@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   has_secure_password
   belongs_to :job
+  has_many :user_team
 
   validates :username, presence: true, length: { maximum: 100 }
   validates :email, presence: true, length: { maximum: 100 },
