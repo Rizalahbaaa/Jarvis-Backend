@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   has_secure_password
-  belongs_to :job
+
+  has_one :profile, dependent: :destroy
+
   has_many :user_team
   has_many :team, through: :user_team
 
