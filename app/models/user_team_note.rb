@@ -3,7 +3,7 @@ class UserTeamNote < ApplicationRecord
     belongs_to :user
 
     validates :role, presence :true
-    validates :team_notes_id, presence :true
+    validates :team_note_id, presence :true
     validates :user_id, presence :true
 
     enum role: {
