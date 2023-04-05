@@ -4,11 +4,11 @@ class TeamNote < ApplicationRecord
     has_many :user_team_note
     has_many :notification
 
-    validates :list_id, presence :true
-    validates :ringtones_id, presence :true
     validates :subject, presence :true
     validates :event_date, presence :true
     validates :reminders,presence :true
+    validates :list_id, presence :true
+    validates :ringtone_id, presence :true
 
     def new_attr
         {   
