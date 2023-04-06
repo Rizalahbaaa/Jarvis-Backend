@@ -1,5 +1,8 @@
 class User < ApplicationRecord
   has_secure_password
+  belongs_to :job
+  has_many :user_team
+  has_many :team, through: :user_team
 
   has_one :profile, dependent: :destroy
 
@@ -18,7 +21,10 @@ class User < ApplicationRecord
   def new_attr
     {
       id:,
-      email:
+      username:,
+      email:,
+      phone:,
+      job: job.new_attr,
     }
   end
 
