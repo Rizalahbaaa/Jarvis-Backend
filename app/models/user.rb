@@ -2,6 +2,7 @@ class User < ApplicationRecord
   has_secure_password
   belongs_to :job
   has_many :user_team
+  has_many :team, through: :user_team
 
   validates :username, presence: true, length: { maximum: 100 }
   validates :email, presence: true, length: { maximum: 100 },
@@ -19,7 +20,7 @@ class User < ApplicationRecord
       username:,
       email:,
       phone:,
-      job: job.new_attr
+      job: job.new_attr,
     }
   end
 
