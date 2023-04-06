@@ -13,5 +13,7 @@ Rails.application.routes.draw do
     resources :attaches
     resources :teams
     resources :lists
+    resources :notes
+    resources :users_notes
   end
 end
