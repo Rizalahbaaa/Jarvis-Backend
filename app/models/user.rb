@@ -1,18 +1,16 @@
 class User < ApplicationRecord
   has_secure_password
-  belongs_to :job
+
+  has_one :profile, dependent: :destroy
+
   has_many :user_team
   has_many :team, through: :user_team
 
   has_many :user_notes
   has_many :notes, through: :user_notes, source: :note
 
-  validates :username, presence: true, length: { maximum: 100 }
-  validates :email, presence: true, length: { maximum: 100 },
+  validates :email, presence: true, length: { maximum: 50 },
                     format: { with: /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i }, uniqueness: true
-  validates :phone, presence: true, length: { minimum: 12 }, uniqueness: true, numericality: true,
-                    format: { with: /\+?([ -]?\d+)+|\(\d+\)([ -]\d+)/ }
-  validates :job_id, presence: true
   validates :password, length: { minimum: 8 }
   validates :password_requirements, confirmation: true
   validates :password_confirmation, presence: true
@@ -20,10 +18,7 @@ class User < ApplicationRecord
   def new_attr
     {
       id:,
-      username:,
-      email:,
-      phone:,
-      job: job.new_attr,
+      email:
     }
   end
 

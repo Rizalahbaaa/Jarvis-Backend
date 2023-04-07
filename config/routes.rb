@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     get '/users', to: 'users#index'
     post '/register', to: 'users#register'
 
+    resources :profiles
     resources :jobs
     resources :progress
     resources :attaches
