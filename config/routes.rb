@@ -11,5 +11,7 @@ Rails.application.routes.draw do
     resources :jobs
     resources :teams
     resources :lists
+    resources :notes
+    resources :users_notes
   end
 end
