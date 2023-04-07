@@ -21,6 +21,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_04_063210) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "lists", force: :cascade do |t|
+    t.string "title"
+    t.integer "team_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+  
   create_table "notes", force: :cascade do |t|
     t.string "subject"
     t.text "description"
@@ -31,6 +38,21 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_04_063210) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "teams", force: :cascade do |t|
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_teams", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "team_id"
+    t.string "invitation_code"
+    t.integer "invitation_status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+  
   create_table "user_notes", force: :cascade do |t|
     t.integer "note_id"
     t.integer "user_id"

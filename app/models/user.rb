@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   has_secure_password
   belongs_to :job
+  has_many :user_team
+  has_many :team, through: :user_team
 
   has_many :user_notes
   has_many :notes, through: :user_notes, source: :note
@@ -21,7 +23,7 @@ class User < ApplicationRecord
       username:,
       email:,
       phone:,
-      job: job.new_attr
+      job: job.new_attr,
     }
   end
 
