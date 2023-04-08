@@ -2,6 +2,10 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   namespace :api do
     resources :products
-  end
-end  # Defines the root path route ("/")
-  # root "articles#index"
+    resources :jobs
+    resources :transactions, only: [:index, :create]
+    get '/users', to: 'users#index'
+    post '/register', to: 'users#register'
+    post '/users', to: 'users#register'
+end 
+end

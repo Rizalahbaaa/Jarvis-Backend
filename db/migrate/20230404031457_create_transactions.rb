@@ -3,6 +3,8 @@ class CreateTransactions < ActiveRecord::Migration[7.0]
     create_table :transactions do |t|
       t.bigint :product_id
       t.bigint :user_id
+      t.bigint :progress_id
+      t.integer :status, null: false, default: 0, enum_type: 'integer'
 
       t.timestamps
     end

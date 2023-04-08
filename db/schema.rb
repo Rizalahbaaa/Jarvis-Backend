@@ -14,12 +14,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_04_031649) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "jobs", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "products", force: :cascade do |t|
-    t.text "image"
-    t.string "title"
+    t.string "name"
     t.string "reward"
-    t.text "sk"
-    t.bigint "points"
+    t.text "terms"
+    t.bigint "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -27,6 +33,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_04_031649) do
   create_table "transactions", force: :cascade do |t|
     t.bigint "product_id"
     t.bigint "user_id"
+    t.bigint "progress_id"
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "username"
+    t.string "email"
+    t.string "phone"
+    t.integer "job_id"
+    t.text "photo"
+    t.string "password_digest"
+    t.string "password_confirmation"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
