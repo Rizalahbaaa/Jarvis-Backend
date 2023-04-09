@@ -9,5 +9,9 @@ Rails.application.routes.draw do
     post '/register', to: 'users#register'
 
     resources :jobs
+    resources :teams
+    resources :lists
+    resources :notes
+    resources :users_notes
   end
 end

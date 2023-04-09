@@ -70,14 +70,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_07_032109) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_team_notes", force: :cascade do |t|
-    t.integer "role"
-    t.integer "user_id"
-    t.integer "team_notes_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "user_teams", force: :cascade do |t|
     t.integer "user_id"
     t.integer "team_id"
