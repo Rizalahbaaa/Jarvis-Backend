@@ -43,3 +43,4 @@ class Api::NotesController < ApplicationController
     params.require(:note).permit(:subject, :description, :event_date, :reminder_date, :ringtone_id)
   end
 end
+ser
