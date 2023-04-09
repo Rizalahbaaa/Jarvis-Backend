@@ -7,7 +7,7 @@ class User < ApplicationRecord
   has_many :team, through: :user_team
 
   has_many :user_notes
-  has_many :notes, through: :user_notes, source: :note
+  has_many :notes, through: :user_notes, source: :note, dependent: :destroy
 
   validates :email, presence: true, length: { maximum: 50 },
                     format: { with: /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i }, uniqueness: true
