@@ -3,6 +3,8 @@ class User < ApplicationRecord
   belongs_to :job
   has_many :user_team
   has_many :user_team_note
+  has_many :invitation
+  has_many :notification
 
   has_one :profile, dependent: :destroy
 
