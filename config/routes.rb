@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   namespace :api do
     resources :products
     resources :jobs
-    resources :transactions, only: [:index, :create]
+    resources :transactions
     get '/users', to: 'users#index'
     post '/register', to: 'users#register'
     post '/users', to: 'users#register'

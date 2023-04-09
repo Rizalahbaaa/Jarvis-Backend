@@ -1,13 +1,14 @@
 class Api::TransactionsController < ApplicationController
+  before_action :set_transaction, only: [:show, :destroy]
     def index
         @transactions = Transaction.all
-        render json: @transactions
+        render json: @transactions.map { |transaction| transaction.new_attr }
       end
-    
+
       def new
         @transaction = Transaction.new
       end
-  
+      
     def create
       @transaction = Transaction.new(transaction_params)
   
@@ -22,8 +23,20 @@ class Api::TransactionsController < ApplicationController
         @transaction = Transaction.find(params[:id])
       end
     
+      def destroy
+        if @transaction.destroy
+            render json: { message: 'success to delete' }, status: 200
+          else
+            render json: { message: 'fail to delete' }, status: 422
+          end
+        end
+
       private
-    
+
+      def set_transaction
+        @transaction = Transaction.find(params[:id])
+      end
+
       def transaction_params
         params.require(:transaction).permit(:product_id, :user_id, :status)
       end
