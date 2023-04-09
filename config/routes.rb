@@ -8,11 +8,14 @@ Rails.application.routes.draw do
     get '/users', to: 'users#index'
     post '/register', to: 'users#register'
 
+    resources :profiles
     resources :jobs
     resources :teams
     resources :lists
     resources :notes
     resources :users_notes
     resources :user_teams
+    resources :progress
+    resources :attaches
   end
 end

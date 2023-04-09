@@ -1,5 +1,5 @@
 class Api::JobsController < ApplicationController
-  before_action :set_job, only: %i[update destory]
+  before_action :set_job, only: %i[update destroy]
   def index
     @jobs = Job.all
     render json: @jobs.map { |job| job.new_attr }

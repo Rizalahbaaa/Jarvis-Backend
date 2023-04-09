@@ -10,13 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_04_063210) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_09_044936) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "attaches", force: :cascade do |t|
+    t.string "name"
+    t.text "path"
+    t.integer "progress_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "jobs", force: :cascade do |t|
     t.string "name"
     t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "progresses", force: :cascade do |t|
+    t.integer "status", default: 0
+    t.integer "notes_id"
+    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -34,6 +50,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_04_063210) do
     t.date "event_date"
     t.integer "reminder_date"
     t.integer "ringtone_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "profiles", force: :cascade do |t|
+    t.string "username"
+    t.string "job_id"
+    t.string "phone"
+    t.text "photo"
+    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -62,11 +88,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_04_063210) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "username"
     t.string "email"
-    t.string "phone"
-    t.integer "job_id"
-    t.text "photo"
     t.string "password_digest"
     t.string "password_confirmation"
     t.datetime "created_at", null: false
