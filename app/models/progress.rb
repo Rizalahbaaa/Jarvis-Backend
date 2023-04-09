@@ -1,7 +1,8 @@
 class Progress < ApplicationRecord
     belongs_to :user
     belongs_to :notes
-    has_many :folders
+    has_one :transaction
+    has_many :attach
 
     validates :status, presence: true
     validates :notes_id, presence: true
