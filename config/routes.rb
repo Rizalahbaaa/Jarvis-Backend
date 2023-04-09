@@ -10,8 +10,6 @@ Rails.application.routes.draw do
 
     resources :profiles
     resources :jobs
-    resources :progress
-    resources :attaches
     resources :teams
     resources :lists
     resources :notes
