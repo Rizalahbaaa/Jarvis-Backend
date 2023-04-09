@@ -4,18 +4,14 @@ belongs_to :user
 
 validates :user_id, presence: true
 validates :team_id, presence: true
+validates :user, uniqueness: { scope: :team, message: "user already join the team" }
 
 
-def new_attributesr
+def new_attributes
     {
-     id: self.id,
-     user_id: self.user_id,
-     team_id: self.team_id,
-     invitation_code: self.invitation_code,
-     invitation_status: self.invitation_status
-          
+     user: self.user.email,
+     team: self.team.title,
       }
     end
-
 
 end
