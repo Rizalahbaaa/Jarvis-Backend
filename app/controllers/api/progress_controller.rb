@@ -1,5 +1,5 @@
 class Api::ProgressController < ApplicationController
-    before_action :set_progress, only: [:create, :update, :destroy]
+    # before_action :set_progress, only: [:create, :update, :destroy]
   
     def index
       @progresses = Progress.all

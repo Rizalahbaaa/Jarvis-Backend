@@ -13,8 +13,8 @@ Rails.application.routes.draw do
     resources :ringtones
     resources :team_notes
     resources :teams
-    resources :user_team_notes
-    resources :user_teams
-    resources :users
+    resources :lists
+    resources :notes
+    resources :users_notes
   end
 end
