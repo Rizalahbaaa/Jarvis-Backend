@@ -34,6 +34,6 @@ class Api::TransactionsController < ApplicationController
       end
 
       def transaction_params
-        params.require(:transaction).permit(:product_id, :user_id, :status)
+        params.require(:transaction).permit(:product_id,:progress_id, :profile_id, :transaction_status)
       end
     end
