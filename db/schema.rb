@@ -44,6 +44,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_09_044936) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "ringtones", force: :cascade do |t|
+    t.string "name"
+    t.string "file"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "team_notes", force: :cascade do |t|
+    t.string "subject"
+    t.string "description"
+    t.date "event_date"
+    t.date "reminder"
+    t.integer "list_id"
+    t.integer "ringtone_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "notes", force: :cascade do |t|
     t.string "subject"
     t.text "description"
@@ -72,6 +90,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_09_044936) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "user_team_notes", force: :cascade do |t|
+    t.integer "role"
+    t.integer "user_id"
+    t.integer "team_note_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+  
   create_table "user_notes", force: :cascade do |t|
     t.integer "note_id"
     t.integer "user_id"
