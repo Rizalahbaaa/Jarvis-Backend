@@ -39,6 +39,6 @@ class Api::ProgressController < ApplicationController
     end
   
     def message_params
-      params.require(:progress).permit(:status, :notes_id, :user_id)
+      params.require(:progress).permit(:status, :notes_id, :profile_id)
     end
 end

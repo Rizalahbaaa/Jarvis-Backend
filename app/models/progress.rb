@@ -1,7 +1,7 @@
 class Progress < ApplicationRecord
   belongs_to :profile
   belongs_to :notes
-  has_one :transaction
+  # has_one :transaction
   has_many :attach
 
   validates :status, presence: true
@@ -15,7 +15,7 @@ class Progress < ApplicationRecord
       id:,
       status:,
       notes_id:,
-      user_id:
+      profile:
     }
   end
 end

@@ -14,6 +14,7 @@ class User < ApplicationRecord
 
   def new_attr
     {
+      id:,
       email:
     }
   end

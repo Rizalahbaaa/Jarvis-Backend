@@ -1,6 +1,4 @@
 class Profile < ApplicationRecord
-  SecureRandom.uuid
-
   belongs_to :user
   belongs_to :job
 
@@ -10,7 +8,7 @@ class Profile < ApplicationRecord
   has_many :progresses
 
   has_many :user_team
-  has_many :team, through: :user_team
+  has_many :team, through: :user_team, dependent: :destroy
 
   validates :username, presence: true, length: { maximum: 50 }
   validates :job_id, presence: true
