@@ -21,8 +21,6 @@ class User < ApplicationRecord
       email:,
       phone:,
       job: job.new_attr, 
-      product: self.products,
-      transaction: self.transactions
     }
   end
 

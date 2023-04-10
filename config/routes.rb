@@ -7,5 +7,5 @@ Rails.application.routes.draw do
     get '/users', to: 'users#index'
     post '/register', to: 'users#register'
     post '/users', to: 'users#register'
-end 
+  end 
 end

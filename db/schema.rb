@@ -32,7 +32,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_04_031649) do
 
   create_table "transactions", force: :cascade do |t|
     t.bigint "product_id"
-    t.bigint "user_id"
+    t.bigint "profile_id"
     t.bigint "progress_id"
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false

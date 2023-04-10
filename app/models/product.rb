@@ -3,8 +3,9 @@ class Product < ApplicationRecord
     has_many :user, through: :transaction
     validates :name , presence: true
     validates :price, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
-
-    def new_attr 
+    validates :reward, presence: true
+    validates :terms, presence: true
+    def new_attr
         {
           id:,
           name: ,

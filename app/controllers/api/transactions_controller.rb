@@ -5,15 +5,11 @@ class Api::TransactionsController < ApplicationController
         render json: @transactions.map { |transaction| transaction.new_attr }
       end
 
-      def new
-        @transaction = Transaction.new
-      end
-      
     def create
       @transaction = Transaction.new(transaction_params)
   
       if @transaction.save
-        render json: @transaction, status: :created
+        render json: @transaction.new_attr, status: :created
       else
         render json: @transaction.errors, status: :unprocessable_entity
       end
