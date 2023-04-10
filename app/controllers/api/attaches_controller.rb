@@ -34,7 +34,7 @@ class Api::AttachesController < ApplicationController
       
     private
     def set_attach
-        @attach = Attach.find_by(id: params[:id])
+        @attach = Attach.find(params[:id])
         return render json: { message: "File not found" }, status: :not_found if @attach.nil?
     end
       
