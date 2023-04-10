@@ -2,15 +2,15 @@ class Api::JobsController < ApplicationController
   before_action :set_job, only: %i[update destroy]
   def index
     @jobs = Job.all
-    render json: @jobs.map { |job| job.new_attr }
+    render json: { success: true, status: 200, data: @jobs.map {|job| job.new_attr} }
   end
 
   def create
     @job = Job.new(job_params)
     if @job.save
-      render json: @job.new_attr
+      render json: { success: true, status: 201, data: @job.new_attr }, status: 201
     else
-      render json: @job.errors, status: 422
+      render json: { success: false, status: 422, message: @job.errors }, status: 422
     end
   end
 
