@@ -1,7 +1,7 @@
 class Profile < ApplicationRecord
   belongs_to :user
   belongs_to :job
-
+  has_many :progress
   validates :username, presence: true, length: { maximum: 50 }
   validates :job_id, presence: true
   validates :phone, presence: true, length: { minimum: 11 }, uniqueness: true, numericality: true,

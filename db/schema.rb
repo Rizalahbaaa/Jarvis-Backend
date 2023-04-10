@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_09_044936) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_10_055354) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,17 +22,18 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_09_044936) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "jobs", force: :cascade do |t|
-    t.string "name"
-    t.text "description"
+  create_table "invitations", force: :cascade do |t|
+    t.integer "type"
+    t.string "link"
+    t.integer "status"
+    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "progresses", force: :cascade do |t|
-    t.integer "status", default: 0
-    t.integer "notes_id"
-    t.integer "user_id"
+  create_table "jobs", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -71,7 +72,25 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_09_044936) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "list_id"
-    t.integer "note_type", default: 0
+    t.integer "note_type"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.string "title"
+    t.string "description"
+    t.integer "note_id"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.string "name"
+    t.string "reward"
+    t.text "terms"
+    t.bigint "price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "profiles", force: :cascade do |t|
@@ -84,8 +103,51 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_09_044936) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "progresses", force: :cascade do |t|
+    t.integer "status", default: 0
+    t.integer "notes_id"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "ringtones", force: :cascade do |t|
+    t.string "name"
+    t.string "file"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "team_notes", force: :cascade do |t|
+    t.string "subject"
+    t.string "description"
+    t.date "event_date"
+    t.date "reminder"
+    t.integer "list_id"
+    t.integer "ringtone_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "teams", force: :cascade do |t|
     t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.bigint "product_id"
+    t.bigint "profile_id"
+    t.bigint "progress_id"
+    t.integer "transaction_status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_notes", force: :cascade do |t|
+    t.integer "note_id"
+    t.integer "user_id"
+    t.integer "role", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -97,20 +159,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_09_044936) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
-  
-  create_table "user_notes", force: :cascade do |t|
-    t.integer "note_id"
-    t.integer "user_id"
-    t.integer "role", default: 0
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
 
   create_table "user_teams", force: :cascade do |t|
     t.integer "user_id"
     t.integer "team_id"
-    t.string "invitation_code"
-    t.integer "invitation_status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
