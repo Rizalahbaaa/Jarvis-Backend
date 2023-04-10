@@ -34,7 +34,7 @@ class Api::ProgressController < ApplicationController
   
     private
     def set_progress
-      @progress = progress.find_by(id: params[:id])
+      @progress = Progress.find(params[:id])
       return render json: { message: "Progress not found" }, status: :not_found if @progress.nil?
     end
   
