@@ -1,5 +1,5 @@
 class Api::AttachesController < ApplicationController
-    before_action :set_attach, only: [:create, :update, :destroy]
+    before_action :set_attach, only: [:update, :destroy]
       
     def index
         @attaches = Attach.all
@@ -11,7 +11,7 @@ class Api::AttachesController < ApplicationController
         if @attach.save
             render json: { message: "success", data: @attach }, status: :created
         else
-            render json: { message: attach.errors }, status: :unprocessable_entity
+            render json: { message: @attach.errors }, status: :unprocessable_entity
         end
     end
       
@@ -34,7 +34,7 @@ class Api::AttachesController < ApplicationController
       
     private
     def set_attach
-        @attach = Attach.find_by(id: params[:id])
+        @attach = Attach.find(params[:id])
         return render json: { message: "File not found" }, status: :not_found if @attach.nil?
     end
       
