@@ -18,6 +18,7 @@ Rails.application.routes.draw do
     resources :users
     resources :profiles
     resources :jobs
+    resources :teams
     resources :lists
     resources :notes
     resources :users_notes
