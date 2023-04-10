@@ -1,6 +1,7 @@
 class Progress < ApplicationRecord
+
   belongs_to :profile
-  belongs_to :notes
+  belongs_to :note
   # has_one :transaction
   has_many :attach
 

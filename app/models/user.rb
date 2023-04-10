@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   has_secure_password
-
+  
+  has_many :transactions
+  has_many :products , through: :transactions
   has_one :profile, dependent: :destroy
 
   has_many :invitation
@@ -15,7 +17,7 @@ class User < ApplicationRecord
   def new_attr
     {
       id:,
-      email:
+      email:,
     }
   end
 

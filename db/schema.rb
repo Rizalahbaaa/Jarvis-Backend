@@ -11,6 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2023_04_10_032413) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -54,7 +55,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_10_032413) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "list_id"
-    t.integer "note_type", default: 0
+    t.integer "note_type"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -62,6 +63,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_10_032413) do
     t.string "description"
     t.integer "note_id"
     t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.string "name"
+    t.string "reward"
+    t.text "terms"
+    t.bigint "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -84,9 +94,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_10_032413) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "teams", force: :cascade do |t|
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "ringtones", force: :cascade do |t|
     t.string "name"
     t.string "file"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+  
+  create_table "transactions", force: :cascade do |t|
+    t.bigint "product_id"
+    t.bigint "profile_id"
+    t.bigint "progress_id"
+    t.integer "transaction_status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

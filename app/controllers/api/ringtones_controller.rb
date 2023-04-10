@@ -1,4 +1,5 @@
 class Api::RingtonesController < ApplicationController
+
   def index
     @ringtones = Ringtone.all
     render json: { success: true, status: 200, data: @ringtones.map { |ringtone| ringtone.new_attr } }
@@ -17,12 +18,13 @@ class Api::RingtonesController < ApplicationController
     end
   end
 
-  def update
-    @ringtones = Ringtone.find(params[:id])
-    if @team_ringtones.update(ringtones_params)
-      render json: @ringtones
-    else
-      render json: @ringtones.errors, status: :unprocessable_entity
+    def update
+        @ringtones = Ringtone.find(params[:id])
+        if @ringtones.update(ringtones_params)
+            render json: @ringtones
+        else
+            render json: @ringtones.errors, status: :unprocessable_entity
+        end
     end
   end
 
