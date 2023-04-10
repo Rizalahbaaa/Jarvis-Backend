@@ -1,7 +1,7 @@
 class Api::RingtonesController < ApplicationController
     def index
         @ringtones = Ringtone.all
-        render json: @team_notes
+        render json: @ringtones
     end
 
     def show
@@ -19,7 +19,7 @@ class Api::RingtonesController < ApplicationController
 
     def update
         @ringtones = Ringtone.find(params[:id])
-        if @team_notes.update(ringtones_params)
+        if @ringtones.update(ringtones_params)
             render json: @ringtones
         else
             render json: @ringtones.errors, status: :unprocessable_entity
@@ -39,7 +39,6 @@ class Api::RingtonesController < ApplicationController
     end
 
     def ringtones_params
-        params.require(:ringtones).permit(
-         :name, :file)
+        params.require(:ringtones).permit(:name, :file)
     end
 end
