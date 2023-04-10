@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_07_032109) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_09_065457) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,54 +22,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_07_032109) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "invitations", force: :cascade do |t|
-    t.integer "type"
-    t.string "link"
-    t.integer "status"
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "jobs", force: :cascade do |t|
     t.string "name"
     t.text "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "lists", force: :cascade do |t|
-    t.string "title"
-    t.integer "team_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "notes", force: :cascade do |t|
-    t.string "subject"
-    t.text "description"
-    t.date "event_date"
-    t.integer "reminder_date"
-    t.integer "ringtone_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "notifications", force: :cascade do |t|
-    t.string "title"
-    t.string "description"
-    t.integer "note_id"
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "profiles", force: :cascade do |t|
-    t.string "username"
-    t.string "job_id"
-    t.string "phone"
-    t.text "photo"
-    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -146,10 +101,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_07_032109) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+  
+  create_table "user_notes", force: :cascade do |t|
+    t.integer "note_id"
+    t.integer "user_id"
+    t.integer "team_note_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "user_teams", force: :cascade do |t|
     t.integer "user_id"
     t.integer "team_id"
+    t.string "invitation_code"
+    t.integer "invitation_status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
