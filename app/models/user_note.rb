@@ -1,5 +1,5 @@
 class UserNote < ApplicationRecord
-  belongs_to :user
+  belongs_to :profile
   belongs_to :note
 
   validates :note_id, presence: true
