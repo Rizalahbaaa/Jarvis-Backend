@@ -1,5 +1,5 @@
 class Api::ProgressController < ApplicationController
-    before_action :set_progress, only: [:create, :update, :destroy]
+    before_action :set_progress, only: [:update, :destroy]
   
     def index
       @progresses = Progress.all
@@ -7,7 +7,7 @@ class Api::ProgressController < ApplicationController
     end
   
     def create
-      @progress = Progress.new(message_params)
+      @progress = Progress.new(progress_params)
       if @progress.save
         render json: { message: "success", data: @progress }, status: :created
       else
@@ -38,7 +38,7 @@ class Api::ProgressController < ApplicationController
       return render json: { message: "Progress not found" }, status: :not_found if @progress.nil?
     end
   
-    def message_params
+    def progress_params
       params.require(:progress).permit(:status, :notes_id, :user_id)
     end
 end
