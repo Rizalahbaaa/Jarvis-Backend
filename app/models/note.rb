@@ -1,6 +1,8 @@
 class Note < ApplicationRecord
   has_many :user_notes
   has_many :profile, through: :user_notes, source: :profile
+  has_many :notification
+  has_many :invitation, as: :invitetable
 
   has_many :progresses
 
