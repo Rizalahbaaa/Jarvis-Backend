@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     get '/users', to: 'users#index'
     post '/register', to: 'users#register'
     resources :products
+    resources :reminders
     resources :jobs
     resources :transactions
     resources :invitations
@@ -20,5 +21,5 @@ Rails.application.routes.draw do
     resources :user_teams
     resources :progress
     resources :attaches
-  end 
+  end
 end

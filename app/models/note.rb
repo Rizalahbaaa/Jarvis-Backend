@@ -6,12 +6,13 @@ class Note < ApplicationRecord
 
   has_many :progresses
 
+  has_many :reminders
+
   belongs_to :list, optional: true
 
   validates :subject, presence: true, length: { maximum: 30 }
   validates :description, presence: true, length: { maximum: 100 }
   validates :event_date, presence: true
-  validates :reminder_date, presence: true
   validates :ringtone_id, presence: false
   validates :note_type, presence: true
   validates :list_id, presence: false
@@ -23,18 +24,14 @@ class Note < ApplicationRecord
 
   def new_attr
     {
-      id:,
+      id: self.id,
       subject:,
       description:,
       event_date:,
-      reminder:,
+      reminder_date: reminders.map{ |reminder| reminder.reminder_date },
       note_type:,
-      list:,
+      list: self.list&.title,
       member: profile.map { |profile| profile.user.email }
     }
-  end
-
-  def reminder
-    event_date - reminder_date.day
   end
 end
