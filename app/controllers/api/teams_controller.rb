@@ -14,7 +14,7 @@ class Api::TeamsController < ApplicationController
     @team = Team.new(team_params)
 
     if @team.save
-      render json: { success: true, status: 201, data: @team.new_attr }, status: 201
+      render json: { success: true, status: 201, data: @team.new_attributes }, status: 201
     else
       render json: { success: false, status: 422, message: @team.errors }, status: 422
     end
@@ -22,7 +22,7 @@ class Api::TeamsController < ApplicationController
 
   def update
     if @team.update(team_params)
-      render json: { success: true, status: 200, data: @team.new_attr }, status: 200
+      render json: { success: true, status: 200, data: @team.new_attributes }, status: 200
     else
       render json: { success: false, status: 422, message: @team.errors }, status: 422
     end
