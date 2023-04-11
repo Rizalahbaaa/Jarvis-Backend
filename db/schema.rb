@@ -87,8 +87,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_10_055354) do
 
   create_table "progresses", force: :cascade do |t|
     t.integer "status", default: 0
-    t.integer "notes_id"
-    t.integer "user_id"
+    t.integer "note_id"
+    t.integer "profile_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -96,17 +96,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_10_055354) do
   create_table "ringtones", force: :cascade do |t|
     t.string "name"
     t.string "file"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "team_notes", force: :cascade do |t|
-    t.string "subject"
-    t.string "description"
-    t.date "event_date"
-    t.date "reminder"
-    t.integer "list_id"
-    t.integer "ringtone_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -128,22 +117,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_10_055354) do
 
   create_table "user_notes", force: :cascade do |t|
     t.integer "note_id"
-    t.integer "user_id"
+    t.integer "profile_id"
     t.integer "role", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_team_notes", force: :cascade do |t|
-    t.integer "role"
-    t.integer "user_id"
-    t.integer "team_note_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "user_teams", force: :cascade do |t|
-    t.integer "user_id"
+    t.integer "profile_id"
     t.integer "team_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

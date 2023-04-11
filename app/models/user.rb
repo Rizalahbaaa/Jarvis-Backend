@@ -5,15 +5,8 @@ class User < ApplicationRecord
   has_many :products , through: :transactions
   has_one :profile, dependent: :destroy
 
-  has_many :user_team
-  has_many :user_team_note
   has_many :invitation
   has_many :notification
-
-  has_many :team, through: :user_team
-
-  has_many :user_notes
-  has_many :notes, through: :user_notes, source: :note, dependent: :destroy
 
   validates :email, presence: true, length: { maximum: 50 },
                     format: { with: /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i }, uniqueness: true
