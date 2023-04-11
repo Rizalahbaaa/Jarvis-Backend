@@ -1,17 +1,15 @@
 class UserTeam < ApplicationRecord
-belongs_to :team
-belongs_to :user
+  belongs_to :team
+  belongs_to :profile
 
-validates :user_id, presence: true
-validates :team_id, presence: true
-validates :user, uniqueness: { scope: :team, message: "user already join the team" }
+  validates :profile_id, presence: true
+  validates :team_id, presence: true
+  validates :profile, uniqueness: { scope: :team, message: 'user already join the team' }
 
-
-def new_attributes
+  def new_attributes
     {
-     user: self.user.email,
-     team: self.team.title,
-      }
-    end
-
+      profile: profile.user.email,
+      team: team.title
+    }
+  end
 end

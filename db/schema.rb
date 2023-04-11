@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_09_065457) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_09_044936) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -106,8 +106,32 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_09_065457) do
     t.string "title"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "list_id"
+    t.integer "note_type", default: 0
   end
 
+  create_table "user_notes", force: :cascade do |t|
+    t.integer "note_id"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "teams", force: :cascade do |t|
+    t.string "title"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.bigint "product_id"
+    t.bigint "profile_id"
+    t.bigint "progress_id"
+    t.integer "transaction_status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+  
   create_table "user_notes", force: :cascade do |t|
     t.integer "note_id"
     t.integer "user_id"
@@ -116,16 +140,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_09_065457) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_team_notes", force: :cascade do |t|
-    t.integer "role"
-    t.integer "user_id"
-    t.integer "team_note_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "user_teams", force: :cascade do |t|
-    t.integer "user_id"
+    t.integer "profile_id"
     t.integer "team_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
