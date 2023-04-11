@@ -2,21 +2,21 @@ class Progress < ApplicationRecord
 
   belongs_to :profile
   belongs_to :note
-  # has_one :transaction
+  # has_one :transactions
   has_many :attach
 
   validates :status, presence: true
-  validates :notes_id, presence: true
-  validates :user_id, presence: true
+  validates :note_id, presence: true
+  validates :profile_id, presence: true
 
   enum status: { on_progress: 0, completed: 1 }
 
-  def new_attributes
+  def new_attr
     {
       id:,
       status:,
-      notes_id:,
-      profile:
+      note: note.subject,
+      profile: profile.username
     }
   end
 end

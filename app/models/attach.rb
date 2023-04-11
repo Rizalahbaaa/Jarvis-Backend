@@ -5,12 +5,12 @@ class Attach < ApplicationRecord
     validates :path, presence: true
     validates :progress_id, presence: true
     
-    def new_attributes
+    def new_attr
     {
-        id: self.id,
-        name: self.name,
-        path: self.path,
-        progress_id: self.progress_id   
+        id:,
+        name:,
+        path:,
+        progress: progress.new_attr
     }
     end
 end
