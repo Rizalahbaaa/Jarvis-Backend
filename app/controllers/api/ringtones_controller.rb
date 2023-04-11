@@ -1,7 +1,7 @@
 class Api::RingtonesController < ApplicationController
     def index
         @ringtones = Ringtone.all
-        render json: @team_notes
+        render json: @ringtones.map { |ringtone| ringtone.new_attr }
     end
 
     def show
@@ -11,7 +11,7 @@ class Api::RingtonesController < ApplicationController
     def create
         @ringtones = Ringtone.new(ringtones_params)
         if @ringtones.save
-            render json: @ringtones, status: :created, location: @ringtones
+            render json: @ringtones.new_attr, status: :created
         else
             render json: @ringtones.errors, status: :unprocessable_entity
         end
@@ -19,8 +19,8 @@ class Api::RingtonesController < ApplicationController
 
     def update
         @ringtones = Ringtone.find(params[:id])
-        if @team_notes.update(ringtones_params)
-            render json: @ringtones
+        if @ringtones.update(ringtones_params)
+            render json: @ringtones.new_attr
         else
             render json: @ringtones.errors, status: :unprocessable_entity
         end
