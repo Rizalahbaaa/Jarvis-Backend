@@ -1,6 +1,5 @@
 class List < ApplicationRecord
 
-  belongs_to :team
   has_many :notes
   belongs_to :team
 
