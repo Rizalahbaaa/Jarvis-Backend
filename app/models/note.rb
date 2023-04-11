@@ -1,6 +1,6 @@
 class Note < ApplicationRecord
   has_many :user_notes
-  has_many :users, through: :user_notes, source: :user
+  has_many :profile, through: :user_notes, source: :profile
   has_many :notification
   has_many :invitation, as: :invitetable
 
@@ -29,7 +29,8 @@ class Note < ApplicationRecord
       event_date:,
       reminder:,
       note_type:,
-      list:
+      list:,
+      member: profile.map { |profile| profile.user.email }
     }
   end
 

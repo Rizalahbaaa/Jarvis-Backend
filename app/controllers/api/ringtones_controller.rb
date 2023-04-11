@@ -1,21 +1,22 @@
 class Api::RingtonesController < ApplicationController
-    def index
-        @ringtones = Ringtone.all
-        render json: @ringtones.map { |ringtone| ringtone.new_attr }
-    end
 
-    def show
-        render json: Ringtone.find(params[:id])
-    end
+  def index
+    @ringtones = Ringtone.all
+    render json: { success: true, status: 200, data: @ringtones.map { |ringtone| ringtone.new_attr } }
+  end
 
-    def create
-        @ringtones = Ringtone.new(ringtones_params)
-        if @ringtones.save
-            render json: @ringtones.new_attr, status: :created
-        else
-            render json: @ringtones.errors, status: :unprocessable_entity
-        end
+  def show
+    render json: Ringtone.find(params[:id])
+  end
+
+  def create
+    @ringtones = Ringtone.new(ringtones_params)
+    if @ringtones.save
+      render json: { success: true, status: 201, data: @ringtones.new_attr }, status: 201
+    else
+      render json: { success: false, status: 422, message: @ringtones.errors }, status: 422
     end
+  end
 
     def update
         @ringtones = Ringtone.find(params[:id])
@@ -26,20 +27,21 @@ class Api::RingtonesController < ApplicationController
         end
     end
 
-    def destroy
-        room = Ringtone.find(params[:id])
-        room.destroy
-        render json: "berhasil di hapus"
-    end
-    
+  def destroy
+    room = Ringtone.find(params[:id])
+    room.destroy
+    render json: 'berhasil di hapus'
+  end
 
-    private
-    def set_ringtones
-        @ringtones = Ringtone.find(params[:id])
-    end
+  private
 
-    def ringtones_params
-        params.require(:ringtones).permit(
-         :name, :file)
-    end
+  def set_ringtones
+    @ringtones = Ringtone.find(params[:id])
+  end
+
+  def ringtones_params
+    params.require(:ringtone).permit(
+      :name, :file
+    )
+  end
 end

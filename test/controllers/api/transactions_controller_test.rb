@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Api::TeamNotesControllerTest < ActionDispatch::IntegrationTest
+class Api::TransactionsControllerTest < ActionDispatch::IntegrationTest
   # test "the truth" do
   #   assert true
   # end
