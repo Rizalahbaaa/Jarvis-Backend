@@ -23,12 +23,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_11_033346) do
   end
 
   create_table "invitations", force: :cascade do |t|
-    t.integer "type"
     t.string "link"
-    t.integer "status"
-    t.integer "user_id"
+    t.string "invitation_status", default: "0"
+    t.integer "profile_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "invitetable_type"
+    t.bigint "invitetable_id"
+    t.index ["invitetable_type", "invitetable_id"], name: "index_invitations_on_invitetable"
   end
 
   create_table "jobs", force: :cascade do |t|
@@ -61,16 +63,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_11_033346) do
     t.string "title"
     t.string "description"
     t.integer "note_id"
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "products", force: :cascade do |t|
-    t.string "name"
-    t.string "reward"
-    t.text "terms"
-    t.bigint "price"
+    t.integer "profile_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -88,7 +81,25 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_11_033346) do
   create_table "progresses", force: :cascade do |t|
     t.integer "status", default: 0
     t.integer "notes_id"
-    t.integer "profile_id"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "ringtones", force: :cascade do |t|
+    t.string "name"
+    t.string "file"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "team_notes", force: :cascade do |t|
+    t.string "subject"
+    t.string "description"
+    t.date "event_date"
+    t.date "reminder"
+    t.integer "list_id"
+    t.integer "ringtone_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -98,11 +109,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_11_033346) do
     t.datetime "reminder_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "list_id"
+    t.integer "note_type", default: 0
   end
 
-  create_table "ringtones", force: :cascade do |t|
-    t.string "name"
-    t.string "file"
+  create_table "user_notes", force: :cascade do |t|
+    t.integer "note_id"
+    t.integer "user_id"
+    t.integer "role", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

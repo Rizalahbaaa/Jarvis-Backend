@@ -21,12 +21,11 @@ class Api::RingtonesController < ApplicationController
     def update
         @ringtones = Ringtone.find(params[:id])
         if @ringtones.update(ringtones_params)
-            render json: @ringtones
+            render json: @ringtones.new_attr
         else
             render json: @ringtones.errors, status: :unprocessable_entity
         end
     end
-  end
 
   def destroy
     room = Ringtone.find(params[:id])
