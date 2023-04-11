@@ -1,29 +1,27 @@
 class Invitation < ApplicationRecord
-    belongs_to :team
-    belongs_to :note
-    belongs_to :user
+    belongs_to :profile
+    belongs_to :invitetable, polymorphic: true
+    
 
-    enum type: {
-        personal: 0,
-        team: 1
-    }
-
-    enum status: {
+    enum invitation_status: {
+        sent: 0,
         confirm: 1,
-        didnt_confirm: 0
+        rejected: 2
     }
 
-    validates :type, presence: true
     validates :link, presence: true
-    validates :status, presence: true
-    validates :user_id, presence: true
+    validates :invitation_status, presence: true
+    validates :profile_id, presence: true
+    validates :invitetable_id, presence: true
+    validates :invitetable_type, presence: true
 
     def new_attr
         {
-            type: self.type,
             link: self.link,
-            status: self.status,
-            user_id: self.user_id
+            invitation_status: self.invitation_status,
+            user_name: profile.username,
+            invitetable_id: self.invitetable_id,
+            invitetable_type: self.invitetable_type
         }
-    end
+    end  
 end

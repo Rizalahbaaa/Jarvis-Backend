@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_10_055354) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_11_061924) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -23,12 +23,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_10_055354) do
   end
 
   create_table "invitations", force: :cascade do |t|
-    t.integer "type"
     t.string "link"
-    t.integer "status"
-    t.integer "user_id"
+    t.string "invitation_status", default: "0"
+    t.integer "profile_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "invitetable_type"
+    t.bigint "invitetable_id"
+    t.index ["invitetable_type", "invitetable_id"], name: "index_invitations_on_invitetable"
   end
 
   create_table "jobs", force: :cascade do |t|
@@ -54,14 +56,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_10_055354) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "list_id"
-    t.integer "note_type"
+    t.integer "note_type", default: 0
   end
 
   create_table "notifications", force: :cascade do |t|
     t.string "title"
     t.string "description"
     t.integer "note_id"
-    t.integer "user_id"
+    t.integer "profile_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -89,6 +91,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_10_055354) do
     t.integer "status", default: 0
     t.integer "note_id"
     t.integer "profile_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "reminders", force: :cascade do |t|
+    t.integer "note_id"
+    t.datetime "reminder_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

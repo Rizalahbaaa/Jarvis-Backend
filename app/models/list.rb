@@ -1,4 +1,6 @@
 class List < ApplicationRecord
+
+  has_many :notes
   belongs_to :team
 
   validates :title, presence: true, length: { maximum: 100 }
