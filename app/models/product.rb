@@ -12,6 +12,7 @@ class Product < ApplicationRecord
           reward: ,
           terms: ,
           price: ,
+          
         }
     end
 end
