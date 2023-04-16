@@ -2,10 +2,12 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   namespace :api do
     get '/users', to: 'users#index'
+    get '/users/:id', to: 'users#show'
     post '/register', to: 'users#register'
+    post '/login', to: 'users#login'
+
     resources :products
     resources :reminders
-    resources :jobs
     resources :transactions
     resources :invitations
     resources :notivications
@@ -13,7 +15,6 @@ Rails.application.routes.draw do
     resources :team_notes
     resources :user_team_notes
     resources :users
-    resources :profiles
     resources :teams
     resources :lists
     resources :notes

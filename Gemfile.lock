@@ -79,7 +79,13 @@ GEM
       reline (>= 0.3.1)
     dockerfile-rails (1.2.5)
       rails
+    dotenv (2.8.1)
+    dotenv-rails (2.8.1)
+      dotenv (= 2.8.1)
+      railties (>= 3.2)
     erubi (1.12.0)
+    faker (3.1.1)
+      i18n (>= 1.8.11, < 2)
     globalid (1.1.0)
       activesupport (>= 5.0)
     i18n (1.12.0)
@@ -87,6 +93,7 @@ GEM
     io-console (0.6.0)
     irb (1.6.3)
       reline (>= 0.3.0)
+    jwt (2.7.0)
     loofah (2.20.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -171,6 +178,9 @@ DEPENDENCIES
   bootsnap
   debug
   dockerfile-rails (>= 1.2)
+  dotenv-rails
+  faker
+  jwt
   pg (~> 1.1)
   pry (~> 0.13.1)
   puma (~> 5.0)
