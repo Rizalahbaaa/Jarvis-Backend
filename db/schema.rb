@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<<<< Temporary merge branch 1
 ActiveRecord::Schema[7.0].define(version: 2023_04_17_024822) do
+=========
+ActiveRecord::Schema[7.0].define(version: 2023_04_16_054331) do
+>>>>>>>>> Temporary merge branch 2
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
