@@ -2,8 +2,8 @@ class Progress < ApplicationRecord
 
   belongs_to :profile
   belongs_to :note
-  # has_one :transactions
-  has_many :attach
+  has_one :transactions
+  has_many :attaches
 
   validates :status, presence: true
   validates :note_id, presence: true
@@ -16,7 +16,8 @@ class Progress < ApplicationRecord
       id:,
       status:,
       note: note.subject,
-      profile: profile.username
+      profile: profile.username,
+      file: attaches.map{ |attach| attach.path }
     }
   end
 end

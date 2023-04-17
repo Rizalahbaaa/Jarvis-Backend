@@ -1,6 +1,6 @@
 class Product < ApplicationRecord
     has_many :transactions
-    has_many :user, through: :transaction
+    has_many :profile, through: :transaction
     validates :name , presence: true
     validates :price, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
     validates :reward, presence: true
@@ -11,7 +11,7 @@ class Product < ApplicationRecord
           name: ,
           reward: ,
           terms: ,
-          price:
+          price: ,
         }
     end
 end

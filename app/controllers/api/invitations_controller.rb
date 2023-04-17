@@ -40,6 +40,6 @@ class Api::InvitationsController < ApplicationController
 
     def invitation_params
         params.require(:invitation).permit(
-         :type, :link, :status, :user_id)
+         :invitetable_id,:invitetable_type, :link, :invitation_status, :profile_id)
     end
 end

@@ -40,6 +40,6 @@ class Api::NotificationsController < ApplicationController
 
     def notification_params
         params.require(:notification).permit(
-         :title, :description, :note_id, :user_id)
+         :title, :description, :note_id, :profile_id)
     end
 end
