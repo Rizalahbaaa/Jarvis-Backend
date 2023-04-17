@@ -30,6 +30,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_17_023925) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "ringtones", force: :cascade do |t|
+    t.string "name"
+    t.text "path"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "teams", force: :cascade do |t|
     t.string "title"
     t.datetime "created_at", null: false
