@@ -9,9 +9,9 @@ class Api::TransactionsController < ApplicationController
       @transaction = Transaction.new(transaction_params)
   
       if @transaction.save
-        render json: @transaction.new_attr, status: :created
+        render json: { success: true, status: 201, message: 'create transaction successfully', data: @transaction.new_attr }, status: 201
       else
-        render json: @transaction.errors, status: :unprocessable_entity
+        render json: { success: false, status: 422, message: 'create transaction unsuccessfully', data: @transaction.errors }, status: 422
       end
     end
     
@@ -21,19 +21,22 @@ class Api::TransactionsController < ApplicationController
     
       def destroy
         if @transaction.destroy
-            render json: { message: 'success to delete' }, status: 200
+            render json: { message: 'success to delete transaction' }, status: 200
           else
-            render json: { message: 'fail to delete' }, status: 422
+            render json: { message: 'fail to delete transaction' }, status: 422
           end
         end
 
       private
 
       def set_transaction
-        @transaction = Transaction.find(params[:id])
+        @transaction = Transaction.find_by_id(params[:id])
+        return unless @transaction.nil?
+    
+        render json: { status: 404, message: 'transaction not found' }, status: 404
       end
 
       def transaction_params
-        params.require(:transaction).permit(:product_id,:progress_id, :profile_id, :transaction_status)
+        params.require(:transaction).permit(:product_id,:user_id, :user_note_id, :transaction_status)
       end
     end
