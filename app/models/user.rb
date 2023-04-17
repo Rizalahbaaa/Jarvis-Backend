@@ -25,8 +25,8 @@ class User < ApplicationRecord
   validates :photo, presence: false
   validates :password, confirmation: true, length: { minimum: 8 },
                        format: { with: PASSWORD_FORMAT,
-                                 message: 'password must contain digit, uppercase, lowercase, and symbol' }
-  validates :password_confirmation, presence: true
+                                 message: 'password must contain digit, uppercase, lowercase, and symbol' }, on: :create
+  validates :password_confirmation, presence: true, on: :create
 
   def new_attr
     {
