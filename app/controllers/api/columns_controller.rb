@@ -15,17 +15,19 @@ class Api::ColumnsController < ApplicationController
     @column = Column.new(column_params)
 
     if @column.save
-      render json: @column.new_attributes, status: :created
+      render json: { success: true, status: 201, message: 'create column successfully', data: @column.new_attributes },
+             status: 201
     else
-      render json: @column.errors, status: :unprocessable_entity
+      render json: { success: false, status: 422, message: 'create column unsuccessfully', data: @column.errors },
+             status: 422
     end
   end
 
   def update
     if @column.update(column_params)
-      render json: @column.new_attributes
+      render json: { success: true, status: 200, message: 'column updated successfully', data: @column.new_attributes }, status: 200
     else
-      render json: @column.errors, status: :unprocessable_entity
+      render json: { success: false, status: 422, message: @column.errors }, status: 422
     end
   end
 
