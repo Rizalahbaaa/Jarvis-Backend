@@ -15,7 +15,7 @@ Rails.application.routes.draw do
     resources :team_notes
     resources :users
     resources :teams
-    resources :lists
+    resources :columns
     resources :notes
     resources :users_notes
     resources :user_teams
