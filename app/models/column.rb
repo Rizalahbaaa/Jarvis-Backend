@@ -1,5 +1,4 @@
-class List < ApplicationRecord
-
+class Column < ApplicationRecord
   has_many :notes
   belongs_to :team
 
