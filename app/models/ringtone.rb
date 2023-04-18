@@ -1,15 +1,14 @@
 class Ringtone < ApplicationRecord
-  has_many :team_note
-  has_many :note
+  has_many :user_notes
 
-  validates :name, presence: true
-  validates :file, presence: true
+  validates :name, presence: true, length: { maximum: 100 }
+  validates :path, presence: true
 
   def new_attr
     {
       id:,
       name:,
-      file:
+      path:
     }
   end
 end
