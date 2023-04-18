@@ -23,7 +23,7 @@ class Api::RingtonesController < ApplicationController
     if @ringtone.update(ringtone_params)
         render json: { success: true, message: 'update ringtone successfully', status: 200, data: @ringtone.new_attr }, status: 200
       else
-        render json: { success: false, message: 'update ringtone unsuccessfully', status: 422, message: @ringtone.errors }, status: 422
+        render json: { success: false, status: 422, message: @ringtone.errors }, status: 422
     end
   end
       
