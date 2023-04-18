@@ -11,7 +11,7 @@ class Api::AttachesController < ApplicationController
         if @attach.save
             render json: { success: true, message: 'upload file successfully', status: 201, data: @attach.new_attr }, status: 201
           else
-            render json: { success: false, message: 'upload file unsuccessfully', status: 422, message: @attach.errors }, status: 422
+            render json: { success: false, message: 'upload file unsuccessfully', status: 422, data: @attach.errors }, status: 422
         end
     end
 
@@ -23,7 +23,7 @@ class Api::AttachesController < ApplicationController
         if @attach.update(attach_params)
             render json: { success: true, message: 'update file successfully', status: 200, data: @attach.new_attr }, status: 200
           else
-            render json: { success: false, message: 'update file unsuccessfully', status: 422, message: @attach.errors }, status: 422
+            render json: { success: false, status: 422, message: @attach.errors }, status: 422
         end
     end
           
