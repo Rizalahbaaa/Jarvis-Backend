@@ -7,7 +7,6 @@ Rails.application.routes.draw do
     post '/login', to: 'users#login'
 
     resources :products
-    resources :reminders
     resources :transactions
     resources :invitations
     resources :notivications
