@@ -27,7 +27,7 @@ class Api::UsersController < ApplicationController
     if @user&.authenticate(params[:password])
       token = JsonWebToken.encode(user_id: @user.id)
       render json: {
-        success: true, status: 201, message: 'login successfully',
+        success: true, status: 200, message: 'login successfully',
         data: @user.new_attr,
         token:
       }, status: 200
