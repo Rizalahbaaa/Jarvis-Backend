@@ -7,7 +7,6 @@ Rails.application.routes.draw do
     post '/login', to: 'users#login'
 
     resources :products
-    resources :reminders
     resources :transactions
     resources :invitations
     resources :notivications
@@ -15,7 +14,7 @@ Rails.application.routes.draw do
     resources :team_notes
     resources :users
     resources :teams
-    resources :lists
+    resources :columns
     resources :notes
     resources :users_notes
     resources :user_teams

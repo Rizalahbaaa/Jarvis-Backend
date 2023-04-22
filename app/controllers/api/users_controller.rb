@@ -59,7 +59,7 @@ class Api::UsersController < ApplicationController
   private
 
   def set_user
-    @user = User.find_by_id(current_user)
+    @user = current_user
     return unless @user.nil?
 
     render json: { status: 404, message: 'user not found' }, status: 404
