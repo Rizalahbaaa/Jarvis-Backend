@@ -1,10 +1,10 @@
 class Product < ApplicationRecord
     has_many :transactions
-    has_many :profile, through: :transaction
-    validates :name , presence: true
-    validates :price, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
-    validates :reward, presence: true
-    validates :terms, presence: true
+    has_many :users, through: :transactions
+    validates :name, presence: true, length: { maximum: 50 }, uniqueness: true
+    validates :terms, presence: true ,length: { maximum: 100 }
+    validates :reward, presence: true, length: { maximum: 50 }, uniqueness: true
+    validates :price, presence: true, numericality: { greater_than: 0 }
     def new_attr
         {
           id:,
@@ -12,7 +12,6 @@ class Product < ApplicationRecord
           reward: ,
           terms: ,
           price: ,
-          
         }
     end
 end
