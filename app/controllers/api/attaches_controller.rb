@@ -3,7 +3,7 @@ class Api::AttachesController < ApplicationController
       
     def index
         @attaches = Attach.all
-        render json: { success: true, message: 'data found', status: 200, data: @attaches.map {|attach| attach.new_attr} }
+        render json: { success: true, status: 200, data: @attaches.map {|attach| attach.new_attr} }
     end
       
     def create
