@@ -25,7 +25,7 @@ class User < ApplicationRecord
   USERNAME_REGEX = /\A[^\W\d_]+\z/
   JOB_REGEX = /\A[^\W\d_]+\z/
 
-  validate :username_format, :email_format, :phone_format, :job_format
+  validate :username_format, :email_format, :phone_format, :job_format, on: :create
   validates_presence_of :email, :username, :phone, :job, message: "can't be blank"
   validates_uniqueness_of :email, :username, :phone, message: 'has already been taken'
   validates :username, length: { maximum: 50 }
