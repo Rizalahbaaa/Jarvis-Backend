@@ -1,5 +1,5 @@
 class Ringtone < ApplicationRecord
-  has_many :user_notes
+  has_many :notes
 
   validates :name, presence: true, length: { maximum: 100 }
   validates :path, presence: true
