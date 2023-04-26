@@ -9,9 +9,9 @@ class Api::AttachesController < ApplicationController
     def create
         @attach = Attach.new(attach_params)
         if @attach.save
-            render json: { success: true, message: 'upload file successfully', status: 201, data: @attach.new_attr }, status: 201
+            render json: { success: true, message: 'file uploaded successfully', status: 201, data: @attach.new_attr }, status: 201
           else
-            render json: { success: false, message: 'upload file unsuccessfully', status: 422, data: @attach.errors }, status: 422
+            render json: { success: false, message: 'file uploaded unsuccessfully', status: 422, data: @attach.errors }, status: 422
         end
     end
 
@@ -21,9 +21,9 @@ class Api::AttachesController < ApplicationController
       
     def update
         if @attach.update(attach_params)
-            render json: { success: true, message: 'update file successfully', status: 200, data: @attach.new_attr }, status: 200
+            render json: { success: true, message: 'file updated successfully', status: 200, data: @attach.new_attr }, status: 200
           else
-            render json: { success: false, status: 422, message: @attach.errors }, status: 422
+            render json: { success: false, message: 'file updated unsuccessfully' ,status: 422, data: @attach.errors }, status: 422
         end
     end
           
@@ -39,7 +39,8 @@ class Api::AttachesController < ApplicationController
     private
     def set_attach
         @attach = Attach.find(params[:id])
-        return render json: { message: "file not found" }, status: :not_found if @attach.nil?
+        return unless @attach.nil?
+        render json: { status: 404, message: "file not found" }, status: 404
     end
       
     def attach_params
