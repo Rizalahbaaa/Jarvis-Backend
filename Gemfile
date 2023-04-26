@@ -7,7 +7,7 @@ gem 'pry', '~> 0.13.1'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.0.4", ">= 7.0.4.3"
-
+gem 'rails_admin', '~> 3.0'
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
 
@@ -54,3 +54,4 @@ gem 'dotenv-rails'
 gem 'faker'
 
 gem "dockerfile-rails", ">= 1.2", :group => :development
+gem "sassc-rails"
