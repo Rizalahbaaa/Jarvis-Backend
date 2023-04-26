@@ -33,8 +33,8 @@ class Note < ApplicationRecord
       ringtone: ringtone.name,
       column: self.column&.title,
       note_type:,
-      status:
-      # member: profile.map { |profile| profile.user.email }
+      status:,
+      member: users.map { |user| user.username }
     }
   end
 end

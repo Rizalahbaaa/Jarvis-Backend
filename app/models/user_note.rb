@@ -1,22 +1,32 @@
 class UserNote < ApplicationRecord
-  belongs_to :profile
+  belongs_to :user
   belongs_to :note
+  has_many :attaches
+  has_many :transactions
 
   validates :note_id, presence: true
-  validates :profile_id, presence: true
-  validates :role, presence: true
+  validates :user_id, presence: true
+  validates :reminder, presence: true
 
   enum role: {
-    member: 0,
-    owner: 1
+    owner: 0,
+    member: 1
+  }
+
+  enum status: {
+    on_progress: 0,
+    completed: 1,
+    late: 2
   }
 
   def new_attr
     {
       id:,
       note: note.new_attr,
-      profile: profile.user.email,
-      role:
+      user: user.username,
+      reminder:,
+      role:,
+      status:
     }
   end
 end
