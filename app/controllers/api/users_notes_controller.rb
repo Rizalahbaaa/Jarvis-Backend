@@ -9,7 +9,7 @@ class Api::UsersNotesController < ApplicationController
     if @user_note.save
       render json: { success: true, status: 201, data: @user_note.new_attr }, status: 201
     else
-      render json: { success: false, status: 422, message: @user_note.errors }, status: 422
+      render json: { success: false, status: 422, data: @user_note.errors }, status: 422
     end
   end
 
@@ -25,6 +25,6 @@ class Api::UsersNotesController < ApplicationController
   private
 
   def user_note_params
-    params.require(:users_note).permit(:note_id, :profile_id, :role)
+    params.require(:users_note).permit(:note_id, :user_id, :reminder, :role, :status)
   end
 end
