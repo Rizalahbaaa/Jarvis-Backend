@@ -1,5 +1,5 @@
 class Api::RingtonesController < ApplicationController
-  before_action :set_ringtone, only: [:show, :update, :destroy]
+  before_action :set_ringtone, only: %i[show update destroy]
 
   def index
     @ringtones = Ringtone.all

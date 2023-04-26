@@ -1,5 +1,5 @@
 class Api::AttachesController < ApplicationController
-    before_action :set_attach, only: [:update, :destroy]
+    before_action :set_attach, only: %i[show update destroy]
       
     def index
         @attaches = Attach.all
