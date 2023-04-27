@@ -1,6 +1,6 @@
 class Api::UsersController < ApplicationController
   skip_before_action :authenticate_request, only: %i[create login confirm_email]
-  before_action :set_user, only: %i[destroy show update]
+  before_action :set_user, only: %i[show update]
 
   def index
     @users = User.all
@@ -56,6 +56,7 @@ class Api::UsersController < ApplicationController
   end
 
   def destroy
+    @user = User.find(params[:id])
     if @user.destroy
       render json: { success: true, status: 200, message: 'user deleted successfully' }, status: 200
     else

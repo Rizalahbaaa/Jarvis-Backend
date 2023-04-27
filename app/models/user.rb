@@ -8,11 +8,11 @@ class User < ApplicationRecord
   has_many :user_notes
   has_many :notes, through: :user_notes, source: :note, dependent: :destroy
 
-  has_many :user_team
-  has_many :team, through: :user_team, dependent: :destroy
+  # has_many :user_team
+  # has_many :team, through: :user_team, dependent: :destroy
 
-  has_many :invitation
-  has_many :notification
+  # has_many :invitation
+  # has_many :notification
 
   PASSWORD_REGEX = /\A
     (?=.*\d)
