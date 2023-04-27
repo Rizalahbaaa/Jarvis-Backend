@@ -69,7 +69,7 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
     address: 'smtp.gmail.com',
     port: 587,
-    domain: 'bantuin.fly.dev',
+    domain: 'localhost:3000',
     user_name: ENV['USERNAME_EMAIL'],
     password: ENV['PASSWORD_EMAIL'],
     authentication: 'plain',
