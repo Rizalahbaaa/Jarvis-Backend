@@ -1,6 +1,6 @@
 class Api::UsersController < ApplicationController
-  skip_before_action :authenticate_request, only: %i[register login]
-  before_action :set_user, only: %i[destroy show update]
+  skip_before_action :authenticate_request, only: %i[index destroy create login confirm_email]
+  before_action :set_user, only: %i[show update]
 
   def index
     @users = User.all
@@ -11,13 +11,14 @@ class Api::UsersController < ApplicationController
     end
   end
 
-  def register
+  def create
     @user = User.new(user_params)
     if @user.save
-      render json: { success: true, status: 201, message: 'create account successfully', data: @user.new_attr },
+      UserMailer.registration_confirmation(@user).deliver_now
+      render json: { success: true, status: 201, message: 'please confirm your email address to continue', data: @user.new_attr },
              status: 201
     else
-      render json: { success: false, status: 422, message: 'create account unsuccessfully', data: @user.errors },
+      render json: { success: false, status: 422, message: 'oooppss, something went wrong!', data: @user.errors },
              status: 422
     end
   end
@@ -25,12 +26,18 @@ class Api::UsersController < ApplicationController
   def login
     @user = User.find_by(email: params[:email])
     if @user&.authenticate(params[:password])
-      token = JsonWebToken.encode(user_id: @user.id)
-      render json: {
-        success: true, status: 200, message: 'login successfully',
-        data: @user.new_attr,
-        token:
-      }, status: 200
+      if @user.email_confirmed
+        token = JsonWebToken.encode(user_id: @user.id)
+        render json: {
+          success: true, status: 200, message: 'login successfully',
+          data: @user.new_attr,
+          token:
+        }, status: 200
+      else
+        render json: {
+          status: 422, message: 'Please activate your email account first'
+        }, status: 422
+      end
     else
       render json: { error: 'invalid email or password' }, status: 401
     end
@@ -49,10 +56,21 @@ class Api::UsersController < ApplicationController
   end
 
   def destroy
+    @user = User.find(params[:id])
     if @user.destroy
       render json: { success: true, status: 200, message: 'user deleted successfully' }, status: 200
     else
       render json: { success: true, status: 422, message: 'user deleted unsuccessfully' }, status: 422
+    end
+  end
+
+  def confirm_email
+    @user = User.find_by_confirm_token(params[:id])
+    if @user
+      @user.email_activate
+      render json: { message: 'email verified' }
+    else
+      render json: { message: 'Sorry. your email not verified' }
     end
   end
 
