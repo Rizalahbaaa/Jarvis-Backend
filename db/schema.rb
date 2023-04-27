@@ -94,4 +94,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_26_042357) do
     t.boolean "email_confirmed"
     t.string "confirm_token"
   end
+
 end
