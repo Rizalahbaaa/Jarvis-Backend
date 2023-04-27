@@ -1,6 +1,6 @@
 class Note < ApplicationRecord
   has_many :user_note
-  has_many :users, through: :user_note, source: :user
+  has_many :users, through: :user_note, source: :user, dependent: :destroy
   has_many :notification
   has_many :invitation, as: :invitetable
 
