@@ -1,4 +1,5 @@
 require 'active_support/core_ext/integer/time'
+require 'dotenv/load'
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -62,13 +63,15 @@ Rails.application.configure do
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
 
+  # config.action_mailer.default_url_options = { host: 'bantuin.fly.dev', protocol: 'https' }
+  # config.action_mailer.perform_deliveries = true
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     address: 'smtp.gmail.com',
     port: 587,
     domain: 'bantuin.fly.dev',
-    user_name: 'bantuin.io@gmail.com',
-    password: 'pfoabbpxrihojvng',
+    user_name: ENV['USERNAME_EMAIL'],
+    password: ENV['PASSWORD_EMAIL'],
     authentication: 'plain',
     enable_starttls_auto: true,
     open_timeout: 5,
