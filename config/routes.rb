@@ -4,8 +4,9 @@ Rails.application.routes.draw do
   namespace :api do
     get '/users', to: 'users#index'
     get '/users/:id', to: 'users#show'
-    post '/register', to: 'users#register'
+    post '/register', to: 'users#create'
     post '/login', to: 'users#login'
+    get '/confirm/:id', to: 'users#confirm_email'
 
     resources :products
     resources :transactions
