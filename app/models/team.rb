@@ -10,7 +10,7 @@ has_many :invitation, as: :invitetable
     {
       id:,
       title:,
-      participant: user.map { |profile| profile.username }
+      participant: user.map { |user| user.username }
     }
   end
 end
