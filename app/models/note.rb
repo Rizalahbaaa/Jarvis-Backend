@@ -1,6 +1,6 @@
 class Note < ApplicationRecord
-  has_many :user_notes
-  has_many :users, through: :user_notes, source: :user
+  has_many :user_note
+  has_many :users, through: :user_note, source: :user
   has_many :notification
   has_many :invitation, as: :invitetable
 
@@ -12,6 +12,10 @@ class Note < ApplicationRecord
   validates :event_date, presence: true
   validates :ringtone_id, presence: true
   validates :column_id, presence: false
+
+  scope :join_usernote, -> { joins(:user_note) }
+  scope :notefunc, -> (note_id) { join_usernote.where(user_note: { note_id: note_id })}
+  scope :owners?, -> (user_id){ join_usernote.where(user_note: { role: 'owner', user_id: user_id }).limit(1).present?}
 
   enum note_type: {
     personal: 0,

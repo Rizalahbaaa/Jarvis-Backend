@@ -1,6 +1,6 @@
 class Team < ApplicationRecord
   has_many :user_team
-  has_many :profile, through: :user_team
+  has_many :user, through: :user_team
   has_many :list
 has_many :invitation, as: :invitetable
 
@@ -10,7 +10,7 @@ has_many :invitation, as: :invitetable
     {
       id:,
       title:,
-      participant: profile.map { |profile| profile.username }
+      participant: user.map { |profile| profile.username }
     }
   end
 end
