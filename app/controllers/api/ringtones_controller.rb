@@ -1,17 +1,17 @@
 class Api::RingtonesController < ApplicationController
-  before_action :set_ringtone, only: [:show, :update, :destroy]
+  before_action :set_ringtone, only: %i[show update destroy]
 
   def index
     @ringtones = Ringtone.all
-    render json: { success: true, message: 'data found', status: 200, data: @ringtones.map { |ringtone| ringtone.new_attr } }
+    render json: { success: true, status: 200, data: @ringtones.map { |ringtone| ringtone.new_attr } }
   end
   
   def create
     @ringtone = Ringtone.new(ringtone_params)
     if @ringtone.save
-        render json: { success: true, message: 'upload ringtone successfully', status: 201, data: @ringtone.new_attr }, status: 201
+        render json: { success: true, message: 'ringtone uploaded successfully', status: 201, data: @ringtone.new_attr }, status: 201
       else
-        render json: { success: false, message: 'upload ringtone unsuccessfully', status: 422, data: @ringtone.errors }, status: 422
+        render json: { success: false, message: 'ringtone uploaded unsuccessfully', status: 422, data: @ringtone.errors }, status: 422
     end
   end
 
@@ -21,9 +21,9 @@ class Api::RingtonesController < ApplicationController
   
   def update
     if @ringtone.update(ringtone_params)
-        render json: { success: true, message: 'update ringtone successfully', status: 200, data: @ringtone.new_attr }, status: 200
+        render json: { success: true, message: 'ringtone updated successfully', status: 200, data: @ringtone.new_attr }, status: 200
       else
-        render json: { success: false, status: 422, message: @ringtone.errors }, status: 422
+        render json: { success: false, message: 'ringtone updated unsuccessfully', status: 422, data: @ringtone.errors }, status: 422
     end
   end
       
@@ -38,7 +38,8 @@ class Api::RingtonesController < ApplicationController
   private
   def set_ringtone
     @ringtone = Ringtone.find(params[:id])
-    return render json: { message: "ringtone not found" }, status: :not_found if @ringtone.nil?
+    return unless @ringtone.nil?
+    render json: { status: 404, message: "ringtone not found" }, status: 404
   end
   
   def ringtone_params
