@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  before_create :confirmation_token
   has_secure_password
 
   has_many :transactions
@@ -27,7 +28,7 @@ class User < ApplicationRecord
 
   validate :username_format, :email_format, :phone_format, :job_format
   validates_presence_of :email, :username, :phone, :job, message: "can't be blank"
-  validates_uniqueness_of :email, :username, :phone, message: 'has already been taken'
+  validates_uniqueness_of :username, :email, :phone, message: 'has already been taken'
   validates :username, length: { maximum: 50 }
   validates :email, length: { maximum: 50 }
   validates :phone, length: { maximum: 13 }
@@ -71,5 +72,19 @@ class User < ApplicationRecord
     return unless job.present?
 
     validates_format_of :job, with: JOB_REGEX, message: 'job is invalid'
+  end
+
+  def email_activate
+    self.email_confirmed = true
+    self.confirm_token = nil
+    save!(validate: false)
+  end
+
+  private
+
+  def confirmation_token
+    return unless confirm_token.blank?
+
+    self.confirm_token = SecureRandom.urlsafe_base64.to_s
   end
 end
