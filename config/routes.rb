@@ -2,12 +2,11 @@ Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   namespace :api do
-    get '/users', to: 'users#index'
-    get '/users/:id', to: 'users#show'
     post '/register', to: 'users#create'
     post '/login', to: 'users#login'
     get '/confirm/:id', to: 'users#confirm_email'
 
+    resources :users
     resources :products
     resources :transactions
     resources :invitations
