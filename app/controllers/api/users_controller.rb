@@ -49,9 +49,11 @@ class Api::UsersController < ApplicationController
 
   def update
     if @user.update(user_params)
-      render json: { success: true, status: 200, data: @user.new_attr }, status: 200
+      render json: { success: true, message: 'profile updated successfully', status: 200, data: @user.new_attr },
+             status: 200
     else
-      render json: { success: false, status: 422, message: @user.errors }, status: 422
+      render json: { success: false, message: 'profile updated unsuccessfully', status: 422, data: @user.errors },
+             status: 422
     end
   end
 
@@ -84,6 +86,6 @@ class Api::UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:username, :email, :phone, :job, :password, :password_confirmation)
+    params.permit(:username, :email, :phone, :job, :photo, :password, :password_confirmation)
   end
 end
