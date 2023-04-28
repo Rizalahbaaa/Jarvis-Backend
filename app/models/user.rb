@@ -1,4 +1,7 @@
+require 'carrierwave/orm/activerecord'
 class User < ApplicationRecord
+  mount_uploader :photo, PhotoUploader
+
   before_create :confirmation_token
   has_secure_password
 
@@ -33,11 +36,13 @@ class User < ApplicationRecord
   validates :email, length: { maximum: 50 }
   validates :phone, length: { maximum: 13 }
   validates :job, length: { maximum: 50 }
-  validates :photo, presence: false
   validates :password, confirmation: true, on: :create,
                        format: { with: PASSWORD_REGEX,
                                  message: 'password must contain digit, uppercase, lowercase, and symbol' }
   validates :password_confirmation, presence: true, on: :create
+
+  validates_format_of :photo, with: /\.(png|jpg|jpeg)/i, message: 'please upload file in .JPEG .JPG .PNG format'
+  validate :photo_size_validation, if: :photo?
 
   def new_attr
     {
@@ -87,4 +92,8 @@ class User < ApplicationRecord
 
     self.confirm_token = SecureRandom.urlsafe_base64.to_s
   end
+
+  # def photo_size_validation
+  #   errors.add(:photo, message: 'should be less than 1MB') if photo.size > 1.megabytes
+  # end
 end
