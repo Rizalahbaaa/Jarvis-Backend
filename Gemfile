@@ -54,7 +54,7 @@ gem 'dotenv-rails'
 gem 'faker'
 
 gem 'carrierwave'
-gem 'carrierwave-processing'
+
 gem 'cloudinary'
 
 gem "dockerfile-rails", ">= 1.2", :group => :development
