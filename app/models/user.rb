@@ -25,11 +25,11 @@ class User < ApplicationRecord
   /x
 
   EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
-  PHONE_REGEX = /\+?([ -]?\d+)+|\(\d+\)([ -]\d+)/
-  USERNAME_REGEX = /\A[^\W\d_]+\z/
-  JOB_REGEX = /\A[^\W\d_]+\z/
+  PHONE_REGEX = /\A\d+\z/
+  USERNAME_REGEX = /\A[a-zA-Z ]+\z/
+  JOB_REGEX = /\A[a-zA-Z ]+\z/
 
-  validate :username_format, :email_format, :phone_format, :job_format, on: :create
+  validate :username_format, :email_format, :phone_format, :job_format, on: [:create, :update]
   validates_presence_of :email, :username, :phone, :job, message: "can't be blank"
   validates_uniqueness_of :username, :email, :phone, message: 'has already been taken'
   validates :username, length: { maximum: 50 }
