@@ -41,8 +41,6 @@ class User < ApplicationRecord
                                  message: 'password must contain digit, uppercase, lowercase, and symbol' }
   validates :password_confirmation, presence: true, on: :create
 
-  validates_format_of :photo, with: /\.(png|jpg|jpeg)/i, message: 'please upload file in .JPEG .JPG .PNG format',
-                              on: :update
   # validate :photo_size_validation, if: :photo?
 
   def new_attr
