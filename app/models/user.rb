@@ -41,8 +41,6 @@ class User < ApplicationRecord
                                  message: 'password must contain digit, uppercase, lowercase, and symbol' }
   validates :password_confirmation, presence: true, on: :create
 
-  # validate :photo_size_validation, if: :photo?
-
   def new_attr
     {
       id:,
@@ -92,7 +90,4 @@ class User < ApplicationRecord
     self.confirm_token = SecureRandom.urlsafe_base64.to_s
   end
 
-  # def photo_size_validation
-  #   errors.add(:photo, message: 'should be less than 1MB') if photo.size > 1.megabytes
-  # end
 end
