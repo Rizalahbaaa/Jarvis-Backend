@@ -25,11 +25,11 @@ class User < ApplicationRecord
   /x
 
   EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
-  PHONE_REGEX = /\+?([ -]?\d+)+|\(\d+\)([ -]\d+)/
-  USERNAME_REGEX = /\A[^\W\d_]+\z/
-  JOB_REGEX = /\A[^\W\d_]+\z/
+  PHONE_REGEX = /\A\d+\z/
+  USERNAME_REGEX = /\A[a-zA-Z ]+\z/
+  JOB_REGEX = /\A[a-zA-Z ]+\z/
 
-  validate :username_format, :email_format, :phone_format, :job_format, on: :create
+  validate :username_format, :email_format, :phone_format, :job_format, on: [:create, :update]
   validates_presence_of :email, :username, :phone, :job, message: "can't be blank"
   validates_uniqueness_of :username, :email, :phone, message: 'has already been taken'
   validates :username, length: { maximum: 50 }
@@ -40,10 +40,6 @@ class User < ApplicationRecord
                        format: { with: PASSWORD_REGEX,
                                  message: 'password must contain digit, uppercase, lowercase, and symbol' }
   validates :password_confirmation, presence: true, on: :create
-
-  validates_format_of :photo, with: /\.(png|jpg|jpeg)/i, message: 'please upload file in .JPEG .JPG .PNG format',
-                              on: :update
-  # validate :photo_size_validation, if: :photo?
 
   def new_attr
     {
@@ -94,7 +90,4 @@ class User < ApplicationRecord
     self.confirm_token = SecureRandom.urlsafe_base64.to_s
   end
 
-  # def photo_size_validation
-  #   errors.add(:photo, message: 'should be less than 1MB') if photo.size > 1.megabytes
-  # end
 end
