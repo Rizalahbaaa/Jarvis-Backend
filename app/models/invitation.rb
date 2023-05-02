@@ -1,27 +1,21 @@
 class Invitation < ApplicationRecord
-    belongs_to :profile
-    belongs_to :invitetable, polymorphic: true
+    # belongs_to :invitetable, polymorphic: true
     
 
-    enum invitation_status: {
-        sent: 0,
-        confirm: 1,
-        rejected: 2
-    }
+    # enum :invitation_status, {pending: 0, Accepted: 1, Rejected: 2 }
 
-    validates :link, presence: true
-    validates :invitation_status, presence: true
-    validates :profile_id, presence: true
-    validates :invitetable_id, presence: true
-    validates :invitetable_type, presence: true
 
-    def new_attr
-        {
-            link: self.link,
-            invitation_status: self.invitation_status,
-            user_name: profile.username,
-            invitetable_id: self.invitetable_id,
-            invitetable_type: self.invitetable_type
-        }
-    end  
+    # def invitation_valid?
+    #     self.invitation_status == "pending" && self.invitation_expired > Time.now
+    # end
+
+    # def accept_invitation!
+    #    self.invitation_status = 1
+    #    save!
+    # end
+
+    # validates :invitation_status, presence: true
+    # validates :invitetable_id, presence: true
+    # validates :invitetable_type, presence: true
+
 end

@@ -7,10 +7,11 @@ Rails.application.routes.draw do
     post '/register', to: 'users#create'
     post '/login', to: 'users#login'
     get '/confirm/:id', to: 'users#confirm_email'
+    post '/note_invite', to: 'users_notes#invite'
+    get '/accept_noteinvitation/:noteinvitation_token', to: 'user_note#accept_invitation', as: 'accept_invitation'
 
     resources :products
     resources :transactions
-    resources :invitations
     resources :notivications
     resources :ringtones
     resources :team_notes

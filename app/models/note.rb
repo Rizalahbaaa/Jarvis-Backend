@@ -2,7 +2,6 @@ class Note < ApplicationRecord
   has_many :user_notes
   has_many :users, through: :user_notes, source: :user
   has_many :notification
-  has_many :invitation, as: :invitetable
 
   belongs_to :column, optional: true
   belongs_to :ringtone
