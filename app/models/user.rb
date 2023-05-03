@@ -29,7 +29,7 @@ class User < ApplicationRecord
   USERNAME_REGEX = /\A[a-zA-Z ]+\z/
   JOB_REGEX = /\A[a-zA-Z ]+\z/
 
-  validate :username_format, :email_format, :phone_format, :job_format, on: [:create, :update]
+  validate :username_format, :email_format, :phone_format, :job_format, on: %i[create update]
   validates_presence_of :email, :username, :phone, :job, message: "can't be blank"
   validates_uniqueness_of :username, :email, :phone, message: 'has already been taken'
   validates :username, length: { maximum: 50 }
@@ -82,6 +82,16 @@ class User < ApplicationRecord
     save!(validate: false)
   end
 
+  def generate_password_token!
+    self.password_reset_token = reset_token
+    self.password_reset_sent_at = Time.now.utc
+    save!
+  end
+
+  def password_token_valid?
+    (password_reset_sent_at + 5.minutes) > Time.now.utc
+  end
+
   private
 
   def confirmation_token
@@ -90,4 +100,7 @@ class User < ApplicationRecord
     self.confirm_token = SecureRandom.urlsafe_base64.to_s
   end
 
+  def reset_token
+    SecureRandom.urlsafe_base64.to_s
+  end
 end
