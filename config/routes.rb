@@ -5,6 +5,9 @@ Rails.application.routes.draw do
     post '/register', to: 'users#create'
     post '/login', to: 'users#login'
     get '/confirm/:id', to: 'users#confirm_email'
+    post '/forgot_password', to: 'users#forgot'
+    get '/reset_password/:token', to: 'users#reset'
+    patch '/reset_password/:token', to: 'users#reset'
 
     resources :users
     resources :products
