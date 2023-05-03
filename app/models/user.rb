@@ -34,7 +34,7 @@ class User < ApplicationRecord
   validates_uniqueness_of :username, :email, :phone, message: 'has already been taken'
   validates :username, length: { maximum: 50 }
   validates :email, length: { maximum: 50 }
-  validates :phone, length: { maximum: 13 }
+  validates :phone, length: { minimum: 10, maximum: 13, message: "must be between 10-13 digits" }
   validates :job, length: { maximum: 50 }
   validates :password, confirmation: true, on: :create,
                        format: { with: PASSWORD_REGEX,
