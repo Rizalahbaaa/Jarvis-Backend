@@ -7,10 +7,10 @@ class Note < ApplicationRecord
   belongs_to :column, optional: true
   belongs_to :ringtone
 
-  validates :subject, presence: true, length: { maximum: 30 }
-  validates :description, presence: true, length: { maximum: 100 }
-  validates :event_date, presence: true
-  validates :ringtone_id, presence: true
+  validates :subject, presence: {message: "can't be blank"}, length: { maximum: 30}
+  validates :description, presence: {message: "can't be blank"}, length: { maximum: 100}
+  validates :event_date, comparison: { greater_than: Time.now }
+  validates :ringtone_id, presence: {message: 'ringtone must be assigned'}
   validates :column_id, presence: false
 
   scope :join_usernote, -> { joins(:user_note) }
@@ -41,4 +41,6 @@ class Note < ApplicationRecord
       member: users.map { |user| user.username }
     }
   end
+
+
 end
