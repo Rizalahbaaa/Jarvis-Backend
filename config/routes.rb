@@ -5,8 +5,9 @@ Rails.application.routes.draw do
     post '/register', to: 'users#create'
     post '/login', to: 'users#login'
     get '/confirm/:id', to: 'users#confirm_email'
-    post '/note_invite', to: 'users_notes#invite'
-    get '/accept_noteinvitation/:noteinvitation_token', to: 'user_note#accept_invitation', as: 'accept_invitation'
+    post '/note/inv', to: 'users_notes#create'
+    get 'note/inv/accept_invitation', to: 'users_notes#accept_invitation', as: 'accept_invitation'
+    get 'note/inv/decline_invitation', to: 'users_notes#decline_invitation', as: 'decline_invitation'
 
     resources :users
     resources :products

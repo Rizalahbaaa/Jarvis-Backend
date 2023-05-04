@@ -4,15 +4,15 @@ class UserNote < ApplicationRecord
   has_many :attaches
   has_many :transactions
 
-  validates :note_id, presence: true
-  validates :user_id, presence: true
-  validates :reminder, presence: true
+  # validates :note_id, presence: true
+  # validates :user_id, presence: true
+  validates :reminder, presence: false
 
   enum :noteinvitation_status, {Pending: 0, Accepted: 1, Rejected: 2 }
 
 
   def invitation_valid?
-      self.noteinvitation_status == "Pending" && self.invitation_expired > Time.now
+      self.noteinvitation_status == "Pending" && self.noteinvitation_expired > Time.now
   end
 
   def accept_invitation!
@@ -43,7 +43,10 @@ class UserNote < ApplicationRecord
       user: user.username,
       reminder:,
       role:,
-      status:
+      status:,
+      invitation_token: self.noteinvitation_token,
+      invitation_status: self.noteinvitation_status,
+      invitation_expired: self.noteinvitation_expired
     }
   end
 end
