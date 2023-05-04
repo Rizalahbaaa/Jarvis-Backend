@@ -4,8 +4,8 @@ class UserNote < ApplicationRecord
   has_many :attaches
   has_many :transactions
 
-  # validates :note_id, presence: true
-  # validates :user_id, presence: true
+  validates :note_id, presence: true
+  validates :user_id, presence: true
   validates :reminder, presence: false
 
   enum :noteinvitation_status, {Pending: 0, Accepted: 1, Rejected: 2 }

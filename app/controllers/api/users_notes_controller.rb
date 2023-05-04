@@ -52,7 +52,7 @@ class Api::UsersNotesController < ApplicationController
           return
         end
       end
-      render json: { status: 201, message: "Terbuat", data: @user_notes}, status: 201
+      render json: { status: 201, message: "Undangan Terkirim"}, status: 201
     else
       # Kirim pesan kesalahan jika ada email yang belum terdaftar
       render json: { status: 404, message: @errors.join(', ') }, status: :not_found
@@ -75,7 +75,7 @@ class Api::UsersNotesController < ApplicationController
 
     if @user_note && @user_note.invitation_valid?
       @user_note.accept_invitation!
-      render json: { status: 200, message: "Undangan Diterima", data:@user_note}, status: 200
+      render json: { status: 200, message: "Undangan Diterima"}, status: 200
     else
       render json: { message: "Undangan tidak valid"}
     end 

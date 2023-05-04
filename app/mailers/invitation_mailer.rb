@@ -9,7 +9,7 @@ class InvitationMailer < ApplicationMailer
     # end
       def invitation_email(user_note)
         @user_note = user_note
-        mail(to: @user_note.user.email, subject: 'Undangan Bergabung ke Tim')
+        mail(to: @user_note.user.email, subject: 'Undangan Bergabung ke Catatan')
         # format.html { render 'invitation_email.html.erb' }
       end
 end
