@@ -89,7 +89,7 @@ class User < ApplicationRecord
   end
 
   def password_token_valid?
-    (password_reset_sent_at + 5.minutes) > Time.now.utc
+    (password_reset_sent_at + 1.hours) > Time.now.utc
   end
 
   private
