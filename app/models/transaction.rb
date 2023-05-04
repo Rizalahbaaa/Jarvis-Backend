@@ -6,7 +6,6 @@ class Transaction < ApplicationRecord
     validates :user_id, presence: true
     validates :user_note_id, presence: true
     enum transaction_status: {
-        pending: 0,
         processing: 1,
         completed: 2,
         canceled: 3

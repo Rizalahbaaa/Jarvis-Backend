@@ -114,6 +114,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_28_035002) do
     t.datetime "updated_at", null: false
     t.boolean "email_confirmed"
     t.string "confirm_token"
+    t.string "password_reset_token"
+    t.datetime "password_reset_sent_at"
   end
 
 end
