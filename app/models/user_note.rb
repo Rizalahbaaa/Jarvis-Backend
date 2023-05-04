@@ -22,7 +22,7 @@ class UserNote < ApplicationRecord
 
   def decline_invitation!
       self.noteinvitation_status = 2
-      save!
+      destroy
   end
 
   enum role: {
