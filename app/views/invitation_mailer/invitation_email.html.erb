@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+      /* Reset CSS */
+      * {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: #f2f2f2;
+        font-family: Arial, sans-serif;
+      }
+      /* Container */
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+      }
+      /* Header */
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .header h1 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      /* Content */
+      .content {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .content p {
+        margin-bottom: 10px;
+      }
+      /* Button */
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Undangan Bergabung ke Catatan</h1>
+      </div>
+      <div class="content">
+        <p>Halo,</p>
+        <p>Anda telah diundang untuk bergabung ke Catatan kami. Silakan klik tombol di bawah ini untuk melihat undangan dan bergabung ke Catatan kami.</p>
+        <a href="{@url}/note/inv/accept_invitation?noteinvitation_token=<%= @user_note.noteinvitation_token %>" class="button">Accept</a>
+        <a href="{@url}/note/inv/decline_invitation?noteinvitation_token=<%= @user_note.noteinvitation_token %>" class="button">Decline</a>
+
+        <%# if you want to use email for development, please uncommment @url below and comment @url above %>
+        <%# <a href="http://localhost:3000/api/note/inv/accept_invitation?noteinvitation_token=<%= @user_note.noteinvitation_token %>" class="button">Accept</a> %>
+        <%# <a href="http://localhost:3000/api/note/inv/decline_invitation?noteinvitation_token=<%= @user_note.noteinvitation_token %>" class="button">Decline</a> %>
+      </div>
+    </div>
+  </body>
+</html>

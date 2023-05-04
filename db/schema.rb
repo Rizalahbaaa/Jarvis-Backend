@@ -29,6 +29,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_02_150733) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "invitations", force: :cascade do |t|
+    t.string "invitation_token"
+    t.string "invitation_status"
+    t.date "invitation_expired"
+    t.string "invitable_type", null: false
+    t.bigint "invitable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invitable_type", "invitable_id"], name: "index_invitations_on_invitable"
+  end
+
   create_table "notes", force: :cascade do |t|
     t.string "subject"
     t.text "description"
@@ -78,6 +89,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_02_150733) do
     t.datetime "reminder"
     t.integer "role", default: 0
     t.integer "status", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "noteinvitation_token"
+    t.integer "noteinvitation_status"
+    t.datetime "noteinvitation_expired", precision: nil
+  end
+
+  create_table "user_teams", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "team_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
