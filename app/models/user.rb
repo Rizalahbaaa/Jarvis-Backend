@@ -16,7 +16,6 @@ class User < ApplicationRecord
 
   # has_many :invitation
   # has_many :notification
-
   PASSWORD_REGEX = /\A
     (?=.*\d)
     (?=.*[a-z])
@@ -36,10 +35,17 @@ class User < ApplicationRecord
   validates :email, length: { maximum: 50 }
   validates :phone, length: { maximum: 13 }
   validates :job, length: { maximum: 50 }
-  validates :password, confirmation: true, on: :create,
+  validates :password, confirmation: true, on: :create, length: { minimum: 8, message: 'minimum is 8 characters' },
                        format: { with: PASSWORD_REGEX,
                                  message: 'password must contain digit, uppercase, lowercase, and symbol' }
   validates :password_confirmation, presence: true, on: :create
+
+  validates :password, confirmation: true,
+                       length: { minimum: 8, message: 'minimum is 8 characters' },
+                       format: { with: PASSWORD_REGEX, message: 'password must contain digit, uppercase, lowercase, and symbol' },
+                       #  allow_blank: true,
+                       on: :update
+  validates :password_confirmation, presence: true, on: :update
 
   def new_attr
     {

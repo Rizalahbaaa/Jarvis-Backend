@@ -97,12 +97,12 @@ class Api::UsersController < ApplicationController
 
     if @user.present? && @user.password_token_valid?
       if @user.update(user_params)
-        render json: { message: 'password has been reset!' }, status: 200
+        render json: { status: '200', message: 'password has been reset!' }, status: 200
       else
-        render json: { error: @user.errors.full_messages }, status: 422
+        render json: { status: '422', error: @user.errors }, status: 422
       end
     else
-      render json: { error: 'Link not valid or expired. Try generating a new link.' }, status: 404
+      render json: { status: '404', error: 'Link not valid or expired. Try generating a new link.' }, status: 404
     end
   end
 
