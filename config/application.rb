@@ -30,7 +30,7 @@ module JarvisBackend
     config.time_zone = 'Jakarta'
     config.active_record.default_timezone = :local
 
-    config.middleware.insert_before 0, 'Rack::Cors' do
+    config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins '*'
         resource(
