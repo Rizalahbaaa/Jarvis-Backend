@@ -11,13 +11,12 @@ Rails.application.routes.draw do
     post '/note/inv', to: 'users_notes#create'
     get 'note/inv/accept_invitation', to: 'users_notes#accept_invitation', as: 'accept_invitation'
     get 'note/inv/decline_invitation', to: 'users_notes#decline_invitation', as: 'decline_invitation'
+
     resources :transactions do
       collection do
         get :history
     resources :users
     resources :products
-    resources :transactions
-    resources :invitations
     resources :notivications
     resources :ringtones
     resources :team_notes
