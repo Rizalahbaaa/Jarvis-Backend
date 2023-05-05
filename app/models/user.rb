@@ -52,6 +52,12 @@ class User < ApplicationRecord
     }
   end
 
+  def point
+    earned = UserNote.where(user_id: self.id, status: 'completed').count + Transaction.where(user_id: self.id, point_type: 'earned' ).sum(:point)    
+    redeemed = Transaction.where(user_id: self.id, point_type: 'redeemed' ).sum(:point)
+    earned - redeemed
+  end
+
   def username_format
     return unless username.present?
 

@@ -5,10 +5,12 @@ Rails.application.routes.draw do
     post '/register', to: 'users#create'
     post '/login', to: 'users#login'
     get '/confirm/:id', to: 'users#confirm_email'
-
+    resources :transactions do
+      collection do
+        get :history
     resources :users
     resources :products
-    resources :transactions
+    # resources :transactions
     resources :invitations
     resources :notivications
     resources :ringtones
@@ -20,5 +22,7 @@ Rails.application.routes.draw do
     resources :users_notes
     resources :user_teams
     resources :attaches
-  end
+end
+end
+end 
 end
