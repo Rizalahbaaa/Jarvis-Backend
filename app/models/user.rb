@@ -5,6 +5,8 @@ class User < ApplicationRecord
   before_create :confirmation_token
   has_secure_password
 
+  attr_accessor :is_forgot
+
   has_many :transactions
   has_many :products, through: :transactions
 
@@ -16,7 +18,6 @@ class User < ApplicationRecord
 
   # has_many :invitation
   # has_many :notification
-
   PASSWORD_REGEX = /\A
     (?=.*\d)
     (?=.*[a-z])
@@ -29,17 +30,23 @@ class User < ApplicationRecord
   USERNAME_REGEX = /\A[a-zA-Z ]+\z/
   JOB_REGEX = /\A[a-zA-Z ]+\z/
 
-  validate :username_format, :email_format, :phone_format, :job_format, on: [:create, :update]
+  validate :username_format, :email_format, :phone_format, :job_format, on: %i[create update]
   validates_presence_of :email, :username, :phone, :job, message: "can't be blank"
   validates_uniqueness_of :username, :email, :phone, message: 'has already been taken'
   validates :username, length: { maximum: 50 }
   validates :email, length: { maximum: 50 }
-  validates :phone, length: { maximum: 13 }
+  validates :phone, length: { minimum: 10, maximum: 13, message: 'must be between 10-13 digits' }
   validates :job, length: { maximum: 50 }
-  validates :password, confirmation: true, on: :create,
+  validates :password, confirmation: true, on: :create, length: { minimum: 8, message: 'minimum is 8 characters' },
                        format: { with: PASSWORD_REGEX,
                                  message: 'password must contain digit, uppercase, lowercase, and symbol' }
   validates :password_confirmation, presence: true, on: :create
+
+  validates :password, confirmation: true,
+                       length: { minimum: 8, message: 'minimum is 8 characters' },
+                       format: { with: PASSWORD_REGEX, message: 'password must contain digit, uppercase, lowercase, and symbol' },
+                       if: :forgot_password_validate
+  validates :password_confirmation, presence: true, if: :forgot_password_validate
 
   def new_attr
     {
@@ -48,14 +55,19 @@ class User < ApplicationRecord
       email:,
       phone:,
       job:,
-      photo:
+      photo: self.photo.url
     }
   end
+
 
   def point
     earned = UserNote.where(user_id: self.id, status: 'completed').count + Transaction.where(user_id: self.id, point_type: 'earned' ).sum(:point)    
     redeemed = Transaction.where(user_id: self.id, point_type: 'redeemed' ).sum(:point)
     earned - redeemed
+
+  def forgot_password_validate
+    is_forgot
+
   end
 
   def username_format
@@ -88,6 +100,22 @@ class User < ApplicationRecord
     save!(validate: false)
   end
 
+  def generate_password_token!
+    self.password_reset_token = reset_token
+    self.password_reset_sent_at = Time.now.utc
+    save!(validate: false)
+  end
+
+  # def reset_password!(password)
+  #   validate :password
+  #   self.password = password
+  #   save!
+  # end
+
+  def password_token_valid?
+    (password_reset_sent_at + 1.hours) > Time.now.utc
+  end
+
   private
 
   def confirmation_token
@@ -96,4 +124,7 @@ class User < ApplicationRecord
     self.confirm_token = SecureRandom.urlsafe_base64.to_s
   end
 
+  def reset_token
+    SecureRandom.urlsafe_base64.to_s
+  end
 end

@@ -1,5 +1,5 @@
 class Api::UsersController < ApplicationController
-  skip_before_action :authenticate_request, only: %i[index destroy create login confirm_email]
+  skip_before_action :authenticate_request, only: %i[index destroy create login confirm_email forgot reset]
   before_action :set_user, only: %i[show update]
 
   def index
@@ -76,6 +76,36 @@ class Api::UsersController < ApplicationController
     end
   end
 
+  def forgot
+    return render json: { error: 'email not present' } if params[:email].blank?
+
+    @user = User.find_by(email: params[:email])
+
+    if @user.present?
+      @user.generate_password_token!
+      UserMailer.forgot_password(@user).deliver_now
+      render json: { status: '200', message: 'E-mail sent with password reset instructions.' }, status: 200
+    else
+      render json: { error: 'email address not found. please check and try again.' }, status: 404
+    end
+  end
+
+  def reset
+    token = params[:token]
+
+    @user = User.find_by(password_reset_token: token)
+
+    if @user.present? && @user.password_token_valid?
+      if @user.update(user_params.merge(is_forgot: true))
+        render json: { message: 'password has been reset!' }, status: 200
+      else
+        render json: { status: '422', error: @user.errors }, status: 422
+      end
+    else
+      render json: { status: '404', error: 'Link not valid or expired. Try generating a new link.' }, status: 404
+    end
+  end
+
   private
 
   def set_user
@@ -88,4 +118,5 @@ class Api::UsersController < ApplicationController
   def user_params
     params.permit(:username, :email, :phone, :job, :photo, :password, :password_confirmation)
   end
+
 end
