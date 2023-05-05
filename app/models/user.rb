@@ -5,6 +5,8 @@ class User < ApplicationRecord
   before_create :confirmation_token
   has_secure_password
 
+  attr_accessor :is_forgot
+
   has_many :transactions
   has_many :products, through: :transactions
 
@@ -33,7 +35,7 @@ class User < ApplicationRecord
   validates_uniqueness_of :username, :email, :phone, message: 'has already been taken'
   validates :username, length: { maximum: 50 }
   validates :email, length: { maximum: 50 }
-  validates :phone, length: { minimum: 10, maximum: 13, message: "must be between 10-13 digits" }
+  validates :phone, length: { minimum: 10, maximum: 13, message: 'must be between 10-13 digits' }
   validates :job, length: { maximum: 50 }
   validates :password, confirmation: true, on: :create, length: { minimum: 8, message: 'minimum is 8 characters' },
                        format: { with: PASSWORD_REGEX,
@@ -43,8 +45,8 @@ class User < ApplicationRecord
   validates :password, confirmation: true,
                        length: { minimum: 8, message: 'minimum is 8 characters' },
                        format: { with: PASSWORD_REGEX, message: 'password must contain digit, uppercase, lowercase, and symbol' },
-                       on: :update
-  validates :password_confirmation, presence: true, on: :update
+                       if: :forgot_password_validate
+  validates :password_confirmation, presence: true, if: :forgot_password_validate
 
   def new_attr
     {
@@ -53,8 +55,12 @@ class User < ApplicationRecord
       email:,
       phone:,
       job:,
-      photo:
+      photo: self.photo.url
     }
+  end
+
+  def forgot_password_validate
+    is_forgot
   end
 
   def username_format
@@ -92,6 +98,12 @@ class User < ApplicationRecord
     self.password_reset_sent_at = Time.now.utc
     save!(validate: false)
   end
+
+  # def reset_password!(password)
+  #   validate :password
+  #   self.password = password
+  #   save!
+  # end
 
   def password_token_valid?
     (password_reset_sent_at + 1.hours) > Time.now.utc
