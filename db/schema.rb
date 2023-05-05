@@ -29,17 +29,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_02_150733) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "invitations", force: :cascade do |t|
-    t.string "invitation_token"
-    t.string "invitation_status"
-    t.date "invitation_expired"
-    t.string "invitable_type", null: false
-    t.bigint "invitable_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["invitable_type", "invitable_id"], name: "index_invitations_on_invitable"
-  end
-
   create_table "notes", force: :cascade do |t|
     t.string "subject"
     t.text "description"
