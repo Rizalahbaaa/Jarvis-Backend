@@ -97,7 +97,7 @@ class Api::UsersController < ApplicationController
 
     if @user.present? && @user.password_token_valid?
       if @user.update(user_params)
-        render json: { status: '200', message: 'password has been reset!' }, status: 200
+        render json: { message: 'password has been reset!' }, status: 200
       else
         render json: { status: '422', error: @user.errors }, status: 422
       end

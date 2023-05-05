@@ -43,7 +43,6 @@ class User < ApplicationRecord
   validates :password, confirmation: true,
                        length: { minimum: 8, message: 'minimum is 8 characters' },
                        format: { with: PASSWORD_REGEX, message: 'password must contain digit, uppercase, lowercase, and symbol' },
-                       #  allow_blank: true,
                        on: :update
   validates :password_confirmation, presence: true, on: :update
 
@@ -91,7 +90,7 @@ class User < ApplicationRecord
   def generate_password_token!
     self.password_reset_token = reset_token
     self.password_reset_sent_at = Time.now.utc
-    save!
+    save!(validate: false)
   end
 
   def password_token_valid?
