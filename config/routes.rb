@@ -5,12 +5,18 @@ Rails.application.routes.draw do
     post '/register', to: 'users#create'
     post '/login', to: 'users#login'
     get '/confirm/:id', to: 'users#confirm_email'
+    post '/forgot_password', to: 'users#forgot'
+    get '/reset_password/:token', to: 'users#reset'
+    patch '/reset_password/:token', to: 'users#reset'
+    post '/note/inv', to: 'users_notes#create'
+    get 'note/inv/accept_invitation', to: 'users_notes#accept_invitation', as: 'accept_invitation'
+    get 'note/inv/decline_invitation', to: 'users_notes#decline_invitation', as: 'decline_invitation'
     resources :transactions do
       collection do
         get :history
     resources :users
     resources :products
-    # resources :transactions
+    resources :transactions
     resources :invitations
     resources :notivications
     resources :ringtones

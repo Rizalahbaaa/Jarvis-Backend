@@ -6,7 +6,24 @@ class UserNote < ApplicationRecord
 
   validates :note_id, presence: true
   validates :user_id, presence: true
-  validates :reminder, presence: true
+  validates :reminder, presence: false
+
+  enum :noteinvitation_status, {Pending: 0, Accepted: 1, Rejected: 2 }
+
+
+  def invitation_valid?
+      self.noteinvitation_status == "Pending" && self.noteinvitation_expired > Time.now
+  end
+
+  def accept_invitation!
+      self.noteinvitation_status = 1
+      save!
+  end
+
+  def decline_invitation!
+      self.noteinvitation_status = 2
+      destroy
+  end
 
   enum role: {
     owner: 0,
@@ -26,7 +43,10 @@ class UserNote < ApplicationRecord
       user: user.username,
       reminder:,
       role:,
-      status:
+      status:,
+      invitation_token: self.noteinvitation_token,
+      invitation_status: self.noteinvitation_status,
+      invitation_expired: self.noteinvitation_expired
     }
   end
 end

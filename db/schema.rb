@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_04_144714) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_26_042357) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -81,6 +81,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_04_144714) do
     t.integer "status", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "noteinvitation_token"
+    t.integer "noteinvitation_status"
+    t.datetime "noteinvitation_expired", precision: nil
+  end
+
+  create_table "user_teams", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "team_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -94,6 +104,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_04_144714) do
     t.datetime "updated_at", null: false
     t.boolean "email_confirmed"
     t.string "confirm_token"
+    t.string "password_reset_token"
+    t.datetime "password_reset_sent_at"
   end
 
 end
