@@ -13,7 +13,7 @@ class Api::NotesController < ApplicationController
       render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
              status: 201
     else
-      render json: { success: false, message: 'note created unsuccessfully', status: 422, data: @note.errors, reminder: params[:reminder], user: current_user.id},
+      render json: { success: false, message: 'note created unsuccessfully', status: 422, data: @note.errors },
              status: 422
     end
   end
