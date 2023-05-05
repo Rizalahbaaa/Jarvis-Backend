@@ -1,20 +1,34 @@
 class Api::TransactionsController < ApplicationController
-  before_action :set_transaction, only: [:show, :destroy]
+  before_action :set_transaction, only: [:index, :show, :create]
     def index
         @transactions = Transaction.all
         render json: @transactions.map { |transaction| transaction.new_attr }
       end
 
-    def create
-      @transaction = Transaction.new(transaction_params)
-  
-      if @transaction.save
-        render json: { success: true, status: 201, message: 'create transaction successfully', data: @transaction.new_attr }, status: 201
-      else
-        render json: { success: false, status: 422, message: 'create transaction unsuccessfully', data: @transaction.errors }, status: 422
+      def create
+        product = Product.find_by(id: transaction_params[:product_id])
+        user = User.find_by(id: transaction_params[:user_id])
+      
+        if product.nil? || user.nil?
+          render json: { success: false, status: 422, message: 'Invalid product/user/user_note id' }, status: 422
+          return
+        end
+      
+        @transaction = Transaction.new(transaction_params)
+      
+        if @transaction.save
+          render json: { success: true, status: 201, message: 'create transaction successfully', data: @transaction.new_attr }, status: 201
+        else
+          render json: { success: false, status: 422, message: 'create transaction unsuccessfully', data: @transaction.errors }, status: 422
+        end
       end
-    end
     
+      def history
+        @transactions = Transaction.where(user_id: params[:user_id])
+        render json: @transactions.map { |transaction| transaction.new_attr }
+      end
+
+
       def show
         @transaction = Transaction.find(params[:id])
       end
@@ -37,6 +51,6 @@ class Api::TransactionsController < ApplicationController
       end
 
       def transaction_params
-        params.require(:transaction).permit(:product_id,:user_id, :user_note_id, :transaction_status)
+        params.require(:transaction).permit(:product_id,:user_id, :user_note_id, :transaction_status,:point , :point_type)
       end
     end
