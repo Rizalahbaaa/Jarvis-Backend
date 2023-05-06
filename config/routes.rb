@@ -17,6 +17,8 @@ Rails.application.routes.draw do
     resources :transactions do
       collection do
         get :history
+      end
+    end
     resources :users
     resources :products
     resources :invitations
@@ -32,5 +34,4 @@ Rails.application.routes.draw do
     resources :attaches
 end
 end
-end 
-end
+

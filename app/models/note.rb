@@ -12,9 +12,11 @@ class Note < ApplicationRecord
   validates :ringtone_id, presence: {message: 'ringtone must be assigned'}
   validates :column_id, presence: false
 
+
   scope :join_usernote, -> { joins(:user_note) }
   scope :notefunc, -> (note_id) { join_usernote.where(user_note: { note_id: note_id })}
   scope :owners?, -> (user_id){ join_usernote.where(user_note: { role: 'owner', user_id: user_id }).limit(1).present?}
+  scope :ownersfilter, -> (user_id){ join_usernote.where(user_note: { role: 'owner', user_id: user_id })}
 
   enum note_type: {
     personal: 0,
@@ -34,6 +36,7 @@ class Note < ApplicationRecord
       description:,
       event_date:,
       ringtone: ringtone.name,
+      reminder: user_note.map{ |user_note| user_note.reminder},
       column: self.column&.title,
       note_type:,
       status:,

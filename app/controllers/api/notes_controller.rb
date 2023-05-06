@@ -2,7 +2,7 @@ class Api::NotesController < ApplicationController
   before_action :authenticate_request
   before_action :set_note, only: %i[update destroy]
   def index
-    @notes = Note.all
+    @notes = Note.ownersfilter(current_user)
     render json: { success: true, status: 200, data: @notes.map { |note| note.new_attr } }
   end
 

@@ -64,6 +64,7 @@ class User < ApplicationRecord
     earned = UserNote.where(user_id: self.id, status: 'completed').count + Transaction.where(user_id: self.id, point_type: 'earned' ).sum(:point)    
     redeemed = Transaction.where(user_id: self.id, point_type: 'redeemed' ).sum(:point)
     earned - redeemed
+  end
 
   def forgot_password_validate
     is_forgot
