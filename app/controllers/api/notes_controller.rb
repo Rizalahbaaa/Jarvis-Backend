@@ -55,7 +55,7 @@ class Api::NotesController < ApplicationController
     @note.update(note_type: 1)
     @emails.each do |email|
       token = set_invite_token
-      @user_invite = User.find_by(email: email)
+      @user_invite = User.find_by(email:)
       @invite_collab = UserNote.new(note: @note, user: @user_invite, noteinvitation_token: token[:token], noteinvitation_status:
         token[:status], role: token[:role], noteinvitation_expired: token[:expired])
       if @invite_collab.save
@@ -84,13 +84,13 @@ class Api::NotesController < ApplicationController
     # binding.pry
     if @user_note.role != 'owner'
       render json: { success: false, message: 'sorry, only owner can update note', status: 422 },
-              status: 422
-    elsif @user_note.role == 'owner' && @user_note.user_id != @user.id && @note.update(note_params)
+             status: 422
+    elsif @user_note.role == 'owner' && @user_note.user_id != @current_user && @note.update(note_params)
       render json: { success: true, message: 'note updated successfully', status: 200, data: @note.new_attr },
-              status: 200
+             status: 200
     else
       render json: { success: false, message: 'note updated unsuccessfully', status: 422, data: @note.errors },
-              status: 422
+             status: 422
     end
   end
 
@@ -108,20 +108,20 @@ class Api::NotesController < ApplicationController
     # binding.pry
     if @user_note.role != 'owner'
       render json: { success: false, message: 'sorry, only owner can delete note', status: 422 },
-              status: 422
-    elsif @user_note.role == 'owner' && @user_note.user_id != @user.id && @note.destroy
+             status: 422
+    elsif @user_note.role == 'owner' && @user_note.user_id != @current_user && @note.destroy
       render json: { success: true, message: 'note delete successfully', status: 200 },
-              status: 200
+             status: 200
     else
       render json: { success: false, message: 'note delete unsuccessfully', status: 422, data: @note.errors },
-              status: 422
+             status: 422
     end
   end
-# def complete!(user_note)
+  # def complete!(user_note)
 
   #   Transaction.create!(user_id: user_note.user_id, point: 1, point_type: 'earned', user_note_id: user_note.id, transaction_status: 2)
   # end
-  
+
   # def complete_notes
   #   @note.user_note.each do |user_note|
   #     complete!(user_note)
