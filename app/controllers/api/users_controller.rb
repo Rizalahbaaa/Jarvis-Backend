@@ -112,7 +112,7 @@ class Api::UsersController < ApplicationController
       return
     end
 
-    if @user.update(password_params)
+    if @user.update(password_params.merge(is_forgot: true))
       render json: { success: true, message: 'Password updated successfully', status: 200 }
     else
       render json: { success: false, message: 'Failed to update password', status: 422, errors: @user.errors.full_messages }
