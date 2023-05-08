@@ -36,3 +36,4 @@ Rails.application.routes.draw do
     resources :attaches
   end
 end
+end

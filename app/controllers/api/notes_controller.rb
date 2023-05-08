@@ -117,8 +117,16 @@ class Api::NotesController < ApplicationController
               status: 422
     end
   end
+# def complete!(user_note)
 
-
+  #   Transaction.create!(user_id: user_note.user_id, point: 1, point_type: 'earned', user_note_id: user_note.id, transaction_status: 2)
+  # end
+  
+  # def complete_notes
+  #   @note.user_note.each do |user_note|
+  #     complete!(user_note)
+  #   end
+  # end
   private
 
   def set_invite_token

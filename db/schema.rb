@@ -72,6 +72,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_014059) do
     t.datetime "updated_at", null: false
     t.integer "point"
     t.string "point_type"
+    t.bigint "user_note_id"
   end
 
   create_table "user_notes", force: :cascade do |t|
