@@ -66,7 +66,7 @@ class Api::UsersNotesController < ApplicationController
       role: 1,
       noteinvitation_token: SecureRandom.hex(20),
       noteinvitation_status: 0,
-      noteinvitation_expired: Time.now + 3.days
+      noteinvitation_expired: Time.now + 1.days
     }
   end
 
