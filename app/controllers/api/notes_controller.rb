@@ -23,7 +23,7 @@ class Api::NotesController < ApplicationController
     if @noteid.owners?(current_user) != true 
       render json: { success: false, status: 403, message: 'only owner can update note' }
     elsif params[:reminder].present?
-      if @noteid.owners?(current_user) == true && @note.update(note_params) && @note.user_note.update(reminder: params[:reminder])
+      if @noteid.owners?(current_user) == true && @note.update(note_params) && @note.user_note.update(reminder: params[:reminder]) && complete_notes
         render json: { success: true, message: 'note updated successfully', status: 200, data: @note.new_attr },
                status: 200
       else
@@ -31,7 +31,7 @@ class Api::NotesController < ApplicationController
                status: 422
       end
     else
-      if @noteid.owners?(current_user) == true && @note.update(note_params)
+      if @noteid.owners?(current_user) == true && @note.update(note_params) && complete_notes
         render json: { success: true, message: 'note updated successfully', status: 200, data: @note.new_attr },
                status: 200
       else
@@ -53,6 +53,16 @@ class Api::NotesController < ApplicationController
     end
   end
 
+  # def complete!(user_note)
+
+  #   Transaction.create!(user_id: user_note.user_id, point: 1, point_type: 'earned', user_note_id: user_note.id, transaction_status: 2)
+  # end
+  
+  # def complete_notes
+  #   @note.user_note.each do |user_note|
+  #     complete!(user_note)
+  #   end
+  # end
   private
 
   def set_note
@@ -65,5 +75,4 @@ class Api::NotesController < ApplicationController
   def note_params
     params.require(:note).permit(:subject, :description, :event_date, :ringtone_id, :column_id, :note_type, :status, :reminder)
   end
-
 end

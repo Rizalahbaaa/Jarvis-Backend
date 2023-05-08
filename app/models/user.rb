@@ -64,8 +64,8 @@ class User < ApplicationRecord
   end
 
   def point
-    earned = UserNote.where(user_id: self.id, status: 'completed').count + Transaction.where(user_id: self.id, point_type: 'earned' ).sum(:point)    
-    redeemed = Transaction.where(user_id: self.id, point_type: 'redeemed' ).sum(:point)
+    earned = Transaction.where(user_id: self.id, point_type: 'earned' ).sum(:point) 
+    redeemed = Transaction.where(user_id: self.id, point_type: 'redeemed' ).sum(:point) 
     earned - redeemed
   end
 
@@ -114,7 +114,11 @@ class User < ApplicationRecord
   def password_token_valid?
     (password_reset_sent_at + 1.hours) > Time.now.utc
   end
-
+  rails_admin do
+    field :id
+    field :point
+    field :transactions
+  end
   private
 
   def confirmation_token

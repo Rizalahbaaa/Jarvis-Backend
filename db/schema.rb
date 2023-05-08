@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_26_042357) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_06_132026) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -71,6 +71,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_26_042357) do
     t.datetime "updated_at", null: false
     t.integer "point"
     t.string "point_type"
+    t.bigint "user_note_id"
   end
 
   create_table "user_notes", force: :cascade do |t|
