@@ -6,14 +6,14 @@ class Note < ApplicationRecord
   belongs_to :column, optional: true
   belongs_to :ringtone
 
-  attr_accessor :reminder
+  # attr_accessor :reminder
   validates :subject, presence: {message: "can't be blank"}, length: { maximum: 30}
   validates :description, presence: {message: "can't be blank"}, length: { maximum: 100}
   validates :event_date, comparison: { greater_than: Time.now }
   validates :ringtone_id, presence: {message: 'ringtone must be assigned'}
   validates :column_id, presence: false
 
-  accepts_nested_attributes_for :user_note
+  # accepts_nested_attributes_for :user_note
 
   validates :reminder, presence: true, comparison: { greater_than: Time.now, less_than: :event_date }
 
@@ -41,7 +41,7 @@ class Note < ApplicationRecord
       event_date:,
       reminder:,
       ringtone: ringtone.name,
-      reminder: user_note.map{ |user_note| user_note.reminder},
+      # reminder: user_note.map{ |user_note| user_note.reminder},
       column: self.column&.title,
       note_type:,
       status:,
