@@ -6,6 +6,8 @@ Rails.application.routes.draw do
     post '/login', to: 'users#login'
     get '/active_user', to: 'users#active_user'
     get '/confirm/:id', to: 'users#confirm_email'
+
+    
     post '/forgot_password', to: 'users#forgot'
     get '/reset_password/:token', to: 'users#reset'
     patch '/reset_password/:token', to: 'users#reset'
@@ -14,9 +16,12 @@ Rails.application.routes.draw do
     get 'note/inv/decline_invitation', to: 'users_notes#decline_invitation', as: 'decline_invitation'
     get '/search_email', to: 'notes#email_valid'
 
+    resources :transactions do
+      collection do
+        get :history
     resources :users
     resources :products
-    resources :transactions
+    resources :invitations
     resources :notivications
     resources :ringtones
     resources :team_notes
@@ -27,5 +32,7 @@ Rails.application.routes.draw do
     resources :users_notes
     resources :user_teams
     resources :attaches
-  end
+end
+end
+end 
 end
