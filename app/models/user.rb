@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_secure_password
 
   attr_accessor :is_forgot
+  attr_accessor :current_password
 
   has_many :transactions
   has_many :products, through: :transactions
@@ -47,6 +48,11 @@ class User < ApplicationRecord
                        format: { with: PASSWORD_REGEX, message: 'password must contain digit, uppercase, lowercase, and symbol' },
                        if: :forgot_password_validate
   validates :password_confirmation, presence: true, if: :forgot_password_validate
+
+  validates :password, confirmation: true, on: :forgot_password_validate, length: { minimum: 8, message: 'minimum is 8 characters' },
+                       format: { with: PASSWORD_REGEX,
+                                 message: 'password must contain digit, uppercase, lowercase, and symbol' }
+  validates :password_confirmation, presence: true, on: :forgot_password_validate
 
   def new_attr
     {

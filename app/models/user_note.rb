@@ -6,7 +6,6 @@ class UserNote < ApplicationRecord
 
   validates :note_id, presence: true
   validates :user_id, presence: true
-  validates :reminder, presence: false
 
   enum :noteinvitation_status, {Pending: 0, Accepted: 1, Rejected: 2 }
 
@@ -25,6 +24,11 @@ class UserNote < ApplicationRecord
       destroy
   end
 
+  def delete_expired_invitations
+    expired_invitations = UserNote.where("noteinvitation_status = ? && noteinvitation_expired < ?", UserNote.noteinvitation_statuses[:Pending], Time.now)
+    expired_invitations.destroy
+  end
+
   enum role: {
     owner: 0,
     member: 1
@@ -41,7 +45,7 @@ class UserNote < ApplicationRecord
       id:,
       note: note.new_attr,
       user: user.username,
-      reminder:,
+      # reminder:,
       role:,
       status:,
       invitation_token: self.noteinvitation_token,

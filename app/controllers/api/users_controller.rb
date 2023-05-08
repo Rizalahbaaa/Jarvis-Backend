@@ -1,6 +1,6 @@
 class Api::UsersController < ApplicationController
   skip_before_action :authenticate_request, only: %i[index destroy create login confirm_email forgot reset]
-  before_action :set_user, only: %i[show update]
+  before_action :set_user, only: %i[show update update_password]
 
   def index
     @users = User.all
@@ -14,6 +14,7 @@ class Api::UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
+      puts 'SENDING EMAIL.....'
       UserMailer.registration_confirmation(@user).deliver_now
       render json: { success: true, status: 201, message: 'please confirm your email address to continue', data: @user.new_attr },
              status: 201
@@ -45,6 +46,10 @@ class Api::UsersController < ApplicationController
 
   def show
     render json: @user.new_attr
+  end
+
+  def active_user
+    render json: @current_user.new_attr, stautus: 200
   end
 
   def update
@@ -106,6 +111,19 @@ class Api::UsersController < ApplicationController
     end
   end
 
+  def update_password
+    unless @user.authenticate(params[:current_password])
+      render json: { success: false, message: 'Invalid current password', status: 422 }
+      return
+    end
+
+    if @user.update(password_params.merge(is_forgot: true))
+      render json: { success: true, message: 'Password updated successfully', status: 200 }
+    else
+      render json: { success: false, message: 'Failed to update password', status: 422, errors: @user.errors.full_messages }
+    end
+  end
+
   private
 
   def set_user
@@ -117,6 +135,10 @@ class Api::UsersController < ApplicationController
 
   def user_params
     params.permit(:username, :email, :phone, :job, :photo, :password, :password_confirmation)
+  end
+
+  def password_params
+    params.permit(:current_password, :password, :password_confirmation)
   end
 
 end
