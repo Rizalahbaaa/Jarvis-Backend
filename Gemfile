@@ -59,3 +59,7 @@ gem 'cloudinary'
 
 gem "dockerfile-rails", ">= 1.2", :group => :development
 gem "sassc-rails"
+
+gem 'whenever', require: false
+
+gem "sidekiq", "~> 7.1"

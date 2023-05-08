@@ -12,9 +12,10 @@ class Note < ApplicationRecord
   validates :event_date, comparison: { greater_than: Time.now }
   validates :ringtone_id, presence: {message: 'ringtone must be assigned'}
   validates :column_id, presence: false
-  validates :reminder, presence: {message: "can't be blank"}
+
   accepts_nested_attributes_for :user_note
 
+  validates :reminder, presence: true, comparison: { greater_than: Time.now, less_than: :event_date }
 
   scope :join_usernote, -> { joins(:user_note) }
   scope :notefunc, -> (note_id) { join_usernote.where(user_note: { note_id: note_id })}
@@ -38,6 +39,7 @@ class Note < ApplicationRecord
       subject:,
       description:,
       event_date:,
+      reminder:,
       ringtone: ringtone.name,
       reminder: user_note.map{ |user_note| user_note.reminder},
       column: self.column&.title,

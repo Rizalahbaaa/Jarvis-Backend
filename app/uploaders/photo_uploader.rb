@@ -5,8 +5,8 @@ class PhotoUploader < CarrierWave::Uploader::Base
   # include CarrierWave::Processing::RMagick
   # include CarrierWave::MiniMagick
 
-  process resize_to_fill: [500, 500]
-  process convert: 'png'
+  # process resize_to_fill: [500, 500]
+  # process convert: 'png'
   process colorspace: :rgb
   process quality: 80
 
@@ -16,29 +16,30 @@ class PhotoUploader < CarrierWave::Uploader::Base
 
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
+
   def public_id
     # "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
     "public/profile_picture/#{filename}"
   end
 
   def filename
-    "#{secure_token}" if original_filename.present?
+    "#{secure_token(10)}" if original_filename.present?
   end
 
   protected
 
-  def secure_token
+  def secure_token(length = 16)
     var = :"@#{mounted_as}_secure_token"
-    model.instance_variable_get(var) or model.instance_variable_set(var, SecureRandom.uuid)
+    model.instance_variable_get(var) or model.instance_variable_set(var, SecureRandom.hex(length / 2))
   end
 
   def extension_allowlist
     %w[jpg jpeg png]
   end
 
-  # def size_range
-  #   102_400...512_000
-  # end
+  def size_range
+    1.byte..1.megabytes
+  end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
   # def default_url(*args)

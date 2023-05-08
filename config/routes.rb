@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   namespace :api do
     post '/register', to: 'users#create'
     post '/login', to: 'users#login'
+    get '/active_user', to: 'users#active_user'
     get '/confirm/:id', to: 'users#confirm_email'
 
     
@@ -13,6 +14,8 @@ Rails.application.routes.draw do
     post '/note/inv', to: 'users_notes#create'
     get 'note/inv/accept_invitation', to: 'users_notes#accept_invitation', as: 'accept_invitation'
     get 'note/inv/decline_invitation', to: 'users_notes#decline_invitation', as: 'decline_invitation'
+    get '/search_email', to: 'notes#email_valid'
+    put '/update_password', to: 'users#update_password'
 
     resources :transactions do
       collection do

@@ -10,7 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_04_144714) do
+
+ActiveRecord::Schema[7.0].define(version: 2023_05_08_014059) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -39,6 +41,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_04_144714) do
     t.integer "status", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "reminder"
   end
 
   create_table "products", force: :cascade do |t|
@@ -76,7 +79,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_04_144714) do
   create_table "user_notes", force: :cascade do |t|
     t.integer "note_id"
     t.integer "user_id"
-    t.datetime "reminder"
     t.integer "role", default: 0
     t.integer "status", default: 0
     t.datetime "created_at", null: false
