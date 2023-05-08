@@ -22,12 +22,9 @@ class Api::NotesController < ApplicationController
   # end
 
   def create
-    # @user = current_user
     @note = Note.new(note_params)
-    return unless @note.save
-
-    @user_note = UserNote.new(note: @note, user: @current_user)
-    if @user_note.save
+    if @note.save
+      @user_note = UserNote.create(note: @note, user: @current_user)
       collab_mailer
       render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
              status: 201
@@ -146,7 +143,7 @@ class Api::NotesController < ApplicationController
   end
 
   def note_params
-    params.require(:note).permit(:subject, :description, :event_date, :reminder, :ringtone_id, :column_id, :note_type,
+    params.permit(:subject, :description, :event_date, :reminder, :ringtone_id, :column_id, :note_type,
                                  :status)
   end
 end
