@@ -14,6 +14,7 @@ class Api::UsersController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
+      puts 'SENDING EMAIL.....'
       UserMailer.registration_confirmation(@user).deliver_now
       render json: { success: true, status: 201, message: 'please confirm your email address to continue', data: @user.new_attr },
              status: 201
@@ -45,6 +46,10 @@ class Api::UsersController < ApplicationController
 
   def show
     render json: @user.new_attr
+  end
+
+  def active_user
+    render json: @current_user.new_attr, stautus: 200
   end
 
   def update
