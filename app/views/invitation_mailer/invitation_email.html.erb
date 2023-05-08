@@ -72,8 +72,13 @@
       <div class="content">
         <p>Halo,</p>
         <p>Anda telah diundang untuk bergabung ke Catatan kami. Silakan klik tombol di bawah ini untuk melihat undangan dan bergabung ke Catatan kami.</p>
-        <a href="{@url}/note/inv/accept_invitation?noteinvitation_token=<%= @user_note.noteinvitation_token %>" class="accept_button">Accept</a>
-        <a href="{@url}/note/inv/decline_invitation?noteinvitation_token=<%= @user_note.noteinvitation_token %>" class="decline_button">Decline</a>
+
+        <a href="{@url}/note/inv/accept_invitation?noteinvitation_token=<%= @invite_token %>" class="button">Accept</a>
+        <a href="{@url}/note/inv/decline_invitation?noteinvitation_token=<%= @invite_token %>" class="button">Decline</a>
+
+        <%# if you want to use email for development, please uncommment @url below and comment @url above %>
+        <%# <a href="http://localhost:3000/api/note/inv/accept_invitation?noteinvitation_token=<%= @invite_token" class="button">Accept</a> %>
+        <%# <a href="http://localhost:3000/api/note/inv/decline_invitation?noteinvitation_token=<%= @invite_token" class="button">Decline</a> %>
       </div>
     </div>
   </body>

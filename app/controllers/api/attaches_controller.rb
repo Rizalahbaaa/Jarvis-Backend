@@ -44,6 +44,6 @@ class Api::AttachesController < ApplicationController
     end
       
     def attach_params
-        params.require(:attach).permit(:name, :path, :user_note_id)
+        params.permit(:name, {path: []}, :user_note_id)
     end
 end
