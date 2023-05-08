@@ -89,13 +89,8 @@ class Api::NotesController < ApplicationController
       render json: { success: true, message: 'note updated successfully', status: 200, data: @note.new_attr },
               status: 200
     else
-      if @noteid.owners?(current_user) == true && @note.update(note_params)
-        render json: { success: true, message: 'note updated successfully', status: 200, data: @note.new_attr },
-               status: 200
-      else
-        render json: { success: false, message: 'note updated unsuccessfully', status: 422, data: @note.errors },
-               status: 422
-      end
+      render json: { success: false, message: 'note updated unsuccessfully', status: 422, data: @note.errors },
+              status: 422
     end
   end
 
@@ -154,5 +149,4 @@ class Api::NotesController < ApplicationController
     params.require(:note).permit(:subject, :description, :event_date, :reminder, :ringtone_id, :column_id, :note_type,
                                  :status)
   end
-
 end
