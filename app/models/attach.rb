@@ -1,5 +1,5 @@
 class Attach < ApplicationRecord
-    mount_uploader :path, AttachUploader
+    mount_uploaders :path, AttachUploader
 
     belongs_to :user_note
     
