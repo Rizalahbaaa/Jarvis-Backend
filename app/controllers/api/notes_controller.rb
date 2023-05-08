@@ -8,7 +8,9 @@ class Api::NotesController < ApplicationController
 
   def create
     @note = Note.create(note_params)
-    @note.user_note.build(user_id: current_user.id, reminder: params[:reminder])
+    @usernote = UserNote.create(user_id: current_user.id,note_id: @note.id, reminder: params[:reminder])
+    # binding.pry
+    # @note.user_note.build(user_id: current_ user.id, reminder: params[:reminder])
     if @note.save 
       render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
              status: 201

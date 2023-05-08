@@ -6,7 +6,7 @@ class UserNote < ApplicationRecord
 
   validates :note_id, presence: true
   validates :user_id, presence: true
-  validates :reminder, presence: false
+  validates :reminder, presence: true
 
   enum :noteinvitation_status, {Pending: 0, Accepted: 1, Rejected: 2 }
 
