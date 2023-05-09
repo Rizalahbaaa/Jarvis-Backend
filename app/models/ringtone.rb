@@ -1,14 +1,16 @@
 class Ringtone < ApplicationRecord
   has_many :notes
 
-  validates :name, presence: true, length: { maximum: 100 }
-  validates :path, presence: true
+  mount_uploader :path, RingtoneUploader
+
+  validates :name, presence: true, length: { maximum: 50 }
+  validates :path, presence: false
 
   def new_attr
     {
       id:,
       name:,
-      path:
+      path: self.path.url
     }
   end
 end

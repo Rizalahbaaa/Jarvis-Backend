@@ -1,7 +1,9 @@
 class Attach < ApplicationRecord
+    mount_uploaders :path, AttachUploader
+
     belongs_to :user_note
     
-    validates :name, presence: true, length: { maximum: 100 }
+    validates :name, presence: true, length: { maximum: 50 }
     validates :path, presence: true
     validates :user_note_id, presence: true
     
@@ -10,7 +12,7 @@ class Attach < ApplicationRecord
         id:,
         name:,
         path:,
-        user_note: user_note.new_attr
+        user_note_id:
     }
     end
 end

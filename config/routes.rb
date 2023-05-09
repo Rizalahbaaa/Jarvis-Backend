@@ -4,7 +4,10 @@ Rails.application.routes.draw do
   namespace :api do
     post '/register', to: 'users#create'
     post '/login', to: 'users#login'
+    get '/active_user', to: 'users#active_user'
     get '/confirm/:id', to: 'users#confirm_email'
+
+    
     post '/forgot_password', to: 'users#forgot'
     get '/reset_password/:token', to: 'users#reset'
     patch '/reset_password/:token', to: 'users#reset'
@@ -15,10 +18,15 @@ Rails.application.routes.draw do
     get '/user_notes/completed', to: 'users_notes#completed'
     get '/user_notes/late', to: 'users_notes#late'
 
+    get '/search_email', to: 'notes#email_valid'
+    put '/update_password', to: 'users#update_password'
 
+    resources :transactions do
+      collection do
+        get :history
     resources :users
     resources :products
-    resources :transactions
+    resources :invitations
     resources :notivications
     resources :ringtones
     resources :team_notes
@@ -29,5 +37,7 @@ Rails.application.routes.draw do
     resources :users_notes
     resources :user_teams
     resources :attaches
-  end
+end
+end
+end 
 end
