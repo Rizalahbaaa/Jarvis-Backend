@@ -6,6 +6,21 @@ class Api::UsersNotesController < ApplicationController
     render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
   end
 
+  def on_progress
+    @user_notes = UserNote.where(status: "on_progress")
+    render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
+  end
+  
+  def completed
+    @user_notes = UserNote.where(status: "completed")
+    render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
+  end
+
+  def late
+    @user_notes = UserNote.where(status: "late")
+    render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
+  end
+
   def create
     # Cari user dengan email yang sesuai
     @emails = Array(params[:email])

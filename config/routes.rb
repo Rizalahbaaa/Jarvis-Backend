@@ -11,6 +11,10 @@ Rails.application.routes.draw do
     post '/note/inv', to: 'users_notes#create'
     get 'note/inv/accept_invitation', to: 'users_notes#accept_invitation', as: 'accept_invitation'
     get 'note/inv/decline_invitation', to: 'users_notes#decline_invitation', as: 'decline_invitation'
+    get '/user_notes/on_progress', to: 'users_notes#on_progress'
+    get '/user_notes/completed', to: 'users_notes#completed'
+    get '/user_notes/late', to: 'users_notes#late'
+
 
     resources :users
     resources :products
