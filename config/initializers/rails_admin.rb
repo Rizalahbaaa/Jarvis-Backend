@@ -1,8 +1,13 @@
+require 'dotenv'
 RailsAdmin.config do |config|
   config.asset_source = :sprockets
 
   ### Popular gems integration
-
+  config.authorize_with do
+    authenticate_or_request_with_http_basic('Login required') do |username, password|
+      username == ENV['ADMIN_USERNAME'] && password == ENV['ADMIN_PASSWORD']
+    end
+  end
   ## == Devise ==
   # config.authenticate_with do
   #   warden.authenticate! scope: :user

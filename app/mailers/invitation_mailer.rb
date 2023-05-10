@@ -15,6 +15,8 @@ class InvitationMailer < ApplicationMailer
 
   def invitation_email(email, invite_token)
     @url = ENV['ROOT_URL']
+    # @url = "http://127.0.0.1:3000/api/"
+
     @invite_token = invite_token
     mail(to: email, subject: 'Undangan Bergabung ke Catatan')
     # format.html { render 'invitation_email.html.erb' }

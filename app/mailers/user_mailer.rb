@@ -7,7 +7,7 @@ class UserMailer < ApplicationMailer
     @url = ENV['ROOT_URL']
 
     # if you want to use email for development, please uncommment @url below and comment @url above
-    # @url = "http://127.0.0.1:3000/api"
+    # @url = "http://127.0.0.1:3000/api/"
 
     mail(to: "#{user.username} <#{user.email}>", subject: 'Registration Confirmation')
   end
@@ -17,7 +17,7 @@ class UserMailer < ApplicationMailer
     @url = ENV['ROOT_URL']
 
     # if you want to use email for development, please uncommment @url below and comment @url above
-    # @url = "http://127.0.0.1:3000/api"
+    # @url = "http://127.0.0.1:3000/api/"
 
     mail(to: "#{user.username} <#{user.email}>", subject: 'Reset Password Instruction')
   end
