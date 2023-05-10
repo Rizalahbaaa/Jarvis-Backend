@@ -18,9 +18,9 @@ class Api::NotesController < ApplicationController
       @emails = params[:email]
       if @emails.present?
         collab_mailer
-        render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
-               status: 201
       end
+      render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
+               status: 201
     else
       render json: { success: false, message: 'note created unsuccessfully', status: 422, data: @note.errors },
              status: 422
@@ -39,7 +39,6 @@ class Api::NotesController < ApplicationController
   end
 
   def collab_mailer
-
     @note.update(note_type: 1)
     @emails.each do |email|
       token = set_invite_token
@@ -51,7 +50,7 @@ class Api::NotesController < ApplicationController
         if @invite_collab.save
           puts 'SENDING EMAIL.....'
           InvitationMailer.invitation_email(email, token[:token]).deliver_now
-          render json: { status: 200, message: 'email send successfully'}, status: 200
+          # return render json: { status: 200, message: 'email send successfully'}, status: 200
         end
       else
         render json: { status: 422, message: "#{email} already invited"}, status: 422
