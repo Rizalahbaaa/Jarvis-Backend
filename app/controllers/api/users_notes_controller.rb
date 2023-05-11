@@ -1,8 +1,24 @@
 class Api::UsersNotesController < ApplicationController
   before_action :set_usernote, only: %i[ show update destroy ]
   before_action :authenticate_request, except: %i[accept_invitation decline_invitation]
+
   def index
     @user_notes = UserNote.all
+    render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
+  end
+
+  def on_progress
+    @user_notes = UserNote.where(status: "on_progress")
+    render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
+  end
+  
+  def completed
+    @user_notes = UserNote.where(status: "completed")
+    render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
+  end
+
+  def late
+    @user_notes = UserNote.where(status: "late")
     render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
   end
 
@@ -59,16 +75,16 @@ class Api::UsersNotesController < ApplicationController
   #   end
   # end
 
-  def usernote_params(user_id, note_id)
-    {
-      user_id: user_id,
-      note_id: note_id,
-      role: 1,
-      noteinvitation_token: SecureRandom.hex(20),
-      noteinvitation_status: 0,
-      noteinvitation_expired: Time.now + 1.days
-    }
-  end
+  # def usernote_params(user_id, note_id)
+  #   {
+  #     user_id: user_id,
+  #     note_id: note_id,
+  #     role: 1,
+  #     noteinvitation_token: SecureRandom.hex(20),
+  #     noteinvitation_status: 0,
+  #     noteinvitation_expired: Time.now + 1.days
+  #   }
+  # end
 
   def accept_invitation
     @user_note = UserNote.find_by(noteinvitation_token: params[:noteinvitation_token])
