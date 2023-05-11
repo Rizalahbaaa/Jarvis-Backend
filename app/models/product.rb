@@ -1,4 +1,6 @@
 class Product < ApplicationRecord
+  mount_uploader :photo_product, ProductUploader
+
     has_many :transactions
     has_many :users, through: :transactions
     
