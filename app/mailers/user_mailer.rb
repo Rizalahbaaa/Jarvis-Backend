@@ -14,7 +14,8 @@ class UserMailer < ApplicationMailer
 
   def forgot_password(user)
     @user = user
-    @url = ENV['ROOT_URL']
+    # @url = ENV['ROOT_URL']
+    @url = "https://qatrosjarvis.netlify.app/resetpassword/"
 
     # if you want to use email for development, please uncommment @url below and comment @url above
     # @url = "http://127.0.0.1:3000/api/"
