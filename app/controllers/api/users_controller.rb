@@ -49,7 +49,7 @@ class Api::UsersController < ApplicationController
   end
 
   def active_user
-    render json: @current_user.new_attr, stautus: 200
+    render json: {success: true, status: 200, data: @current_user.new_attr}, status: 200
   end
 
   def update
