@@ -1,6 +1,7 @@
 class Api::NotesController < ApplicationController
   before_action :authenticate_request
   before_action :set_note, only: %i[update destroy show]
+  rescue_from ActionController::UnpermittedParameters, with: :handle_errors
 
   def index
     @notes = Note.ownersfilter(current_user)
@@ -18,9 +19,10 @@ class Api::NotesController < ApplicationController
       @emails = params[:email]
       if @emails.present?
         collab_mailer
+        return
       end
       render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
-               status: 201
+             status: 201
     else
       render json: { success: false, message: 'note created unsuccessfully', status: 422, data: @note.errors },
              status: 422
@@ -50,10 +52,11 @@ class Api::NotesController < ApplicationController
         if @invite_collab.save
           puts 'SENDING EMAIL.....'
           InvitationMailer.invitation_email(email, token[:token]).deliver_now
-          # return render json: { status: 200, message: 'email send successfully'}, status: 200
+          render json: { status: 200, message: 'email send successfully' }, status: 200
+          return
         end
       else
-        render json: { status: 422, message: "#{email} already invited"}, status: 422
+        render json: { status: 422, message: "#{email} already invited" }, status: 422
       end
     end
   end
@@ -69,9 +72,11 @@ class Api::NotesController < ApplicationController
       end
 
       if @note.update(note_params)
-        render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr }, status: 200
+        render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr },
+        status: 200
       else
-        render json: { success: false, status: 422, message: 'note updated unsuccessfully', data: @note.errors }, status: 422
+        render json: { success: false, status: 422, message: 'note updated unsuccessfully', data: @note.errors },
+               status: 422
       end
     else
       render json: { success: false, message: 'sorry, only owner can update note', status: 422 },
@@ -160,7 +165,13 @@ class Api::NotesController < ApplicationController
   end
 
   def note_params
-    params.permit(:subject, :description, :event_date, :reminder, :ringtone_id, :column_id, :note_type,
-                  :status)
+    # ActionController::Parameters.action_on_unpermitted_parameters = :raise
+    params.require(:note).permit(:subject, :description, :event_date, :reminder, :ringtone_id, :column_id,
+                     :status)
+  end
+
+  def handle_errors
+    render json: { "unpermitted parameters found": params.to_unsafe_h.except(:controller, :action, :note, :id, :subject,
+                    :description, :event_date, :reminder, :ringtone_id, :column_id, :status).keys }, status: 422
   end
 end
