@@ -8,8 +8,8 @@ Rails.application.routes.draw do
     get '/confirm/:id', to: 'users#confirm_email'
 
     post '/forgot_password', to: 'users#forgot'
-    get '/reset_password/:token', to: 'users#reset'
-    patch '/reset_password/:token', to: 'users#reset'
+    get '/resetpassword/:token', to: 'users#reset'
+    patch '/resetpassword/:token', to: 'users#reset'
 
     post '/note/inv', to: 'users_notes#create'
     get 'note/inv/accept_invitation', to: 'users_notes#accept_invitation', as: 'accept_invitation'
