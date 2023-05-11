@@ -33,9 +33,9 @@ class Note < ApplicationRecord
     completed: 1
   }
 
-  def name
-    subject
-  end
+  # def name
+  #   subject
+  # end
 
   def accepted_member
     accepted_user_notes = user_note.where(noteinvitation_status: 1, role: 1)

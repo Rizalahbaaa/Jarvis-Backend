@@ -52,13 +52,13 @@ class Api::NotesController < ApplicationController
         if @invite_collab.save
           puts 'SENDING EMAIL.....'
           InvitationMailer.invitation_email(email, token[:token]).deliver_now
-          render json: { status: 200, message: 'email send successfully' }, status: 200
-          return
         end
       else
         render json: { status: 422, message: "#{email} already invited" }, status: 422
       end
     end
+    render json: { status: 200, message: 'email send successfully' }, status: 200
+    return
   end
 
   def update
@@ -165,12 +165,12 @@ class Api::NotesController < ApplicationController
   end
 
   def note_params
-    # ActionController::Parameters.action_on_unpermitted_parameters = :raise
     params.require(:note).permit(:subject, :description, :event_date, :reminder, :ringtone_id, :column_id,
-                     :status)
-  end
+      :status)
+    end
 
-  def handle_errors
+    def handle_errors
+    # ActionController::Parameters.action_on_unpermitted_parameters = :raise
     render json: { "unpermitted parameters found": params.to_unsafe_h.except(:controller, :action, :note, :id, :subject,
                     :description, :event_date, :reminder, :ringtone_id, :column_id, :status).keys }, status: 422
   end
