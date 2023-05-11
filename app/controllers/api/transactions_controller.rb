@@ -1,5 +1,5 @@
 class Api::TransactionsController < ApplicationController
-  before_action :set_transaction, only: [:index, :show, :create]
+  before_action :set_transaction, only: [:show, :create]
     def index
         @transactions = Transaction.all
         render json: @transactions.map { |transaction| transaction.new_attr }
@@ -10,19 +10,26 @@ class Api::TransactionsController < ApplicationController
         user = User.find_by(id: transaction_params[:user_id])
       
         if product.nil? || user.nil?
-          render json: { success: false, status: 422, message: 'Invalid product/user/user_note id' }, status: 422
+          render json: { success: false, status: 422, message: 'Invalid product/user' }, status: 422
           return
         end
-      
-        @transaction = Transaction.new(transaction_params)
-      
+        if transaction_params[:point_type] == 'redeemed' && product.price > user.point
+          render json: { message: 'Insufficient points' }, status: 422
+          return
+        end
+        if transaction_params[:point_type] == 'earned'
+          earned_point = transaction_params[:point].to_i # Mengambil nilai poin yang diperoleh dari params
+          @transaction = user.transactions.build(transaction_params.merge({ point: earned_point }))
+        else
+          @transaction = user.transactions.build(transaction_params.merge({ point: product.price }))
+        end
         if @transaction.save
           render json: { success: true, status: 201, message: 'create transaction successfully', data: @transaction.new_attr }, status: 201
         else
           render json: { success: false, status: 422, message: 'create transaction unsuccessfully', data: @transaction.errors }, status: 422
         end
       end
-    
+
       def history
         @transactions = Transaction.where(user_id: params[:user_id])
         render json: @transactions.map { |transaction| transaction.new_attr }
@@ -45,7 +52,7 @@ class Api::TransactionsController < ApplicationController
 
       def set_transaction
         @transaction = Transaction.find_by_id(params[:id])
-        return unless @transaction.nil?
+        return if @transaction.nil?
     
         render json: { status: 404, message: 'transaction not found' }, status: 404
       end

@@ -23,7 +23,6 @@ class User < ApplicationRecord
     (?=.*\d)
     (?=.*[a-z])
     (?=.*[A-Z])
-    (?=.*[[:^alnum:]])
   /x
 
   EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
@@ -40,18 +39,18 @@ class User < ApplicationRecord
   validates :job, length: { maximum: 50 }
   validates :password, confirmation: true, on: :create, length: { minimum: 8, message: 'minimum is 8 characters' },
                        format: { with: PASSWORD_REGEX,
-                                 message: 'password must contain digit, uppercase, lowercase, and symbol' }
+                                 message: 'password must contain digit, uppercase and lowercase' }
   validates :password_confirmation, presence: true, on: :create
 
   validates :password, confirmation: true,
                        length: { minimum: 8, message: 'minimum is 8 characters' },
-                       format: { with: PASSWORD_REGEX, message: 'password must contain digit, uppercase, lowercase, and symbol' },
+                       format: { with: PASSWORD_REGEX, message: 'password must contain digit, uppercase and lowercase' },
                        if: :forgot_password_validate
   validates :password_confirmation, presence: true, if: :forgot_password_validate
 
   validates :password, confirmation: true, on: :forgot_password_validate, length: { minimum: 8, message: 'minimum is 8 characters' },
                        format: { with: PASSWORD_REGEX,
-                                 message: 'password must contain digit, uppercase, lowercase, and symbol' }
+                                 message: 'password must contain digit, uppercase and lowercase' }
   validates :password_confirmation, presence: true, on: :forgot_password_validate
 
   def new_attr
@@ -65,16 +64,14 @@ class User < ApplicationRecord
     }
   end
 
-
-  def point
-    earned = UserNote.where(user_id: self.id, status: 'completed').count + Transaction.where(user_id: self.id, point_type: 'earned' ).sum(:point)    
-    redeemed = Transaction.where(user_id: self.id, point_type: 'redeemed' ).sum(:point)
-    earned - redeemed
-  end
-
   def forgot_password_validate
     is_forgot
+  end
 
+  def point
+    earned = Transaction.where(user_id: self.id, point_type: 'earned' ).sum(:point) 
+    redeemed = Transaction.where(user_id: self.id, point_type: 'redeemed' ).sum(:point) 
+    earned - redeemed
   end
 
   def username_format
@@ -113,6 +110,10 @@ class User < ApplicationRecord
     save!(validate: false)
   end
 
+  def name
+    username
+  end
+
   # def reset_password!(password)
   #   validate :password
   #   self.password = password
@@ -123,6 +124,13 @@ class User < ApplicationRecord
     (password_reset_sent_at + 1.hours) > Time.now.utc
   end
 
+  rails_admin do
+    field :id
+    field :username
+    field :email
+    field :point
+    field :transactions
+  end
   private
 
   def confirmation_token

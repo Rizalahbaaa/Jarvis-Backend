@@ -16,7 +16,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_10_044155) do
 
   create_table "attaches", force: :cascade do |t|
     t.string "name"
-    t.text "path"
+    t.json "path"
     t.integer "user_note_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -72,6 +72,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_10_044155) do
     t.datetime "updated_at", null: false
     t.integer "point"
     t.string "point_type"
+    t.bigint "user_note_id"
   end
 
   create_table "user_notes", force: :cascade do |t|

@@ -7,7 +7,6 @@ Rails.application.routes.draw do
     get '/active_user', to: 'users#active_user'
     get '/confirm/:id', to: 'users#confirm_email'
 
-    
     post '/forgot_password', to: 'users#forgot'
     get '/reset_password/:token', to: 'users#reset'
     patch '/reset_password/:token', to: 'users#reset'
