@@ -20,7 +20,6 @@ class Api::TeamsController < ApplicationController
   # end
 
   def create
-    # @user = current_user
     @team = Team.new(team_params)
     return unless @team.save
 

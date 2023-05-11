@@ -14,9 +14,10 @@ class InvitationMailer < ApplicationMailer
   # end
 
   def collab_invitation(email, invite_token)
-    # @url = ENV['ROOT_URL']
+    @url = ENV['ROOT_URL']
+
     # if you want to use email for development, please uncommment @url below and comment @url above
-    @url = "http://127.0.0.1:3000/api"
+    # @url = "http://127.0.0.1:3000/api"
 
     @invite_token = invite_token
     mail(to: email, subject: 'Undangan Bergabung ke Catatan')
@@ -24,9 +25,10 @@ class InvitationMailer < ApplicationMailer
   end
 
   def team_invitation(email, invite_token)
-    # @url = ENV['ROOT_URL']
+    @url = ENV['ROOT_URL']
+    
     # if you want to use email for development, please uncommment @url below and comment @url above
-    @url = "http://127.0.0.1:3000/api"
+    # @url = "http://127.0.0.1:3000/api"
 
     @invite_token = invite_token
     mail(to: email, subject: 'Undangan Bergabung ke Tim')
