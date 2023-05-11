@@ -111,6 +111,19 @@ class Api::UsersController < ApplicationController
     end
   end
 
+  def check_reset
+    token = params[:token]
+
+    @user = User.find_by(password_reset_token: token)
+
+    if @user.present? && @user.password_token_valid?
+      render json: { status: '200', message: 'Link is valid'}, status: 200
+    else
+      render json: { status: '404', error: 'Link not valid or expired. Try generating a new link.' }, status: 404
+    end
+  end
+  
+
   def update_password
     unless @user.authenticate(params[:current_password])
       render json: { success: false, message: 'Invalid current password', status: 422 }
@@ -140,5 +153,6 @@ class Api::UsersController < ApplicationController
   def password_params
     params.permit(:current_password, :password, :password_confirmation)
   end
+
 
 end

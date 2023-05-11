@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
     post '/forgot_password', to: 'users#forgot'
     get '/resetpassword/:token', to: 'users#reset'
+    get '/check_reset/:token', to: 'users#check_reset'
     patch '/resetpassword/:token', to: 'users#reset'
 
     post '/note/inv', to: 'users_notes#create'
