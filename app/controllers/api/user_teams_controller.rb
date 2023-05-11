@@ -1,5 +1,6 @@
 class Api::UserTeamsController < ApplicationController
   before_action :set_userteam, only: :destroy
+  before_action :authenticate_request, except: %i[accept_invitation decline_invitation]
 
   def index
     @userteam = UserTeam.where(nil)
@@ -15,6 +16,28 @@ class Api::UserTeamsController < ApplicationController
     else
       render json: @userteam.errors, status: :unprocessable_entity
     end
+  end
+
+  def accept_invitation
+    @user_team = UserTeam.find_by(teaminvitation_token: params[:tteaminvitation_token])
+
+    if @user_team && @user_team.invitation_valid?
+      @user_team.accept_invitation!
+      render json: { status: 200, message: "Undangan Diterima"}, status: 200
+    else
+      render json: { message: "Undangan tidak valid"}
+    end 
+  end
+
+  def decline_invitation
+    @user_team = UserTeam.find_by(teaminvitation_token: params[:teaminvitation_token])
+
+    if @user_team && @user_team.invitation_valid?
+      @user_team.decline_invitation!
+      render json: { status: 200, message: "Undangan Ditolak"}, status: 200
+    else
+      render json: { message: "Undangan tidak valid"}
+    end 
   end
 
   def destroy

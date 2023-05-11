@@ -31,26 +31,6 @@ class Api::UsersNotesController < ApplicationController
   #   @emails.each do |email|
   #     @user = User.find_by(email: email.strip) #variable buat cari email | strip untuk
   
-  def completed
-    @user_notes = UserNote.where(status: "completed")
-    render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
-  end
-
-  def late
-    @user_notes = UserNote.where(status: "late")
-    render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
-  end
-
-  # def create
-  #   # Cari user dengan email yang sesuai
-  #   @emails = Array(params[:email])
-  #   @user_ids = []
-  #   @errors = []
-  #   @existing_user_ids = UserNote.where(note_id: params[:note_id], noteinvitation_status: 1).pluck(:user_id)
-
-  #   @emails.each do |email|
-  #     @user = User.find_by(email: email.strip) #variable buat cari email | strip untuk
-  
   #     if @user #ngejalanin fungsi variable @usesr
   #       if @existing_user_ids.include?(@user.id)
   #         # User sudah terdaftar dalam tim, tambahkan pesan error ke dalam array

@@ -60,7 +60,7 @@ class Api::NotesController < ApplicationController
         token[:status], role: token[:role], noteinvitation_expired: token[:expired])
       if @invite_collab.save
         puts 'SENDING EMAIL.....'
-        InvitationMailer.invitation_email(email, token[:token]).deliver_now
+        InvitationMailer.collab_invitation(email, token[:token]).deliver_now
       end
       # binding.pry
     end

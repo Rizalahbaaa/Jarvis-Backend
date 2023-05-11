@@ -11,9 +11,13 @@ Rails.application.routes.draw do
     post '/forgot_password', to: 'users#forgot'
     get '/reset_password/:token', to: 'users#reset'
     patch '/reset_password/:token', to: 'users#reset'
+
     post '/note/inv', to: 'users_notes#create'
     get 'note/inv/accept_invitation', to: 'users_notes#accept_invitation', as: 'accept_invitation'
     get 'note/inv/decline_invitation', to: 'users_notes#decline_invitation', as: 'decline_invitation'
+    get 'team/inv/accept_invitation', to: 'user_teams#accept_invitation', as: 'accept_team_invitation'
+    get 'team/inv/decline_invitation', to: 'user_teams#decline_invitation', as: 'decline_team_invitation'
+
     get '/user_notes/on_progress', to: 'users_notes#on_progress'
     get '/user_notes/completed', to: 'users_notes#completed'
     get '/user_notes/late', to: 'users_notes#late'
@@ -24,6 +28,8 @@ Rails.application.routes.draw do
     resources :transactions do
       collection do
         get :history
+      end
+    end
     resources :users
     resources :products
     resources :invitations
@@ -37,7 +43,5 @@ Rails.application.routes.draw do
     resources :users_notes
     resources :user_teams
     resources :attaches
-end
-end
-end 
+  end
 end

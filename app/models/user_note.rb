@@ -26,7 +26,7 @@ class UserNote < ApplicationRecord
   end
 
   def delete_expired_invitations
-    expired_invitations = UserNote.where("noteinvitation_status = ? && noteinvitation_expired < ?", UserNote.noteinvitation_statuses[:Pending], Time.now)
+    expired_invitations = UserNote.where("teaminvitation_status = ? && teaminvitation_expired < ?", UserTeam.teaminvitation_statuses[:Pending], Time.now)
     expired_invitations.destroy
   end
 
