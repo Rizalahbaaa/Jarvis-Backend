@@ -92,6 +92,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_10_141440) do
     t.integer "team_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "teaminvitation_token"
+    t.integer "teaminvitation_status"
+    t.datetime "teaminvitation_expired", precision: nil
+    t.integer "team_role", default: 0
   end
 
   create_table "users", force: :cascade do |t|
