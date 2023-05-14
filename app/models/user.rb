@@ -70,8 +70,9 @@ class User < ApplicationRecord
 
   def point
     earned = Transaction.where(user_id: self.id, point_type: 'earned' ).sum(:point) 
-    redeemed = Transaction.where(user_id: self.id, point_type: 'redeemed' ).sum(:point) 
-    earned - redeemed
+    redeemed = Transaction.where(user_id: self.id, point_type: 'redeemed' ).sum(:point)
+    additional_points = 300 # Jumlah poin tambahan yang ingin ditambahkan setelah pendaftaran
+    earned - redeemed + additional_points
   end
 
   def username_format
