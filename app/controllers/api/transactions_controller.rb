@@ -18,18 +18,25 @@ class Api::TransactionsController < ApplicationController
           return
         end
         if transaction_params[:point_type] == 'earned'
-          earned_point = transaction_params[:point].to_i # Mengambil nilai poin yang diperoleh dari params
+          earned_point = 100 # Mengambil nilai poin yang diperoleh dari params
           @transaction = user.transactions.build(transaction_params.merge({ point: earned_point }))
         else
           @transaction = user.transactions.build(transaction_params.merge({ point: product.price }))
         end
         if @transaction.save
-          render json: { success: true, status: 201, message: 'create transaction successfully', data: @transaction.new_attr }, status: 201
+          if transaction_params[:point_type] == 'redeemed'
+            render json: { success: true, status: 201, message: 'Redeemed point successfully', data: @transaction.new_attr }, status: 201
+          else
+            render json: { success: true, status: 201, message: 'Earned point successfully', data: @transaction.new_attr }, status: 201
+          end
         else
-          render json: { success: false, status: 422, message: 'create transaction unsuccessfully', data: @transaction.errors }, status: 422
+          if transaction_params[:point_type] == 'redeemed'
+            render json: { success: false, status: 422, message: 'Failed to redeem point', data: @transaction.errors }, status: 422
+          else
+            render json: { success: false, status: 422, message: 'Failed to earn point', data: @transaction.errors }, status: 422
+          end
         end
       end
-
       def history
         @transactions = Transaction.where(user_id: params[:user_id])
         render json: @transactions.map { |transaction| transaction.new_attr }
