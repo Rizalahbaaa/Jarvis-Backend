@@ -16,6 +16,8 @@ class Api::UsersController < ApplicationController
     if @user.save
       puts 'SENDING EMAIL.....'
       UserMailer.registration_confirmation(@user).deliver_now
+      new_transaction = @user.transactions.create(point: 300, point_type: 'earned')
+      new_transaction.save
       render json: { success: true, status: 201, message: 'please confirm your email address to continue', data: @user.new_attr },
              status: 201
     else
