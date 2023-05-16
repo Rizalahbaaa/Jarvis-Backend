@@ -15,16 +15,16 @@ class Note < ApplicationRecord
 
   scope :join_usernote, -> { joins(:user_note) }
   # scope :notefunc, -> (note_id) { join_usernote.where(user_note: { note_id: note_id })}
-  # scope :owners?, -> (user_id){ join_usernote.where(user_note: { role: 'owner', user_id: user_id }).limit(1).present?}
 
 # filters & sorts
-  scope :passed_note, -> (user_id){ join_usernote.where(user_note: { user_id: user_id }).where('event_date < ?', Date.today) }
-  scope :upcoming_note, -> (user_id){ join_usernote.where(user_note: { user_id: user_id }).where('event_date >= ?', Date.today) }
-  scope :owner, -> (user_id){ join_usernote.where(user_note: { role: 'owner', user_id: user_id })}
+  scope :noteall, -> (user_id){ join_usernote.where(user_note: { user_id: user_id }).where.not(note_type: 'team')}
+  scope :passed_note, -> (user_id){ join_usernote.where(user_note: { user_id: user_id }).where('event_date < ?', Date.today).where.not(note_type: 'team') }
+  scope :upcoming_note, -> (user_id){ join_usernote.where(user_note: { user_id: user_id }).where('event_date >= ?', Date.today).where.not(note_type: 'team') }
+  scope :owner, -> (user_id){ join_usernote.where(user_note: { role: 'owner', user_id: user_id }).where.not(note_type: 'team')}
   scope :upload_done, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'have_upload' }).where(note_type: 'collaboration')}
   scope :not_upload, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'not_upload_yet' }).where(note_type: 'collaboration')}
   scope :late, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'late' })}
-  scope :completed_note, ->{ where(status: 'completed') }
+  scope :completed_note, ->{ where(status: 'completed').where.not(note_type: 'team') }
 
   enum note_type: {
     personal: 0,
@@ -39,6 +39,9 @@ class Note < ApplicationRecord
 
 
   def self.filter_and_sort(params, current_user)
+
+     notes = Note.noteall(current_user)
+
     if params[:note] == 'passed'
       notes = Note.passed_note(current_user)
     end
