@@ -7,6 +7,10 @@ class Api::UsersNotesController < ApplicationController
     render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
   end
 
+  def show
+    render json: {success: true, status: 200, data: @user_note.new_attr}, status: 200
+  end
+
   def on_progress
     @user_notes = UserNote.where(status: "on_progress")
     render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
@@ -20,6 +24,17 @@ class Api::UsersNotesController < ApplicationController
   def late
     @user_notes = UserNote.where(status: "late")
     render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
+  end
+
+  def history
+    note = UserNote.where(note: params[:note_id])
+    # binding.pry
+    if note.sort_history
+
+      render json: note.map{|u| u.new_attr}, status: 200
+    else
+      render json: note.errros, status: 400
+    end
   end
 
   # def create
@@ -124,8 +139,10 @@ class Api::UsersNotesController < ApplicationController
   # end
 
   def set_usernote
-    @user_note = Usernote.find_by(id: params[:id])
-    return render json: { status:404, message: "User Team Tidak ditemukan", data: []}, status: :not_found if@user_note.nil?
+    @user_note = UserNote.find_by_id(params[:id])
+    return unless @user_note.nil?
+
+    render json: { status: 404, message: 'note not found' }, status: 404
   end
 
 

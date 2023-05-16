@@ -8,8 +8,9 @@ Rails.application.routes.draw do
     get '/confirm/:id', to: 'users#confirm_email'
 
     post '/forgot_password', to: 'users#forgot'
-    get '/reset_password/:token', to: 'users#reset'
-    patch '/reset_password/:token', to: 'users#reset'
+    get '/resetpassword/:token', to: 'users#reset'
+    get '/check_reset/:token', to: 'users#check_reset'
+    patch '/resetpassword/:token', to: 'users#reset'
 
     post '/note/inv', to: 'users_notes#create'
     get 'note/inv/accept_invitation', to: 'users_notes#accept_invitation', as: 'accept_invitation'
@@ -22,6 +23,7 @@ Rails.application.routes.draw do
     get '/user_notes/late', to: 'users_notes#late'
 
     get '/search_email', to: 'notes#email_valid'
+    get '/history', to: 'users_notes#history'
     put '/update_password', to: 'users#update_password'
 
     resources :transactions do
