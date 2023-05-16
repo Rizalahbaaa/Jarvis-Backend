@@ -80,7 +80,7 @@ class UserNote < ApplicationRecord
   def new_attr
     {
       id:,
-      note: note,
+      note: note.subject,
       user: user.username,
       file: docs.map(&:url),
       role:,
