@@ -28,11 +28,11 @@ class UserNote < ApplicationRecord
     late_file = attaches.where('self.created_at > ?', note.event_date)
 
     self.status = if ontime_file
-                    'completed'
+                    'have_upload'
                   elsif late_file
                     'late'
                   else
-                    'on_progress'
+                    'not_upload_yet'
                   end
     save!
   end
@@ -71,9 +71,10 @@ class UserNote < ApplicationRecord
   }
 
   enum status: {
-    on_progress: 0,
-    completed: 1,
-    late: 2
+    not_upload_yet: 0,
+    have_upload: 1,
+    complete: 2,
+    late: 3
   }
 
   def new_attr
