@@ -71,15 +71,16 @@ class UserNote < ApplicationRecord
   }
 
   enum status: {
-    on_progress: 0,
-    completed: 1,
-    late: 2
+    not_upload_yet: 0,
+    have_upload: 1,
+    complete: 2,
+    late: 3
   }
 
   def new_attr
     {
       id:,
-      note: note.subject,
+      note: note,
       user: user.username,
       file: docs.map(&:url),
       role:,

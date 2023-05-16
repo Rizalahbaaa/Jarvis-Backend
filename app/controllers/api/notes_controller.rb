@@ -3,11 +3,11 @@ class Api::NotesController < ApplicationController
   before_action :set_note, only: %i[update destroy show]
 
   def index
-    notes = Note.ownersfilter(current_user)
+    notes = Note.filter_and_sort(params, current_user)
     if notes.present?
       render json: { success: true, message: 'data found', status: 200, data: notes.map do |owner|
                                                                                 owner.new_attr
-                                                                              end }
+     end }
     else
       render json: { success: true, message: 'data not found', status: 404 }, status: 404
     end
