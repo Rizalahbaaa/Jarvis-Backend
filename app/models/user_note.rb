@@ -28,11 +28,11 @@ class UserNote < ApplicationRecord
     late_file = attaches.where('self.created_at > ?', note.event_date)
 
     self.status = if ontime_file
-                    'completed'
+                    'have_upload'
                   elsif late_file
                     'late'
                   else
-                    'on_progress'
+                    'not_upload_yet'
                   end
     save!
   end
