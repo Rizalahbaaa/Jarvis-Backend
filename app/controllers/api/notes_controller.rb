@@ -81,6 +81,7 @@ class Api::NotesController < ApplicationController
       end
 
       if @note.update(note_params)
+        @find_user_note.update(updated_at: Time.now)
         render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr },
                status: 200
       else

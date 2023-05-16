@@ -67,7 +67,6 @@ class Note < ApplicationRecord
     return notes
   end
 
-
   # def name
   #   subject
   # end
