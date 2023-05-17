@@ -110,7 +110,7 @@ class Note < ApplicationRecord
       member: accepted_member.map { |accept_user| accept_user.new_attr },
       event_date:,
       reminder:,
-      ringtone: self.ringtone.path.url,
+      ringtone: ringtone.name,
       file: file_collection,
       note_type:,
       status:,
