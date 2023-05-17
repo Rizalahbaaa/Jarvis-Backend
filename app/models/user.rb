@@ -115,12 +115,6 @@ class User < ApplicationRecord
     username
   end
 
-  # def reset_password!(password)
-  #   validate :password
-  #   self.password = password
-  #   save!
-  # end
-
   def password_token_valid?
     (password_reset_sent_at + 1.hours) > Time.now.utc
   end
@@ -129,6 +123,10 @@ class User < ApplicationRecord
     field :id
     field :username
     field :email
+    field :phone
+    field :job
+    field :photo
+    field :email_confirmed
     field :point
     field :transactions
   end

@@ -12,6 +12,14 @@ class UserMailer < ApplicationMailer
     mail(to: "#{user.username} <#{user.email}>", subject: 'Registration Confirmation')
   end
 
+  def resend_email_verification(user)
+    @user = user
+    @url = "http://127.0.0.1:3000/api/"
+
+    mail(to: "#{user.username} <#{user.email}>", subject: 'Resend Email Verification')
+  end
+
+
   def forgot_password(user)
     @user = user
     # @url = ENV['ROOT_URL']
