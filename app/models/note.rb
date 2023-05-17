@@ -17,7 +17,8 @@ class Note < ApplicationRecord
   # scope :notefunc, -> (note_id) { join_usernote.where(user_note: { note_id: note_id })}
 
 # filters & sorts
-  scope :noteall, -> (user_id){ join_usernote.where(user_note: { user_id: user_id }).where.not(note_type: 'team')}
+  # scope :noteall, -> (user_id){ join_usernote.where(user_note: { user_id: user_id}).where.not(note_type: 'team')}
+  scope :noteall, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where.not(note_type: 'team')}
   scope :passed_note, -> (user_id){ join_usernote.where(user_note: { user_id: user_id }).where('event_date < ?', Date.today).where.not(note_type: 'team') }
   scope :upcoming_note, -> (user_id){ join_usernote.where(user_note: { user_id: user_id }).where('event_date >= ?', Date.today).where.not(note_type: 'team') }
   scope :owner, -> (user_id){ join_usernote.where(user_note: { role: 'owner', user_id: user_id }).where.not(note_type: 'team')}
@@ -40,7 +41,7 @@ class Note < ApplicationRecord
 
   def self.filter_and_sort(params, current_user)
 
-     notes = Note.noteall(current_user)
+    notes = Note.noteall(current_user)
 
     if params[:note] == 'passed'
       notes = Note.passed_note(current_user)
@@ -109,7 +110,7 @@ class Note < ApplicationRecord
       member: accepted_member.map { |accept_user| accept_user.new_attr },
       event_date:,
       reminder:,
-      ringtone: ringtone.name,
+      ringtone: self.ringtone.path.url,
       file: file_collection,
       note_type:,
       status:,
