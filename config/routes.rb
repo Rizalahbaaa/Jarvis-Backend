@@ -23,6 +23,7 @@ Rails.application.routes.draw do
     get '/user_notes/late', to: 'users_notes#late'
 
     get '/search_email', to: 'notes#email_valid'
+    get '/history', to: 'users_notes#history'
     put '/update_password', to: 'users#update_password'
 
     resources :transactions do

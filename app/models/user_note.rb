@@ -7,53 +7,91 @@ class UserNote < ApplicationRecord
   validates :note_id, presence: true
   validates :user_id, presence: true
 
-  enum :noteinvitation_status, {Pending: 0, Accepted: 1, Rejected: 2 }
-  
-  def completed?
-    note.nil? ? status == 'completed' : (status == 'completed' && note.status == 'completed')
-  end
-
-  def invitation_valid?
-      self.noteinvitation_status == "Pending" && self.noteinvitation_expired > Time.now
-  end
-
-  def accept_invitation!
-      self.noteinvitation_status = 1
-      save!
-  end
-
-  def decline_invitation!
-      self.noteinvitation_status = 2
-      destroy
-  end
-
-  def delete_expired_invitations
-    expired_invitations = UserNote.where("teaminvitation_status = ? && teaminvitation_expired < ?", UserTeam.teaminvitation_statuses[:Pending], Time.now)
-    expired_invitations.destroy
-  end
+  enum :noteinvitation_status, { Pending: 0, Accepted: 1, Rejected: 2 }
 
   enum role: {
     owner: 0,
     member: 1
   }
-
+  
   enum status: {
-    on_progress: 0,
-    completed: 1,
-    late: 2
+    not_upload_yet: 0,
+    have_upload: 1,
+    complete: 2,
+    late: 3
   }
+  def completed?
+    note.nil? ? status == 'completed' : (status == 'completed' && note.status == 'completed')
+  end
+
+  def invitation_valid?
+    noteinvitation_status == 'Pending' && noteinvitation_expired > Time.now
+  end
+
+  def accept_invitation!
+    self.noteinvitation_status = 1
+    save!
+  end
+
+  def decline_invitation!
+    self.noteinvitation_status = 2
+    destroy
+  end
+
+  def update_status
+    ontime_file = attaches.where('self.created_at < ?', note.event_date)
+    late_file = attaches.where('self.created_at > ?', note.event_date)
+
+    self.status = if ontime_file
+                    'have_upload'
+                  elsif late_file
+                    'late'
+                  else
+                    'not_upload_yet'
+                  end
+    save!
+  end
+
+  def update_time
+    updated_at = Time.now
+    save
+  end
+
+  def self.note_history
+    sort = UserNote.order('updated_at ASC')
+    sort.user_note_data
+  end
+
+  def self.user_note_data
+    owner = User.find_by_id(UserNote.find_by(role: "owner").try("user_id"))
+    member = []
+    UserNote.where(role: 'member', status: 'have_upload').each do |m|
+      member.push(User.find_by(id: m.user_id))
+    end
+  end
+
+  def delete_expired_invitations
+    expired_invitations = UserNote.where('teaminvitation_status = ? && teaminvitation_expired < ?',
+                                         UserTeam.teaminvitation_statuses[:Pending], Time.now)
+    expired_invitations.destroy
+  end
+
+  def docs
+    attaches.map(&:path)
+  end
+
 
   def new_attr
     {
       id:,
-      note: note.new_attr,
+      note: note.subject,
       user: user.username,
-      # reminder:,
+      file: docs.map(&:url),
       role:,
-      status:,
-      invitation_token: self.noteinvitation_token,
-      invitation_status: self.noteinvitation_status,
-      invitation_expired: self.noteinvitation_expired
+      status:
+      # invitation_token: self.noteinvitation_token,
+      # invitation_status: self.noteinvitation_status,
+      # invitation_expired: self.noteinvitation_expired
     }
   end
 end
