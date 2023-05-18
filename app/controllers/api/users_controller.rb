@@ -138,7 +138,11 @@ class Api::UsersController < ApplicationController
       render json: { success: false, message: 'Failed to update password', status: 422, errors: @user.errors.full_messages }
     end
   end
-
+  def point
+    user = User.find_by(id: params[:id])
+    point = user.point
+    render json: { success: true, status: 200, message: 'User point retrieved successfully', data: { user_id: user.id, point: point } }
+  end
   private
 
   def set_user

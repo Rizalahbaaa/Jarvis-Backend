@@ -8,7 +8,10 @@ class UserNote < ApplicationRecord
   validates :user_id, presence: true
 
   enum :noteinvitation_status, {Pending: 0, Accepted: 1, Rejected: 2 }
-
+  
+  def completed?
+    note.nil? ? status == 'completed' : (status == 'completed' && note.status == 'completed')
+  end
 
   def invitation_valid?
       self.noteinvitation_status == "Pending" && self.noteinvitation_expired > Time.now

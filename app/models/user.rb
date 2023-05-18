@@ -126,12 +126,22 @@ class User < ApplicationRecord
   end
 
   rails_admin do
-    field :id
+  field :id
+  field :username
+  field :email
+  field :email_confirmed
+  list do
+    field :point
+  end
+  show do
+    field :point
+  end
+  edit do
     field :username
     field :email
-    field :point
-    field :transactions
+    field :email_confirmed
   end
+end
   private
 
   def confirmation_token
