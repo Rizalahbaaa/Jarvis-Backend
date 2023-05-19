@@ -64,11 +64,16 @@ class Note < ApplicationRecord
     if params[:completed] == 'yes'
       notes = Note.completed_note
     end
-   
+
     sort_direction = params[:sort] == 'desc' ? 'desc' : 'asc'
     notes = notes.order(event_date: sort_direction)
 
     return notes
+  end
+
+  def notice
+    puts 'SENDING REMINDER.....'
+    ReminderMailer.my_reminder(email).deliver_now
   end
 
   # def name
@@ -84,7 +89,7 @@ class Note < ApplicationRecord
   def reminder_date_valid?
     return unless reminder.present?
 
-    validates_comparison_of :reminder, greater_than: Time.now, less_than: event_date - 30.minutes
+    validates_comparison_of :reminder, greater_than: Time.now, less_than: event_date
   end
 
   def owner_collab
