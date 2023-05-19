@@ -30,11 +30,15 @@ Rails.application.routes.draw do
     put '/update_password', to: 'users#update_password'
 
     resources :transactions do
-      collection do
-        get :history
+      member do
+        get  'history', to: 'transactions#history'
       end
     end
-    resources :users
+    resources :users do
+      member do
+        get 'point', to: 'users#point'
+      end
+    end
     resources :products
     resources :invitations
     resources :notivications
