@@ -81,6 +81,18 @@ class Note < ApplicationRecord
   #   subject
   # end
 
+  def self.teamates(current_user, note)
+    @find_column = Column.find_by(id: note.column_id)
+    @find_team = Team.find_by(id: @find_column.team_id)
+    @find_user_team = UserTeam.find_by(user: current_user, team: @find_team).present?
+  end
+
+  def team_status
+    if self.column_id.present?
+      self.note_type = 'team'
+    end
+  end
+
   def event_date_valid?
     return unless event_date.present?
 
