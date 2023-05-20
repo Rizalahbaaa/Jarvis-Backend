@@ -23,7 +23,7 @@ class Note < ApplicationRecord
   scope :owner, -> (user_id){ join_usernote.where(user_note: { role: 'owner', user_id: user_id }).where.not(note_type: 'team')}
   scope :upload_done, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'have_upload' }).where(note_type: 'collaboration')}
   scope :not_upload, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'not_upload_yet' }).where(note_type: 'collaboration')}
-  scope :late, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'late' })}
+  scope :late, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'late' }).where(note_type: 'collaboration')}
   scope :completed_note, ->{ where(status: 'completed').where.not(note_type: 'team') }
 
   enum note_type: {
@@ -36,6 +36,7 @@ class Note < ApplicationRecord
     in_progress: 0,
     completed: 1
   }
+  before_create :team_status
 
 
   def self.filter_and_sort(params, current_user)
@@ -70,6 +71,17 @@ class Note < ApplicationRecord
     return notes
   end
 
+  def self.teamates(current_user, note)
+    @find_column = Column.find_by(id: note.column_id)
+    @find_team = Team.find_by(id: @find_column.team_id)
+    @find_user_team = UserTeam.find_by(user: current_user, team: @find_team).present?
+  end
+
+  def team_status
+    if self.column_id.present?
+      self.note_type = 'team'
+    end
+  end
 
   # def name
   #   subject
