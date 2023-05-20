@@ -19,7 +19,7 @@ class Api::UserTeamsController < ApplicationController
   end
 
   def accept_invitation
-    @user_team = UserTeam.find_by(teaminvitation_token: params[:tteaminvitation_token])
+    @user_team = UserTeam.find_by(teaminvitation_token: params[:teaminvitation_token])
 
     if @user_team && @user_team.invitation_valid?
       @user_team.accept_invitation!
@@ -41,10 +41,11 @@ class Api::UserTeamsController < ApplicationController
   end
 
   def destroy
-    if @userteam.destroy
-      render json: { message: 'success to delete UserTeams' }, status: 200
+    @user_team = UserTeam.find_by_id(params[:id])
+    if @user_team.destroy
+      render json: { success: true, status: 200, message: 'user_team deleted successfully' }, status: 200
     else
-      render json: { message: 'failed to delete UserTeams' }, status: 422
+      render json: { success: true, status: 422, message: 'user_team deleted unsuccessfully' }, status: 422
     end
   end
 

@@ -70,8 +70,9 @@ class User < ApplicationRecord
 
   def point
     earned = Transaction.where(user_id: self.id, point_type: 'earned' ).sum(:point) 
-    redeemed = Transaction.where(user_id: self.id, point_type: 'redeemed' ).sum(:point) 
-    earned - redeemed
+    redeemed = Transaction.where(user_id: self.id, point_type: 'redeemed' ).sum(:point)
+    additional_points = 300 # Jumlah poin tambahan yang ingin ditambahkan setelah pendaftaran
+    earned - redeemed + additional_points
   end
 
   def username_format
@@ -114,23 +115,32 @@ class User < ApplicationRecord
     username
   end
 
-  # def reset_password!(password)
-  #   validate :password
-  #   self.password = password
-  #   save!
-  # end
-
   def password_token_valid?
     (password_reset_sent_at + 1.hours) > Time.now.utc
   end
 
   rails_admin do
-    field :id
+  field :id
+  field :username
+  field :email
+  field :email_confirmed
+  list do
+    field :point
+  end
+  show do
+    field :point
+  end
+  edit do
     field :username
     field :email
+    field :phone
+    field :job
+    field :photo
+    field :email_confirmed
     field :point
     field :transactions
   end
+end
   private
 
   def confirmation_token
