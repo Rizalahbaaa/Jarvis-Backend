@@ -161,6 +161,6 @@ class Api::TeamsController < ApplicationController
   end
 
   def team_params
-    params.require(:team).permit(:title)
+    params.permit(:title, :photo)
   end
 end
