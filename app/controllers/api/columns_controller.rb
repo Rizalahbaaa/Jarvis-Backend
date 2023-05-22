@@ -4,18 +4,18 @@ class Api::ColumnsController < ApplicationController
   def index
     # binding.pry
     @column = Column.all
-    render json: { success: true, status: 200, data: @column.map {|column| column.new_attributes} }
+    render json: { success: true, status: 200, data: @column.map {|column| column.new_attr} }
   end
 
   def show
-    render json: @column.new_attributes
+    render json: @column.new_attr
   end
 
   def create
     @column = Column.new(column_params)
 
     if @column.save
-      render json: { success: true, status: 201, message: 'create column successfully', data: @column.new_attributes },
+      render json: { success: true, status: 201, message: 'create column successfully', data: @column.new_attr },
              status: 201
     else
       render json: { success: false, status: 422, message: 'create column unsuccessfully', data: @column.errors },
@@ -25,7 +25,7 @@ class Api::ColumnsController < ApplicationController
 
   def update
     if @column.update(column_params)
-      render json: { success: true, status: 200, message: 'column updated successfully', data: @column.new_attributes }, status: 200
+      render json: { success: true, status: 200, message: 'column updated successfully', data: @column.new_attr }, status: 200
     else
       render json: { success: false, status: 422, message: @column.errors }, status: 422
     end

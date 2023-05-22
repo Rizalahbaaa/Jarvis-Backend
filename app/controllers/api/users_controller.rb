@@ -83,6 +83,20 @@ class Api::UsersController < ApplicationController
     end
   end
 
+  def resend_verification
+    user = User.find_by(email: params[:email])
+
+    if user.present? && user.email_confirmed.nil?
+      puts 'SENDING EMAIL.....'
+      UserMailer.resend_email_verification(user).deliver_now
+      render json: {status: 200, message: 'please confirm your email'}, status: 200
+    elsif user.present? && user.email_confirmed == true
+      render json: {status: 200, message: 'your email has been verified'}, status: 200
+    else
+      render json: {status: 404, message: 'email not found'}, status: 404
+    end
+  end
+
   def forgot
     return render json: { error: 'email not present' } if params[:email].blank?
 
@@ -124,7 +138,6 @@ class Api::UsersController < ApplicationController
       render json: { status: '404', error: 'Link not valid or expired. Try generating a new link.' }, status: 404
     end
   end
-  
 
   def update_password
     unless @user.authenticate(params[:current_password])
@@ -138,7 +151,11 @@ class Api::UsersController < ApplicationController
       render json: { success: false, message: 'Failed to update password', status: 422, errors: @user.errors.full_messages }
     end
   end
-
+  def point
+    user = User.find_by(id: params[:id])
+    point = user.point
+    render json: { success: true, status: 200, message: 'User point retrieved successfully', data: { user_id: user.id, point: point } }
+  end
   private
 
   def set_user
