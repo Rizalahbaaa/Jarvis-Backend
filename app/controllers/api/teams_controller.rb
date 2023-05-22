@@ -88,7 +88,7 @@ class Api::TeamsController < ApplicationController
                status: 422
       end
     else
-      render json: { success: false, message: 'sorry, only owner can update note', status: 422 },
+      render json: { success: false, message: 'sorry, only owner can update team', status: 422 },
              status: 422
     end
   end
@@ -119,7 +119,7 @@ class Api::TeamsController < ApplicationController
           end
         end
       else
-        render json: { success: false, message: 'sorry, only owner can update note', status: 422, data: @find_user_team },
+        render json: { success: false, message: 'sorry, only owner can update team', status: 422, data: @find_user_team },
               status: 422
       end
     end
@@ -142,13 +142,13 @@ class Api::TeamsController < ApplicationController
     @user_team = UserTeam.find_by(user: @current_user, team: @team)
     # binding.pry
     if @user_team.team_role != 'owner'
-      render json: { success: false, message: 'sorry, only owner can delete note', status: 422 },
+      render json: { success: false, message: 'sorry, only owner can delete team', status: 422 },
              status: 422
     elsif @user_team.team_role == 'owner' && @user_team.user_id != @current_user && @team.destroy
-      render json: { success: true, message: 'note delete successfully', status: 200 },
+      render json: { success: true, message: 'team delete successfully', status: 200 },
              status: 200
     else
-      render json: { success: false, message: 'note delete unsuccessfully', status: 422, data: @team.errors },
+      render json: { success: false, message: 'team delete unsuccessfully', status: 422, data: @team.errors },
              status: 422
     end
   end
