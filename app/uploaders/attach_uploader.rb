@@ -11,19 +11,19 @@ class AttachUploader < CarrierWave::Uploader::Base
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def public_id
-    "public/file_notes/#{model.user_note_id}/#{secure_token}/#{filename}"
+    "public/files/#{filename}"
   end
 
   def filename
-    "#{secure_token}_#{original_filename}" if original_filename.present?
+    "#{original_filename}" if original_filename.present?
   end
 
   protected
 
-  def secure_token
-    var = :"@#{mounted_as}_secure_token"
-    model.instance_variable_get(var) or model.instance_variable_set(var, SecureRandom.uuid)
-  end
+  # def secure_token
+  #   var = :"@#{mounted_as}_secure_token"
+  #   model.instance_variable_get(var) or model.instance_variable_set(var, SecureRandom.uuid)
+  # end
 
   def extension_allowlist
     %w[jpg jpeg png pdf]
