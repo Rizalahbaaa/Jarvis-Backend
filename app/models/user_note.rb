@@ -54,13 +54,21 @@ class UserNote < ApplicationRecord
     save
   end
 
-  def note_history
+  def note_history(note)
     sort = UserNote.order('updated_at ASC')
-    sort.user_note_data
+    histories = sort.user_note_data
+
+    owner = UserNote.find_by(role: 'owner', note_id: note.id)
+    {
+      owner: owner.user.new_attr,
+      histories: histories.map{|h| h.new_attr},
+      note_created_at: note.created_at,
+      note_done_at: note.updated_at,
+      note_status: note.status
+    }
   end
 
   def self.user_note_data
-    owner = User.find_by_id(UserNote.find_by(role: "owner").try("user_id"))
     member = []
     UserNote.where(role: 'member', status: 'have_upload').each do |m|
       member.push(User.find_by(id: m.user_id))

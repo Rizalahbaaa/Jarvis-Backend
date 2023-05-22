@@ -27,9 +27,10 @@ class Api::UsersNotesController < ApplicationController
   end
 
   def history
-    note = UserNote.where(note: params[:note_id])
-    if note
-      render json: note.note_history.map{|u| u.new_attr}, status: 200
+    user_note = UserNote.find_by(note: params[:note_id])
+    note = Note.find_by(id: params[:note_id])
+    if user_note
+      render json: {status: 200, data: user_note.note_history(note)},  status: 200
     else
       render json: note.errros, status: 400
     end
