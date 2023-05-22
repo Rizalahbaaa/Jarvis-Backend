@@ -69,7 +69,8 @@ class Api::NotesController < ApplicationController
     end
 
     @find_user_note = UserNote.find_by(user: @current_user, note: @note)
-    if @find_user_note.role == 'owner' && @find_user_note.user_id != @current_user
+    if (@find_user_note.role == 'owner' && @find_user_note.user_id != @current_user) || 
+      (!@note.column_id.nil? && Note.teamates(@current_user, @note))
       @emails = params[:email]
 
       if @emails.present?
