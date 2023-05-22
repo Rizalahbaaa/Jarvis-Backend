@@ -9,6 +9,21 @@ class UserNote < ApplicationRecord
 
   enum :noteinvitation_status, { Pending: 0, Accepted: 1, Rejected: 2 }
 
+  enum role: {
+    owner: 0,
+    member: 1
+  }
+  
+  enum status: {
+    not_upload_yet: 0,
+    have_upload: 1,
+    complete: 2,
+    late: 3
+  }
+  def completed?
+    note.nil? ? status == 'completed' : (status == 'completed' && note.status == 'completed')
+  end
+
   def invitation_valid?
     noteinvitation_status == 'Pending' && noteinvitation_expired > Time.now
   end
@@ -28,11 +43,11 @@ class UserNote < ApplicationRecord
     late_file = attaches.where('self.created_at > ?', note.event_date)
 
     self.status = if ontime_file
-                    'completed'
+                    'have_upload'
                   elsif late_file
                     'late'
                   else
-                    'on_progress'
+                    'not_upload_yet'
                   end
     save!
   end
@@ -42,15 +57,15 @@ class UserNote < ApplicationRecord
     save
   end
 
-  def self.sort_history
-    asc_sort = UserNote.order('updated_at ASC')
-    asc_sort.user_note_data
+  def self.note_history
+    sort = UserNote.order('updated_at ASC')
+    sort.user_note_data
   end
 
   def self.user_note_data
     owner = User.find_by_id(UserNote.find_by(role: "owner").try("user_id"))
     member = []
-    UserNote.where(role: "member").each do |m|
+    UserNote.where(role: 'member', status: 'have_upload').each do |m|
       member.push(User.find_by(id: m.user_id))
     end
   end
@@ -65,16 +80,6 @@ class UserNote < ApplicationRecord
     attaches.map(&:path)
   end
 
-  enum role: {
-    owner: 0,
-    member: 1
-  }
-
-  enum status: {
-    on_progress: 0,
-    completed: 1,
-    late: 2
-  }
 
   def new_attr
     {

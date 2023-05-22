@@ -15,7 +15,7 @@ class Api::UsersNotesController < ApplicationController
     @user_notes = UserNote.where(status: "on_progress")
     render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
   end
-  
+
   def completed
     @user_notes = UserNote.where(status: "completed")
     render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
@@ -28,10 +28,8 @@ class Api::UsersNotesController < ApplicationController
 
   def history
     note = UserNote.where(note: params[:note_id])
-    # binding.pry
-    if note.sort_history
-
-      render json: note.map{|u| u.new_attr}, status: 200
+    if note
+      render json: note.note_history.map{|u| u.new_attr}, status: 200
     else
       render json: note.errros, status: 400
     end

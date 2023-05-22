@@ -49,6 +49,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_15_075822) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "photo_product"
+    t.boolean "status"
   end
 
   create_table "ringtones", force: :cascade do |t|

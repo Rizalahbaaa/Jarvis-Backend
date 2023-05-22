@@ -3,11 +3,11 @@ class Api::NotesController < ApplicationController
   before_action :set_note, only: %i[update destroy show]
 
   def index
-    notes = Note.ownersfilter(current_user)
+    notes = Note.filter_and_sort(params, current_user)
     if notes.present?
       render json: { success: true, message: 'data found', status: 200, data: notes.map do |owner|
                                                                                 owner.new_attr
-                                                                              end }
+     end }
     else
       render json: { success: true, message: 'data not found', status: 404 }, status: 404
     end
@@ -24,7 +24,6 @@ class Api::NotesController < ApplicationController
       @emails = params[:email]
       if @emails.present?
         collab_mailer
-        return
       end
       render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
              status: 201
@@ -62,8 +61,6 @@ class Api::NotesController < ApplicationController
         render json: { status: 422, message: "#{email} already invited" }, status: 422
       end
     end
-    render json: { status: 200, message: 'email send successfully' }, status: 200
-    return
   end
 
   def update
@@ -77,10 +74,12 @@ class Api::NotesController < ApplicationController
 
       if @emails.present?
         collab_mailer
-        return
+        return render json: { status: 200, message: 'email send successfully' }, status: 200
+        # return
       end
 
       if @note.update(note_params)
+        @find_user_note.update(updated_at: Time.now)
         render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr },
                status: 200
       else

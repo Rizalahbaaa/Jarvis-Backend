@@ -4,14 +4,14 @@ class Api::ProductsController < ApplicationController
         @products = Product.all
         render json: { success: true, message: 'product found', status: 200, data: @products.map { |product| product.new_attr} }
     end
-    def show 
-        render json: @product.new_attr
+    def show
+      render json: @product.new_attr
     end
-
+   
     def create
       @product = Product.new(product_params)
       if @product.save
-        render json: { success: true, status: 201,message: 'create product successfully', data: @product.new_attr }, status: 201
+        render json: { success: true, status: 201, message: 'create product successfully', data: @product.new_attr.merge(redeemed: @product.redeemed_status) }, status: 201
       else
         render json: { success: false, status: 422, message: 'create account unsuccessfully', data: @product.errors }, status: 422
       end
@@ -43,6 +43,6 @@ class Api::ProductsController < ApplicationController
   end
 
     def product_params
-    params.require(:product).permit(:name, :reward, :terms, :price)
+    params.require(:product).permit(:name, :reward, :terms, :price, :photo_product,:status)
   end
 end

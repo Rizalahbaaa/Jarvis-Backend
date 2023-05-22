@@ -15,8 +15,17 @@ class Note < ApplicationRecord
 
   scope :join_usernote, -> { joins(:user_note) }
   # scope :notefunc, -> (note_id) { join_usernote.where(user_note: { note_id: note_id })}
-  # scope :owners?, -> (user_id){ join_usernote.where(user_note: { role: 'owner', user_id: user_id })}
-  scope :ownersfilter, ->(user_id) { join_usernote.where(user_note: { user_id: }) }
+
+# filters & sorts
+  # scope :noteall, -> (user_id){ join_usernote.where(user_note: { user_id: user_id}).where.not(note_type: 'team')}
+  scope :noteall, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where.not(note_type: 'team')}
+  scope :passed_note, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where('event_date < ?', Date.today).where.not(note_type: 'team') }
+  scope :upcoming_note, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where('event_date >= ?', Date.today).where.not(note_type: 'team') }
+  scope :owner, -> (user_id){ join_usernote.where(user_note: { role: 'owner', user_id: user_id }).where.not(note_type: 'team')}
+  scope :upload_done, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'have_upload' }).where(note_type: 'collaboration')}
+  scope :not_upload, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'not_upload_yet' }).where(note_type: 'collaboration')}
+  scope :late, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'late' })}
+  scope :completed_note, ->{ where(status: 'completed').where.not(note_type: 'team') }
 
   enum note_type: {
     personal: 0,
@@ -28,6 +37,44 @@ class Note < ApplicationRecord
     in_progress: 0,
     completed: 1
   }
+
+
+  def self.filter_and_sort(params, current_user)
+
+    notes = Note.noteall(current_user)
+
+    if params[:note] == 'passed'
+      notes = Note.passed_note(current_user)
+    end
+    if params[:note] == 'upcoming'
+      notes = Note.upcoming_note(current_user)
+    end 
+    if params[:owner] == 'yes'
+      notes = Note.owner(current_user)
+    end
+    if params[:up] == 'no'
+      notes = Note.not_upload(current_user)
+    end
+    if params[:up] == 'yes'
+      notes = Note.upload_done(current_user)
+    end
+    if params[:late] == 'yes'
+      notes = Note.late(current_user)
+    end
+    if params[:completed] == 'yes'
+      notes = Note.completed_note
+    end
+
+    sort_direction = params[:sort] == 'desc' ? 'desc' : 'asc'
+    notes = notes.order(event_date: sort_direction)
+
+    return notes
+  end
+
+  def notice
+    puts 'SENDING REMINDER.....'
+    ReminderMailer.my_reminder(email).deliver_now
+  end
 
   # def name
   #   subject
@@ -42,7 +89,7 @@ class Note < ApplicationRecord
   def reminder_date_valid?
     return unless reminder.present?
 
-    validates_comparison_of :reminder, greater_than: Time.now, less_than: event_date - 30.minutes
+    validates_comparison_of :reminder, greater_than: Time.now, less_than: event_date
   end
 
   def owner_collab
