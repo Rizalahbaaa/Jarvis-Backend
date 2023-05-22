@@ -15,18 +15,21 @@ class Api::AttachesController < ApplicationController
     user_note = UserNote.find_by(user: current_user, note: params[:note_id])
     files = params[:path]
     attachment = []
-    files.each do |p|
-      attach = Attach.create(path: p, user_note_id: user_note.id)
-      attachment << attach
+    if files.present?
+      files.each do |p|
+        attach = Attach.create(path: p, user_note_id: user_note.id)
+        attachment << attach
+      end
+      if attachment.present? && user_note.update_status && user_note.update_time
+        render json: { success: true, message: 'file uploaded successfully', status: 201, data: attachment.map{|a| a.new_attr}},
+               status: 201
+      else
+        render json: { success: false, message: 'file uploaded unsuccessfully', status: 422, data: attachment.errors },
+                status: 422
+      end
+      return
     end
-
-    if attachment.present? && user_note.update_status && user_note.update_time
-      render json: { success: true, message: 'file uploaded successfully', status: 201, data: attachment.map{|a| a.new_attr}},
-             status: 201
-    else
-      render json: { success: false, message: 'file uploaded unsuccessfully', status: 422, data: attachment.errors },
-             status: 422
-    end
+    render json: {status: 400, success: false, message: 'no files to upload'}, status: 400
   end
 
   def show
