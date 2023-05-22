@@ -54,7 +54,7 @@ class UserNote < ApplicationRecord
     save
   end
 
-  def self.note_history
+  def note_history
     sort = UserNote.order('updated_at ASC')
     sort.user_note_data
   end
