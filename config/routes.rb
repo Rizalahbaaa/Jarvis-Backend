@@ -38,7 +38,12 @@ Rails.application.routes.draw do
     resources :ringtones
     resources :team_notes
     resources :users
-    resources :teams
+    resources :teams do
+      member do
+        post :kick_member
+        post :leave_member
+      end
+    end
     resources :columns
     resources :notes
     resources :users_notes

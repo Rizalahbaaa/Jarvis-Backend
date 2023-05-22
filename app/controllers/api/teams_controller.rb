@@ -1,5 +1,5 @@
 class Api::TeamsController < ApplicationController
-  before_action :set_team, only: %i[show update destroy]
+  before_action :set_team, only: %i[show update destroy kick_member leave_member]
   before_action :authenticate_request
 
   def index
@@ -8,7 +8,8 @@ class Api::TeamsController < ApplicationController
   end
 
   def show
-    render json: @team.new_attr
+    @find_user_team = UserTeam.find_by(user: @current_user, team: @team)
+    render json: {message: @team.new_attr, data: @find_user_team}
   end
 
   # def create
@@ -76,11 +77,6 @@ class Api::TeamsController < ApplicationController
     if @find_user_team.team_role == 'owner' && @find_user_team.user_id != @current_user
       @emails = params[:email]
 
-      # if @emails.present?
-      #   team_mailer
-      #   return
-      # end
-
       if @team.update(team_params)
         
         team_mailer(params[:email]) if params[:email].present?
@@ -95,7 +91,52 @@ class Api::TeamsController < ApplicationController
       render json: { success: false, message: 'sorry, only owner can update note', status: 422 },
              status: 422
     end
-  end  
+  end
+  
+  def kick_member
+    member_emails = params[:email]
+    members = User.where(email: member_emails)
+  
+    if members.empty?
+      render json: { success: false, message: 'Members not found', status: 404 }, status: 404
+    elsif members.include?(@current_user)
+      render json: { success: false, message: 'You cannot kick yourself', status: 422 }, status: 422
+    else
+      # Pastikan hanya owner tim yang dapat melakukan kick
+      @team = Team.find_by_id(params[:id])
+      @find_user_team = UserTeam.find_by(user: @current_user, team: @team, team_role: 'owner').present?
+      if @find_user_team == true
+        # Cek apakah anggota tersebut adalah anggota dari tim
+        user_teams = @team.user_team.where(user: members)
+        if user_teams.empty?
+          render json: { success: false, message: 'Members are not part of the team', status: 422 }, status: 422
+        else
+          # Kick member dari tim
+          if user_teams.destroy_all
+            render json: { success: true, message: 'Members kicked successfully', status: 200 }, status: 200
+          else
+            render json: { success: false, message: 'Failed to kick members', status: 500 }, status: 500
+          end
+        end
+      else
+        render json: { success: false, message: 'sorry, only owner can update note', status: 422, data: @find_user_team },
+              status: 422
+      end
+    end
+  end
+  
+  def leave_member
+    @user_team = UserTeam.find_by(user: @current_user, team: @team)
+    if @user_team.team_role == 'owner'
+      render json: { success: false, message: 'The team owner cannot leave the team', status: 422 }, status: 422
+    else
+      if @user_team.destroy
+        render json: { success: true, message: 'You have left the team successfully', status: 200 }, status: 200
+      else
+        render json: { success: false, message: 'Failed to leave the team', status: 500 }, status: 500
+      end
+    end
+  end
 
   def destroy
     @user_team = UserTeam.find_by(user: @current_user, team: @team)
