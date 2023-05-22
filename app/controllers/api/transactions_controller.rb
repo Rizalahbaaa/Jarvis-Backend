@@ -94,10 +94,7 @@ class Api::TransactionsController < ApplicationController
         render json: { status: 404, message: 'transaction not found' }, status: 404
       end
 
-      def transaction_params
-        if params[:transaction][:point_type] == 'earned'
-          params.require(:transaction).permit(:user_id, :user_note_id, :transaction_status, :point, :point_type)
-        else
+      def transaction_params        
           params.require(:transaction).permit(:product_id, :user_id, :user_note_id, :transaction_status, :point, :point_type)
-        end
-      end end
+       end
+      end

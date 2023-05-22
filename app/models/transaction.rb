@@ -18,9 +18,8 @@ class Transaction < ApplicationRecord
       earned_points = Transaction.where(user_id: self.user_id, point_type: 'earned').sum(:point)
       redeemed_points = Transaction.where(user_id: self.user_id, point_type: 'redeemed').sum(:point)
     
-      {
+      attributes = {
         id: self.id,
-        product_id: self.product_id,
         user_id: self.user_id,
         user_note_id: self.user_note_id,
         transaction_status: self.transaction_status,
@@ -29,8 +28,11 @@ class Transaction < ApplicationRecord
         earned: earned_points,
         redeemed: redeemed_points
       }
+    
+      attributes.delete(:product_id) if self.point_type == 'earned'
+      attributes.delete(:user_note_id) if self.point_type == 'redeemed'
+      attributes
     end
-
     def name
         "#{self.point_type} #{self.point}"
     end
