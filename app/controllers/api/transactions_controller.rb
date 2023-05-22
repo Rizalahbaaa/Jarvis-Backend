@@ -5,8 +5,13 @@ class Api::TransactionsController < ApplicationController
         render json: @transactions.map { |transaction| transaction.new_attr }
       end
       def create
-        user = current_user
-      
+        if transaction_params[:user_note_id].present?
+          userm = UserNote.find_by(id: transaction_params[:user_note_id])
+          userd = User.find_by(id: userm.user_id)
+          user = userd
+          else
+            user = current_user
+          end    
         if user.nil?
           render json: { success: false, status: 422, message: 'Invalid user' }, status: 422
           return
@@ -40,8 +45,12 @@ class Api::TransactionsController < ApplicationController
             return
           end
           earned_point = 100 # Jumlah poin yang ingin ditambahkan jika user menyelesaikan note
-          @transaction = user.transactions.build(transaction_params.merge({ point: earned_point }))
-        else
+          if user_note.role == 'member' 
+            @transaction = user.transactions.build(transaction_params.merge({ point: earned_point }))
+          else
+            @transaction = user.transactions.build(transaction_params.merge({ point: 0 }))
+          end            
+         else
           render json: { success: false, status: 422, message: 'Invalid point_type' }, status: 422
           return
         end
@@ -60,6 +69,8 @@ class Api::TransactionsController < ApplicationController
           end
         end
       end
+      
+
       
       def history
         user = User.find_by(id: params[:id])
