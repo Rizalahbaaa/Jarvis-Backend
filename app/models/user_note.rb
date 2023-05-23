@@ -13,13 +13,16 @@ class UserNote < ApplicationRecord
     owner: 0,
     member: 1
   }
-
+  
   enum status: {
     not_upload_yet: 0,
     have_upload: 1,
     complete: 2,
     late: 3
   }
+  def completed?
+    note.nil? ? status == 'completed' : (status == 'completed' && note.status == 'completed')
+  end
 
   def invitation_valid?
     noteinvitation_status == 'Pending' && noteinvitation_expired > Time.now

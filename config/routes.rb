@@ -31,11 +31,15 @@ Rails.application.routes.draw do
     post '/reminder', to: 'notes#reminder'
 
     resources :transactions do
-      collection do
-        get :history
+      member do
+        get  'history', to: 'transactions#history'
       end
     end
-    resources :users
+    resources :users do
+      member do
+        get 'point', to: 'users#point'
+      end
+    end
     resources :products
     resources :invitations
     resources :notivications
