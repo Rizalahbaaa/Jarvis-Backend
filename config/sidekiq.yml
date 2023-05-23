@@ -1,0 +1,14 @@
+# development:
+#   :concurrency: 5
+
+# production:
+#   :concurrency: 10
+
+:scheduler:
+  :schedule:
+    reminder_work:
+      cron: '* * * * * Asia/Jakarta' # Runs once per minute
+      # dynamic: true
+      class: ReminderWorker
+      queue: 'default'
+ 
