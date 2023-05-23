@@ -14,4 +14,3 @@ class Attach < ApplicationRecord
     }
   end
 end
-
