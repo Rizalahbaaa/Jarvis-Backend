@@ -1,9 +1,11 @@
 class Team < ApplicationRecord
+  mount_uploader :photo, TeamUploader
   has_many :user_team
   has_many :user, through: :user_team, source: :user, dependent: :destroy
   has_many :column
 
   validates :title, presence: {message: "can't be blank"}, length: { maximum: 100 }
+  validates :photo, presence: false
 
   scope :join_userteam, -> { joins(:user_team) }
   scope :teamfunc, -> (team_id) { join_userteam.where(user_team: { team_id: team_id })}
@@ -23,6 +25,7 @@ class Team < ApplicationRecord
     {
       id:,
       title:,
+      photo: self.photo.url,
       owner: team_owner.map{ |owner| owner.new_attr},
       participant: accepted_member.map{ |accept_user| accept_user.new_attr}
     }
