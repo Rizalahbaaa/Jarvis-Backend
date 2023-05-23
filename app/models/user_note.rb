@@ -17,7 +17,7 @@ class UserNote < ApplicationRecord
   enum status: {
     not_upload_yet: 0,
     have_upload: 1,
-    complete: 2,
+    completed: 2,
     late: 3
   }
   def completed?
