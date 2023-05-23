@@ -107,6 +107,23 @@ class Api::NotesController < ApplicationController
     end
   end
 
+  def reminder
+    user = User.find_by(email: params[:email])
+    note = Note.find_by(id: params[:note_id])
+
+    if note.present?
+      puts 'SEND REMINDER....'
+      ReminderMailer.my_reminder(user, note).deliver_now
+      render json: {status: 200, message: 'reminder sent via email'}, status: 200
+    else
+      render json: { status: 404, message: 'note not found' }, status: 404
+    end
+    # users.each do |user|
+      # ReminderWorker.perform_async(user, note)
+    # end
+    # emails = User
+  end
+
   private
 
   def set_invite_token

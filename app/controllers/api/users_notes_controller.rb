@@ -37,7 +37,7 @@ class Api::UsersNotesController < ApplicationController
   end
 
   # def create
-  #   # Cari user dengan email yang sesuai
+  #   # Cari user dengan email yaattachmentng sesuai
   #   @emails = Array(params[:email])
   #   @user_ids = []
   #   @errors = []

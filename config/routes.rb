@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     get '/search_email', to: 'notes#email_valid'
     get '/history', to: 'users_notes#history'
     put '/update_password', to: 'users#update_password'
+    post '/reminder', to: 'notes#reminder'
 
     resources :transactions do
       collection do

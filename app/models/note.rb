@@ -71,10 +71,11 @@ class Note < ApplicationRecord
     return notes
   end
 
-  def notice
-    puts 'SENDING REMINDER.....'
-    ReminderMailer.my_reminder(email).deliver_now
+  def self.ref_note(current_user)
+    # remind = Note.where('reminder = ?', Time.now)
+    my_note = Note.joins(:user_note).where('user_id = ? AND note_id = ?', current_user.id, self.id)
   end
+  
 
   # def name
   #   subject
