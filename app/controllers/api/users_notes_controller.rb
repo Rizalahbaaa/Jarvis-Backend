@@ -36,70 +36,6 @@ class Api::UsersNotesController < ApplicationController
     end
   end
 
-  # def create
-  #   # Cari user dengan email yaattachmentng sesuai
-  #   @emails = Array(params[:email])
-  #   @user_ids = []
-  #   @errors = []
-  #   @existing_user_ids = UserNote.where(note_id: params[:note_id], noteinvitation_status: 1).pluck(:user_id)
-
-  #   @emails.each do |email|
-  #     @user = User.find_by(email: email.strip) #variable buat cari email | strip untuk
-  
-  #     if @user #ngejalanin fungsi variable @usesr
-  #       if @existing_user_ids.include?(@user.id)
-  #         # User sudah terdaftar dalam tim, tambahkan pesan error ke dalam array
-  #         @errors << "#{email} sudah terdaftar dalam tim"
-  #       else
-  #         # User belum terdaftar dalam tim, tambahkan user_id ke dalam array
-  #         @user_ids << @user.id
-  #       end
-  #     else
-  #       # Tambahkan pesan kesalahan ke dalam array jika user tidak ditemukan
-  #       @errors << "#{email} belum terdaftar"
-  #     end
-  #   end
-
-  #   if @errors.present?
-  #     render json: { status: 422, message: @errors.join(', ') }, status: :unprocessable_entity
-  #     return
-  #   end
-
-  #   if @errors.empty?
-  #     # Buat data baru pada tabel User_Tim untuk setiap user_id
-  #     @user_notes = []
-  #     @user_ids.each do |user_id|
-  #       usernote_params_hash = usernote_params(user_id, params[:note_id])
-  #       @user_note = UserNote.new(usernote_params_hash)
-  
-  #       if @user_note.save
-  #         # Kirim email undangan ke user
-  #         InvitationMailer.invitation_email(@user_note).deliver_now
-  #         @user_notes << @user_note
-  #       else
-  #         errors = @user_note.errors.full_messages.join(", ")
-  #         render json: { message: "Gagal", errors: @user_note.errors.full_messages }
-  #         return
-  #       end
-  #     end
-  #     render json: { status: 201, message: "Undangan Terkirim"}, status: 201
-  #   else
-  #     # Kirim pesan kesalahan jika ada email yang belum terdaftar
-  #     render json: { status: 404, message: @errors.join(', ') }, status: :not_found
-  #   end
-  # end
-
-  # def usernote_params(user_id, note_id)
-  #   {
-  #     user_id: user_id,
-  #     note_id: note_id,
-  #     role: 1,
-  #     noteinvitation_token: SecureRandom.hex(20),
-  #     noteinvitation_status: 0,
-  #     noteinvitation_expired: Time.now + 1.days
-  #   }
-  # end
-
   def accept_invitation
     @user_note = UserNote.find_by(noteinvitation_token: params[:noteinvitation_token])
 
@@ -143,7 +79,6 @@ class Api::UsersNotesController < ApplicationController
 
     render json: { status: 404, message: 'note not found' }, status: 404
   end
-
 
   # def noteinvite_params
   #   params.require(:users_note).permit(:note_id, :user_id, :noteinvitation_token)
