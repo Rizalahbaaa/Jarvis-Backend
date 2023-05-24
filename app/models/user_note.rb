@@ -13,11 +13,11 @@ class UserNote < ApplicationRecord
     owner: 0,
     member: 1
   }
-  
+
   enum status: {
     not_upload_yet: 0,
     have_upload: 1,
-    complete: 2,
+    completed: 2,
     late: 3
   }
   def completed?
@@ -57,20 +57,28 @@ class UserNote < ApplicationRecord
     save
   end
 
-  def self.note_history
+  def note_history(note)
     sort = UserNote.order('updated_at ASC')
-    sort.user_note_data
+    histories = sort.user_note_data
+
+    owner = UserNote.find_by(role: 'owner', note_id: note.id)
+    {
+      owner: owner.user.new_attr,
+      histories: histories.map{|h| h.new_attr},
+      note_created_at: note.created_at,
+      note_done_at: note.updated_at,
+      note_status: note.status
+    }
   end
 
   def self.user_note_data
-    owner = User.find_by_id(UserNote.find_by(role: "owner").try("user_id"))
     member = []
     UserNote.where(role: 'member', status: 'have_upload').each do |m|
       member.push(User.find_by(id: m.user_id))
     end
   end
 
-  def delete_expired_invitations
+  def self.delete_expired_invitations
     expired_invitations = UserNote.where('teaminvitation_status = ? && teaminvitation_expired < ?',
                                          UserTeam.teaminvitation_statuses[:Pending], Time.now)
     expired_invitations.destroy
