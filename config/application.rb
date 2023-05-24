@@ -30,8 +30,6 @@ module JarvisBackend
     config.time_zone = 'Asia/Jakarta'
     config.active_record.default_timezone = :local
 
-    config.active_job.queue_adapter = :sidekiq
-
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins '*'

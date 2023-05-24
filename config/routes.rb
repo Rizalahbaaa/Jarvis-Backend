@@ -1,7 +1,5 @@
-require 'sidekiq/web'
 Rails.application.routes.draw do
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
-  mount Sidekiq::Web => '/sidekiq'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   namespace :api do
     post '/register', to: 'users#create'
@@ -28,7 +26,6 @@ Rails.application.routes.draw do
     get '/search_email', to: 'notes#email_valid'
     get '/history', to: 'users_notes#history'
     put '/update_password', to: 'users#update_password'
-    post '/reminder', to: 'notes#reminder'
 
     resources :transactions do
       member do
