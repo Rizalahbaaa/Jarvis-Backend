@@ -80,6 +80,9 @@ class UserNote < ApplicationRecord
     attaches.map(&:path)
   end
 
+  def owner_note
+    User.find_by_id(user_note.find_by(role: "owner"))
+  end
 
   def new_attr
     {
@@ -94,4 +97,33 @@ class UserNote < ApplicationRecord
       # invitation_expired: self.noteinvitation_expired
     }
   end
+
+
+  def owner_note
+    UserNote.find_by(note_id: self.note_id, role: "owner")&.user&.username
+  end
+
+  def message_inv
+    'mengirim anda sebuah catatan'
+  end
+
+  BACKEND_DOMAIN = if Rails.env.development?
+    'http://localhost:3000/api'
+  else
+    'https://bantuin.fly.dev/api'
+  end
+
+  def inv_request
+    {
+      id:,
+      from: owner_note,
+      message: message_inv,
+      note: note.subject, 
+      actions: [
+        { action: "accept", url: "#{BACKEND_DOMAIN}/note/inv/accept_invitation/#{self.noteinvitation_token}" },
+        { action: "reject", url: "#{BACKEND_DOMAIN}/note/inv/decline_invitation/#{self.noteinvitation_token}" }
+      ]
+    }
+  end
+
 end
