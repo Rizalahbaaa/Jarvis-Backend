@@ -75,6 +75,14 @@ class User < ApplicationRecord
     earned - redeemed + additional_points
   end
 
+  # def max_note
+  #   product_note = Transaction.where(user_id: self.id, product_id: 13).sum(:max_note)
+  #   used_note = UserNote.where(user_id: self.id, role: 'owner').count
+  #   additional_note = 3
+  #   additional_note - used_note + product_note
+  # end
+  
+
   def username_format
     return unless username.present?
 
