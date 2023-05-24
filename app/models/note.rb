@@ -76,7 +76,21 @@ class Note < ApplicationRecord
     # remind = Note.where('reminder = ?', Time.now)
     my_note = Note.joins(:user_note).where('user_id = ? AND note_id = ?', current_user.id, self.id)
   end
-  
+
+  def self.send_reminder
+    notes = Note.where('reminder = ?', Time.now.strftime('%F %I:%M'))
+    users = UserNote.where(note: notes)
+    users.each do |u|
+      if notes.present?
+        notes.each do |n|
+          ReminderMailer.my_reminder(u.user.email, n).deliver_now
+          puts 'SENDING REMINDER...'
+        end
+      else
+        puts 'NO EMAIL SEND :('
+      end
+    end
+  end
 
   # def name
   #   subject

@@ -13,7 +13,7 @@ class UserNote < ApplicationRecord
     owner: 0,
     member: 1
   }
-  
+
   enum status: {
     not_upload_yet: 0,
     have_upload: 1,
@@ -78,7 +78,7 @@ class UserNote < ApplicationRecord
     end
   end
 
-  def delete_expired_invitations
+  def self.delete_expired_invitations
     expired_invitations = UserNote.where('teaminvitation_status = ? && teaminvitation_expired < ?',
                                          UserTeam.teaminvitation_statuses[:Pending], Time.now)
     expired_invitations.destroy
