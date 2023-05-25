@@ -14,7 +14,12 @@ class Api::NotesController < ApplicationController
   end
 
   def show
-    render json: { success: true, status: 200, data: @note.new_attr }, status: 200
+    @find_user_note = UserNote.find_by(user: current_user, note: @note)
+    if @find_user_note.role == 'owner' && @find_user_note.user_id != @current_user
+      render json: { success: true, status: 200, data: @note.new_attr }, status: 200
+    elsif @find_user_note.role == 'member' && @find_user_note.user_id != @current_user
+      render json: { success: true, status: 200, data: @note.member_side(@find_user_note)}, status: 200
+    end
   end
 
   def create

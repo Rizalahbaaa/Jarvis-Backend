@@ -151,4 +151,23 @@ class Note < ApplicationRecord
       column: column&.title
     }
   end
+
+  def member_side(current_user_note)
+    attach_current = Attach.where(user_note: current_user_note).map(&:path).map(&:url)
+    {
+      id:,
+      subject:,
+      description:,
+      owner: owner_collab.map { |owner| owner.new_attr },
+      member: accepted_member.map { |accept_user| accept_user.new_attr },
+      event_date: event_date.strftime('%F %I:%M'),
+      reminder: reminder.strftime('%F %I:%M'),
+      ringtone_id: ringtone.id,
+      ringtone: ringtone.name,
+      file: attach_current,
+      note_type:,
+      status:,
+      column: column&.title
+    }
+  end
 end
