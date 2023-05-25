@@ -16,8 +16,9 @@ class Api::UsersController < ApplicationController
     if @user.save
       puts 'SENDING EMAIL.....'
       UserMailer.registration_confirmation(@user).deliver_now
-      new_transaction = @user.transactions.create(point: 300, point_type: 'earned')
+      new_transaction = @user.transactions.create(point:0, point_type: 'earned')
       new_transaction.save
+      @user.add_notes_count(3) # Ubah angka 3 sesuai dengan jumlah catatan yang ingin ditambahkan
       render json: { success: true, status: 201, message: 'please confirm your email address to continue', data: @user.new_attr },
              status: 201
     else
@@ -166,7 +167,7 @@ class Api::UsersController < ApplicationController
   end
 
   def user_params
-    params.permit(:username, :email, :phone, :job, :photo, :password, :password_confirmation)
+    params.permit(:username,:email, :phone, :job, :photo, :password, :password_confirmation, :notes_count)
   end
 
   def password_params

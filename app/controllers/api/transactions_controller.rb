@@ -7,18 +7,18 @@ class Api::TransactionsController < ApplicationController
       def create
         users = []
         if transaction_params[:user_note_id].present?
-          users = User.joins(user_notes: :note).where(user_notes: { note_id: transaction_params[:user_note_id], status: 'completed' }, notes: { status: 'completed' }).to_a
+          users = User.joins(user_notes: :note).where(user_notes: { note_id: transaction_params[:user_note_id] }, notes: { status: 'completed' }).to_a
         end
       
         if transaction_params[:point_type] == 'earned' && users.empty?
           note = Note.find_by(id: transaction_params[:user_note_id])
           if note.nil? || note.note_type == 'tim'
-            render json: { success: false, status: 422, message: 'User note/note tidak valid' }, status: 422
+            render json: { success: false, status: 422, message: 'User_note/note tidak valid' }, status: 422
             return
           end
           user_note = UserNote.find_by(note_id: transaction_params[:user_note_id], user_id: current_user.id)
           if user_note.nil? || !user_note.completed? || !note.completed?
-            render json: { success: false, status: 422, message: 'User note/note belum completed' }, status: 422
+            render json: { success: false, status: 422, message: 'User note/note invalid atau belum completed' }, status: 422
           return
         end
         @transaction = current_user.transactions.build(transaction_params.merge({ point: earned_point }))
@@ -42,11 +42,13 @@ class Api::TransactionsController < ApplicationController
           end
       
           @transaction = current_user.transactions.build(transaction_params.merge({ point: product.price }))
-      
+          current_user.add_notes_count(product.notes_quantity)
+
           unless @transaction.save
             render json: { success: false, status: 422, message: 'Gagal melakukan penebusan poin' }, status: 422
             return
           end
+
         elsif transaction_params[:point_type] == 'earned'
           earned_point = 100 # Jumlah poin yang ingin ditambahkan jika user menyelesaikan note
 
@@ -72,7 +74,7 @@ class Api::TransactionsController < ApplicationController
         user_points = current_user.reload.point
       
         if transaction_params[:point_type] == 'earned'
-          users_data = users.map { |user| { user_id: user.id, username: user.username } }
+          users_data = users.map { |user| { user_id: user.id, username: user.username, earned_point: earned_point, total_point: user.point } }
       
           render json: { success: true, status: 201, message: 'Berhasil menambahkan poin', data: users_data }, status: 201
         elsif transaction_params[:point_type] == 'redeemed'
@@ -116,6 +118,6 @@ class Api::TransactionsController < ApplicationController
       end
 
       def transaction_params        
-          params.require(:transaction).permit(:product_id, :user_id, :user_note_id, :transaction_status, :point, :point_type)
+          params.require(:transaction).permit(:product_id,:notes_quantity, :user_id, :user_note_id, :transaction_status, :point, :point_type)
        end
       end

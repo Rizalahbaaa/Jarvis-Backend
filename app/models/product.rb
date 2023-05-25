@@ -21,7 +21,8 @@ class Product < ApplicationRecord
         terms: self.terms,
         price: self.price,
         photo_product: self.photo_product.url,
-        status: self.status
+        status: self.status,
+        notes_quantity:
       }
     end
 end
