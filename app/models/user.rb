@@ -32,7 +32,7 @@ class User < ApplicationRecord
 
   validate :username_format, :email_format, :phone_format, :job_format, on: %i[create update]
   validates_presence_of :email, :username, :phone, :job, message: "can't be blank"
-  validates_uniqueness_of :username, :email, :phone, message: 'has already been taken'
+  validates_uniqueness_of :email, :phone, message: 'has already been taken'
   validates :username, length: { maximum: 50 }
   validates :email, length: { maximum: 50 }
   validates :phone, length: { minimum: 10, maximum: 13, message: 'must be between 10-13 digits' }
@@ -145,28 +145,28 @@ class User < ApplicationRecord
   end
 
   rails_admin do
-  field :id
-  field :username
-  field :email
-  field :email_confirmed
-  list do
-    field :notes_count
-    field :point
-  end
-  show do
-    field :notes_count
-    field :point
-  end
-  edit do
+    field :id
     field :username
     field :email
     field :phone
     field :job
     field :photo
     field :email_confirmed
-    field :transactions
+    list do
+    field :notes_count
+      field :point
+    end
+    show do
+    field :notes_count
+      field :point
+    end
+    edit do
+      field :username
+      field :email
+      field :email_confirmed
+        field :transactions
+    end
   end
-end
   private
 
   def confirmation_token
