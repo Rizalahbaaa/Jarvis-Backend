@@ -1,5 +1,5 @@
 class Api::UsersController < ApplicationController
-  skip_before_action :authenticate_request, only: %i[create login confirm_email forgot reset]
+  skip_before_action :authenticate_request, only: %i[create login confirm_email forgot reset resend_verification]
   before_action :set_user, only: %i[show update update_password]
 
   def index
