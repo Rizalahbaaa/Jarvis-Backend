@@ -141,12 +141,12 @@ class Api::UsersController < ApplicationController
 
   def update_password
     unless @user.authenticate(params[:current_password])
-      render json: { success: false, message: 'Invalid current password', status: 422 }
+      render json: { success: false, message: 'Invalid current password', status: 422 }, status: 422
       return
     end
 
     if @user.update(password_params.merge(is_forgot: true))
-      render json: { success: true, message: 'Password updated successfully', status: 200 }
+      render json: { success: true, message: 'Password updated successfully', status: 200 }, status: 200
     else
       render json: { success: false, message: 'Failed to update password', status: 422, errors: @user.errors.full_messages }
     end
