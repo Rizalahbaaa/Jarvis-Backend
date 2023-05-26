@@ -157,6 +157,13 @@ class Api::UsersController < ApplicationController
     point = user.point
     render json: { success: true, status: 200, message: 'User point retrieved successfully', data: { user_id: user.id, point: point } }
   end
+  
+  def notes_count
+    user = User.find_by(id: params[:id])
+    notes_count = user.notes_count
+    render json: { success: true, status: 200, message: 'User note retrieved successfully', data: { user_id: user.id, notes_count: notes_count } }
+  end
+    
   private
 
   def set_user
