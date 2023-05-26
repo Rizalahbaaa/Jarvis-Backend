@@ -14,6 +14,12 @@ Rails.application.routes.draw do
     patch '/resetpassword/:token', to: 'users#reset'
 
     post '/note/inv', to: 'users_notes#create'
+    get '/reqlist', to:'users_notes#reqlist'
+    get 'note/inv/accept_invitation/:noteinvitation_token', to: 'users_notes#accept_invitation'
+    get 'note/inv/decline_invitation/:noteinvitation_token', to: 'users_notes#decline_invitation'
+    get 'team/inv/accept_invitation/:teaminvitation_token', to: 'user_teams#accept_invitation'
+    get 'team/inv/decline_invitation/:teaminvitation_token', to: 'user_teams#decline_invitation'
+
     get 'note/inv/accept_invitation', to: 'users_notes#accept_invitation', as: 'accept_invitation'
     get 'note/inv/decline_invitation', to: 'users_notes#decline_invitation', as: 'decline_invitation'
     get 'team/inv/accept_invitation', to: 'user_teams#accept_invitation', as: 'accept_team_invitation'

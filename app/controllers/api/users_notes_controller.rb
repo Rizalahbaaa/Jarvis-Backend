@@ -7,6 +7,13 @@ class Api::UsersNotesController < ApplicationController
     render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
   end
 
+  def reqlist
+    @user_notes = UserNote.joins(:note).where(notes: { note_type: 'collaboration' }).where(user_id: current_user, noteinvitation_status: 'Pending')
+    @user_teams = UserTeam.where(user_id: current_user, teaminvitation_status: 'Pending', team_role: 'member')
+    combined_data = @user_notes.map {|user_note| user_note.inv_request} + @user_teams.map {|user_team|user_team.inv_reqteam}
+    render json: { success: true, status: 200, data: combined_data}
+  end
+
   def show
     render json: {success: true, status: 200, data: @user_note.new_attr}, status: 200
   end
