@@ -11,9 +11,6 @@ processes = []
 [experimental]
   auto_rollback = true
 
-[deploy.cron]
-command = "bundle exec whenever --update-crontab"
-
 [[services]]
   http_checks = []
   internal_port = 3000
@@ -43,4 +40,3 @@ command = "bundle exec whenever --update-crontab"
 [[statics]]
   guest_path = "/rails/public"
   url_prefix = "/"
-
