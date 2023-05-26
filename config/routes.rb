@@ -41,6 +41,7 @@ Rails.application.routes.draw do
     resources :users do
       member do
         get 'point', to: 'users#point'
+        get 'notes_count', to: 'users#notes_count'
       end
     end
     resources :products

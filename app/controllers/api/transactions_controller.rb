@@ -5,59 +5,82 @@ class Api::TransactionsController < ApplicationController
         render json: @transactions.map { |transaction| transaction.new_attr }
       end
       def create
-        user = current_user
-      
-        if user.nil?
-          render json: { success: false, status: 422, message: 'Invalid user' }, status: 422
-          return
+        users = []
+        if transaction_params[:user_note_id].present?
+          users = User.joins(user_notes: :note).where(user_notes: { note_id: transaction_params[:user_note_id] }, notes: { status: 'completed' }).to_a
         end
       
-        if transaction_params[:point_type] == 'redeemed'
-          if transaction_params[:product_id].nil?
-            render json: { success: false, status: 422, message: 'Product ID is required for redemption' }, status: 422
+        if transaction_params[:point_type] == 'earned' && users.empty?
+          note = Note.find_by(id: transaction_params[:user_note_id])
+          if note.nil? || note.note_type == 'tim'
+            render json: { success: false, status: 422, message: 'User_note/note tidak valid' }, status: 422
+            return
+          end
+          user_note = UserNote.find_by(note_id: transaction_params[:user_note_id], user_id: current_user.id)
+          if user_note.nil? || !user_note.completed? || !note.completed?
+            render json: { success: false, status: 422, message: 'User note/note invalid atau belum completed' }, status: 422
+          return
+        end
+        @transaction = current_user.transactions.build(transaction_params.merge({ point: earned_point }))
+    
+        elsif transaction_params[:point_type] == 'redeemed'
+          if current_user.nil?
+            render json: { success: false, status: 422, message: 'Pengguna tidak valid' }, status: 422
             return
           end
       
           product = Product.find_by(id: transaction_params[:product_id])
       
           if product.nil?
-            render json: { success: false, status: 422, message: 'Invalid product' }, status: 422
+            render json: { success: false, status: 422, message: 'ID Produk diperlukan untuk penebusan' }, status: 422
             return
           end
       
-          if product.price > user.point
-            render json: { message: 'Insufficient points' }, status: 422
+          if product.price > current_user.point
+            render json: { success: false, status: 422, message: 'Poin tidak mencukupi' }, status: 422
             return
           end
       
-          @transaction = user.transactions.build(transaction_params.merge({ point: product.price }))
-        elsif transaction_params[:point_type] == 'earned'
-          user_note = UserNote.find_by(id: transaction_params[:user_note_id])
-          note = user_note&.note
+          @transaction = current_user.transactions.build(transaction_params.merge({ point: product.price }))
+          current_user.add_notes_count(product.notes_quantity)
 
-          if user_note.nil? || !user_note.completed?
-            render json: { success: false, status: 422, message: 'Invalid user_note or user_note/note not completed' }, status: 422
+          unless @transaction.save
+            render json: { success: false, status: 422, message: 'Gagal melakukan penebusan poin' }, status: 422
             return
           end
+
+        elsif transaction_params[:point_type] == 'earned'
           earned_point = 100 # Jumlah poin yang ingin ditambahkan jika user menyelesaikan note
-          @transaction = user.transactions.build(transaction_params.merge({ point: earned_point }))
+
+          users.each do |user|
+            user_note = UserNote.find_by(note_id: transaction_params[:user_note_id], user_id: user.id)
+      
+            if user_note.role != nil
+              @transaction = user.transactions.build(transaction_params.merge({ point: earned_point }))
+            else
+              @transaction = user.transactions.build(transaction_params.merge({ point: 0 }))
+            end
+      
+            unless @transaction.save
+              render json: { success: false, status: 422, message: 'Gagal menambahkan poin untuk pengguna', user: user }, status: 422
+              return
+            end
+          end
         else
-          render json: { success: false, status: 422, message: 'Invalid point_type' }, status: 422
+          render json: { success: false, status: 422, message: 'Jenis poin tidak valid' }, status: 422
           return
         end
       
-        if @transaction.save
-          if transaction_params[:point_type] == 'redeemed'
-            render json: { success: true, status: 201, message: 'Redeemed point successfully', data: @transaction.new_attr }, status: 201
-          else
-            render json: { success: true, status: 201, message: 'Earned point successfully', data: @transaction.new_attr }, status: 201
-          end
+        user_points = current_user.reload.point
+      
+        if transaction_params[:point_type] == 'earned'
+          users_data = users.map { |user| { user_id: user.id, username: user.username, earned_point: earned_point, total_point: user.point } }
+      
+          render json: { success: true, status: 201, message: 'Berhasil menambahkan poin', data: users_data }, status: 201
+        elsif transaction_params[:point_type] == 'redeemed'
+          render json: { success: true, status: 201, message: 'Berhasil melakukan redeem product', data: @transaction.new_attr, point: user_points }, status: 201
         else
-          if transaction_params[:point_type] == 'redeemed'
-            render json: { success: false, status: 422, message: 'Failed to redeem point', data: @transaction.errors }, status: 422
-          else
-            render json: { success: false, status: 422, message: 'Failed to earn point', data: @transaction.errors }, status: 422
-          end
+          render json: { success: false, status: 422, message: 'Jenis poin tidak valid' }, status: 422
         end
       end
       
@@ -94,10 +117,7 @@ class Api::TransactionsController < ApplicationController
         render json: { status: 404, message: 'transaction not found' }, status: 404
       end
 
-      def transaction_params
-        if params[:transaction][:point_type] == 'earned'
-          params.require(:transaction).permit(:user_id, :user_note_id, :transaction_status, :point, :point_type)
-        else
-          params.require(:transaction).permit(:product_id, :user_id, :user_note_id, :transaction_status, :point, :point_type)
-        end
-      end end
+      def transaction_params        
+          params.require(:transaction).permit(:product_id,:notes_quantity, :user_id, :user_note_id, :transaction_status, :point, :point_type)
+       end
+      end
