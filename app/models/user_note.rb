@@ -21,9 +21,9 @@ class UserNote < ApplicationRecord
     late: 3
   }
   def completed?
-    note.nil? ? status == 'completed' : (status == 'completed' && note.status == 'completed')
+    note.nil? ? (status == 'completed') : (status == 'completed' && note.completed?)
   end
-
+  
   def invitation_valid?
     noteinvitation_status == 'Pending' && noteinvitation_expired > Time.now
   end
