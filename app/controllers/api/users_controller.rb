@@ -18,7 +18,7 @@ class Api::UsersController < ApplicationController
       UserMailer.registration_confirmation(@user).deliver_now
       new_transaction = @user.transactions.create(point:0, point_type: 'earned')
       new_transaction.save
-      @user.add_notes_count(3) # Ubah angka 3 sesuai dengan jumlah catatan yang ingin ditambahkan
+      @user.add_notes_count(100) # Ubah angka 3 sesuai dengan jumlah catatan yang ingin ditambahkan
       render json: { success: true, status: 201, message: 'please confirm your email address to continue', data: @user.new_attr },
              status: 201
     else
