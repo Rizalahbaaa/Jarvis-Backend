@@ -21,7 +21,7 @@ class Note < ApplicationRecord
   scope :upcoming_note, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where('event_date >= ?', Date.today).where.not(note_type: 'team') }
   scope :owner, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND user_notes.role = ?', user_id, 0).where.not(note_type: 'team')}
   scope :upload_done, -> (user_id){ join_usernote.where('user_notes.role = ? AND user_notes.user_id = ? AND user_notes.status = ?', 1, user_id,1 ).where(note_type: 'collaboration')}
-  scope :not_upload, -> (user_id){ join_usernote.where('user_notes.role = ? AND user_notes.user_id = ? AND user_notes.status = ?', 1, user_id,0 ).where(note_type: 'collaboration')}
+  scope :not_upload, -> (user_id){ join_usernote.where('user_notes.role = ? AND user_notes.user_id = ? AND user_notes.status = ? AND user_notes.noteinvitation_status = ?', 1, user_id, 0,1).where(note_type: 'collaboration')}
   scope :late, -> (user_id){ join_usernote.where('user_notes.role = ? AND user_notes.user_id = ? AND user_notes.status = ?', 1, user_id,3 ).where(note_type: 'collaboration')}
   scope :completed_note, ->(user_id){ join_usernote.where('user_notes.user_id = ?', user_id).where(status: 'completed').where.not(note_type: 'team')}
 
@@ -129,7 +129,7 @@ class Note < ApplicationRecord
 
   
   def calculate_usernote 
-    UserNote.where(note_id: self.id, role: 'member')
+    UserNote.where(note_id: self.id, role: 'member', noteinvitation_status: 'Accepted')
   end
 
   def calculate_upload
