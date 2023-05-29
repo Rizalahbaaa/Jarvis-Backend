@@ -32,6 +32,7 @@ class Api::NotesController < ApplicationController
       render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
              status: 201
     else
+      @note.destroy
       render json: { success: false, message: 'Tidak bisa membuat note lagi silahkan redeem', status: 422 },
              status: 422
     end
