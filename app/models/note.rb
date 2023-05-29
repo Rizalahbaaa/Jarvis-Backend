@@ -150,15 +150,12 @@ class Note < ApplicationRecord
   end
 
   def precentage
-    calculate_progress == 0 if calculate_progress == 0.0 
-    "#{calculate_progress.to_i}%"
+    if self.status == 'completed'
+      'completed'
+    else
+      "#{calculate_progress.to_i}%"
+    end
   end
-
-  # def enum_precentage
-  #   if status == 'in_progress'
-  #    self.status = precentage
-  #   end 
-  # end
 
   def new_attr(current_user)
    
@@ -172,10 +169,9 @@ class Note < ApplicationRecord
       reminder:,
       ringtone: ringtone.name,
       file: file_collection,
-      note_type:,
-      status: owner_collab.map { |owner| owner  == current_user ? self.status : user_note&.find_by(user_id: current_user.id, note_id: self.id)&.status},
+      note_type: self.note_type,
+      status: owner_collab.map { |owner| owner  == current_user ? precentage : user_note&.find_by(user_id: current_user.id, note_id: self.id)&.status},
       column: column&.title,
-      progress: precentage
     }
                                                                         
   end
