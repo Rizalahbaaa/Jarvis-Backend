@@ -6,7 +6,7 @@ class Note < ApplicationRecord
   belongs_to :ringtone
 
   validates :subject, presence: { message: "can't be blank" }, length: { maximum: 30 }
-  validates :description, presence: { message: "can't be blank" }, length: { maximum: 100 }
+  validates :description, presence: { message: "can't be blank" }, length: { maximum: 250 }
   validates :ringtone_id, presence: { message: 'ringtone must be assigned' }
   validates :event_date, presence: true
   validates :reminder, presence: true
@@ -14,10 +14,9 @@ class Note < ApplicationRecord
   validate :reminder_date_valid?, :event_date_valid?
 
   scope :join_usernote, -> { joins(:user_note) }
-  # scope :notefunc, -> (note_id) { join_usernote.where(user_note: { note_id: note_id })}
 
 # filters & sorts
-  # scope :noteall, -> (user_id){ join_usernote.where(user_note: { user_id: user_id}).where.not(note_type: 'team')}
+  scope :noteall1, -> (user_id){ join_usernote.where(user_note: { user_id: user_id})}
   scope :noteall, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where.not(note_type: 'team')}
   scope :passed_note, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where('event_date < ?', Date.today).where.not(note_type: 'team') }
   scope :upcoming_note, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where('event_date >= ?', Date.today).where.not(note_type: 'team') }
@@ -37,11 +36,11 @@ class Note < ApplicationRecord
     in_progress: 0,
     completed: 1
   }
+
   before_create :team_status
 
 
   def self.filter_and_sort(params, current_user)
-
     notes = Note.noteall(current_user)
 
     if params[:note] == 'passed'
@@ -134,7 +133,35 @@ class Note < ApplicationRecord
     user_note.map { |f| f.attaches.map { |attach| attach.path.url } }.flatten
   end
 
-  def new_attr
+  
+  def calculate_usernote 
+    UserNote.where(note_id: self.id, role: 'member')
+  end
+
+  def calculate_upload
+     UserNote.where(note_id: self.id, role: 'member', status:'have_upload') 
+  end
+
+  def calculate_progress
+    total_tasks = calculate_usernote.count
+    note_done = calculate_upload.count 
+    return 0 if total_tasks.zero?
+    (note_done.to_f / total_tasks) * 100
+  end
+
+  def precentage
+    calculate_progress == 0 if calculate_progress == 0.0 
+    "#{calculate_progress.to_i}%"
+  end
+
+  # def enum_precentage
+  #   if status == 'in_progress'
+  #    self.status = precentage
+  #   end 
+  # end
+
+  def new_attr(current_user)
+   
     {
       id:,
       subject:,
@@ -146,8 +173,10 @@ class Note < ApplicationRecord
       ringtone: ringtone.name,
       file: file_collection,
       note_type:,
-      status:,
-      column: column&.title
+      status: owner_collab.map { |owner| owner  == current_user ? self.status : user_note&.find_by(user_id: current_user.id, note_id: self.id)&.status},
+      column: column&.title,
+      progress: precentage
     }
+                                                                        
   end
 end

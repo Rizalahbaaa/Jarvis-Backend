@@ -6,7 +6,7 @@ class Api::NotesController < ApplicationController
     notes = Note.filter_and_sort(params, current_user)
     if notes.present?
       render json: { success: true, message: 'data found', status: 200, data: notes.map do |owner|
-                                                                                owner.new_attr
+                                                                                owner.new_attr(current_user)
      end }
     else
       render json: { success: true, message: 'data not found', status: 404 }, status: 404
