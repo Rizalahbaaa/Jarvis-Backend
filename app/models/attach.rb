@@ -10,7 +10,7 @@ class Attach < ApplicationRecord
     {
       id:,
       file: path.url,
-      user_note_id:
+      uploader: user_note.user.new_attr
     }
   end
 end

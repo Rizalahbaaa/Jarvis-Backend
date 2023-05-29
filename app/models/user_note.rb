@@ -14,17 +14,17 @@ class UserNote < ApplicationRecord
     owner: 0,
     member: 1
   }
-  
+
   enum status: {
     not_upload_yet: 0,
     have_upload: 1,
-    complete: 2,
+    completed: 2,
     late: 3
   }
   def completed?
-    note.nil? ? status == 'completed' : (status == 'completed' && note.status == 'completed')
+    note.nil? ? (status == 'completed') : (status == 'completed' && note.completed?)
   end
-
+  
   def invitation_valid?
     noteinvitation_status == 'Pending' && noteinvitation_expired > Time.now
   end
@@ -58,20 +58,28 @@ class UserNote < ApplicationRecord
     save
   end
 
-  def self.note_history
+  def note_history(note)
     sort = UserNote.order('updated_at ASC')
-    sort.user_note_data
+    histories = sort.user_note_data
+
+    owner = UserNote.find_by(role: 'owner', note_id: note.id)
+    {
+      owner: owner.user.new_attr,
+      histories: histories.map{|h| h.new_attr},
+      note_created_at: note.created_at,
+      note_done_at: note.updated_at,
+      note_status: note.status
+    }
   end
 
   def self.user_note_data
-    owner = User.find_by_id(UserNote.find_by(role: "owner").try("user_id"))
     member = []
     UserNote.where(role: 'member', status: 'have_upload').each do |m|
       member.push(User.find_by(id: m.user_id))
     end
   end
 
-  def delete_expired_invitations
+  def self.delete_expired_invitations
     expired_invitations = UserNote.where('teaminvitation_status = ? && teaminvitation_expired < ?',
                                          UserTeam.teaminvitation_statuses[:Pending], Time.now)
     expired_invitations.destroy
@@ -81,6 +89,9 @@ class UserNote < ApplicationRecord
     attaches.map(&:path)
   end
 
+  def owner_note
+    User.find_by_id(user_note.find_by(role: "owner"))
+  end
 
   def new_attr
     {
@@ -95,4 +106,33 @@ class UserNote < ApplicationRecord
       # invitation_expired: self.noteinvitation_expired
     }
   end
+
+
+  def owner_note
+    UserNote.find_by(note_id: self.note_id, role: "owner")&.user&.username
+  end
+
+  def message_inv
+    'mengirim anda sebuah catatan'
+  end
+
+  BACKEND_DOMAIN = if Rails.env.development?
+    'http://localhost:3000/api'
+  else
+    'https://bantuin.fly.dev/api'
+  end
+
+  def inv_request
+    {
+      id:,
+      from: owner_note,
+      message: message_inv,
+      note: note.subject, 
+      actions: [
+        { action: "accept", url: "#{BACKEND_DOMAIN}/note/inv/accept_invitation/#{self.noteinvitation_token}" },
+        { action: "reject", url: "#{BACKEND_DOMAIN}/note/inv/decline_invitation/#{self.noteinvitation_token}" }
+      ]
+    }
+  end
+
 end

@@ -21,6 +21,10 @@ class Api::NotesController < ApplicationController
     @note = Note.new(note_params)
     if @note.save
       @user_note = UserNote.create(note: @note, user: @current_user)
+      if @current_user.can_create_note?
+        @current_user.deduct_notes_count(1) # Mengurangi notes_count
+        @current_user.save
+
       @emails = params[:email]
       if @emails.present?
         collab_mailer
@@ -28,10 +32,15 @@ class Api::NotesController < ApplicationController
       render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
              status: 201
     else
-      render json: { success: false, message: 'note created unsuccessfully', status: 422, data: @note.errors },
+      @note.destroy
+      render json: { success: false, message: 'Tidak bisa membuat note lagi silahkan redeem', status: 422 },
              status: 422
     end
+  else
+    render json: { success: false, message: 'note created unsuccessfully', status: 422, data: @note.errors },
+           status: 422
   end
+end
 
   def email_valid
     @email = params[:email].downcase

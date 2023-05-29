@@ -9,8 +9,14 @@ class UserTeam < ApplicationRecord
   enum :teaminvitation_status, {Pending: 0, Accepted: 1, Rejected: 2 }
 
 
+  # def invitation_valid?
+  #     self.teaminvitation_status == "Pending" && self.teaminvitation_expired > Time.now
+  # end
+
   def invitation_valid?
-      self.teaminvitation_status == "Pending" && self.teaminvitation_expired > Time.now
+    return unless self.teaminvitation_status == "Pending"
+      validates_comparison_of :teaminvitation_expired, greater_than: Time.now
+  
   end
 
   def accept_invitation!
@@ -28,6 +34,14 @@ class UserTeam < ApplicationRecord
     member: 1
   }
 
+  def owner_team
+    UserTeam.find_by(team_id: self.team_id, team_role: "owner")&.user&.username
+  end
+
+  def message_teaminv
+    'mengajak anda bergabung team'
+  end
+
   def new_attributes
     {
       user: user.email,
@@ -38,4 +52,24 @@ class UserTeam < ApplicationRecord
       invitation_expired: self.teaminvitation_expired
     }
   end
+
+  BACKEND_DOMAIN = if Rails.env.development?
+    'http://localhost:3000/api'
+  else
+    'https://bantuin.fly.dev/api'
+  end
+
+  def inv_reqteam
+  {
+    id:,
+    from:owner_team,
+    message: message_teaminv,
+    team: team.title,
+    actions: [
+      { action: "accept", url: "#{BACKEND_DOMAIN}/team/inv/accept_invitation/#{self.teaminvitation_token}" },
+      { action: "reject", url: "#{BACKEND_DOMAIN}/team/inv/decline_invitation/#{self.teaminvitation_token}" }
+    ]
+  }
+  end
+
 end

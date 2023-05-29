@@ -32,7 +32,7 @@ class User < ApplicationRecord
 
   validate :username_format, :email_format, :phone_format, :job_format, on: %i[create update]
   validates_presence_of :email, :username, :phone, :job, message: "can't be blank"
-  validates_uniqueness_of :username, :email, :phone, message: 'has already been taken'
+  validates_uniqueness_of :email, :phone, message: 'has already been taken'
   validates :username, length: { maximum: 50 }
   validates :email, length: { maximum: 50 }
   validates :phone, length: { minimum: 10, maximum: 13, message: 'must be between 10-13 digits' }
@@ -52,7 +52,11 @@ class User < ApplicationRecord
                        format: { with: PASSWORD_REGEX,
                                  message: 'password must contain digit, uppercase and lowercase' }
   validates :password_confirmation, presence: true, on: :forgot_password_validate
+  validates :notes_count, numericality: { greater_than_or_equal_to: 0 }
 
+  def can_create_note?
+    notes_count > 0
+  end
   def new_attr
     {
       id:,
@@ -60,7 +64,9 @@ class User < ApplicationRecord
       email:,
       phone:,
       job:,
-      photo: self.photo.url
+      photo: self.photo.url,
+      notes_count:,
+      point:
     }
   end
 
@@ -74,6 +80,25 @@ class User < ApplicationRecord
     additional_points = 300 # Jumlah poin tambahan yang ingin ditambahkan setelah pendaftaran
     earned - redeemed + additional_points
   end
+  def update_notes_count(quantity)
+    self.notes_count += quantity
+  end
+
+  def deduct_notes_count(quantity)
+    self.notes_count -= quantity
+    self.save
+  end
+  def add_notes_count(quantity)
+    self.notes_count += quantity
+    self.save
+  end
+  # def max_note
+  #   product_note = Transaction.where(user_id: self.id, product_id: 13).sum(:max_note)
+  #   used_note = UserNote.where(user_id: self.id, role: 'owner').count
+  #   additional_note = 3
+  #   additional_note - used_note + product_note
+  # end
+  
 
   def username_format
     return unless username.present?
@@ -120,27 +145,28 @@ class User < ApplicationRecord
   end
 
   rails_admin do
-  field :id
-  field :username
-  field :email
-  field :email_confirmed
-  list do
-    field :point
-  end
-  show do
-    field :point
-  end
-  edit do
+    field :id
     field :username
     field :email
     field :phone
     field :job
     field :photo
     field :email_confirmed
-    field :point
-    field :transactions
+    list do
+    field :notes_count
+      field :point
+    end
+    show do
+    field :notes_count
+      field :point
+    end
+    edit do
+      field :username
+      field :email
+      field :email_confirmed
+        field :transactions
+    end
   end
-end
   private
 
   def confirmation_token
