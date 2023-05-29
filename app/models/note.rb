@@ -16,14 +16,14 @@ class Note < ApplicationRecord
   scope :join_usernote, -> { joins(:user_note) }
 
 # filters & sorts
-  scope :noteall, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where.not(note_type: 'team')}
+  scope :noteall, -> (user_id){ join_usernote.where('user_notes.user_id = ?', user_id).where.not(note_type: 'team')}
   scope :passed_note, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where('event_date < ?', Date.today).where.not(note_type: 'team') }
   scope :upcoming_note, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where('event_date >= ?', Date.today).where.not(note_type: 'team') }
-  scope :owner, -> (user_id){ join_usernote.where(user_note: { role: 'owner', user_id: user_id }).where.not(note_type: 'team')}
-  scope :upload_done, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'have_upload' }).where(note_type: 'collaboration')}
-  scope :not_upload, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'not_upload_yet' }).where(note_type: 'collaboration')}
-  scope :late, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'late' }).where(note_type: 'collaboration')}
-  scope :completed_note, ->{ where(status: 'completed').where.not(note_type: 'team') }
+  scope :owner, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND user_notes.role = ?', user_id, 0).where.not(note_type: 'team')}
+  scope :upload_done, -> (user_id){ join_usernote.where('user_notes.role = ? AND user_notes.user_id = ? AND user_notes.status = ?', 1, user_id,1 ).where(note_type: 'collaboration')}
+  scope :not_upload, -> (user_id){ join_usernote.where('user_notes.role = ? AND user_notes.user_id = ? AND user_notes.status = ?', 1, user_id,0 ).where(note_type: 'collaboration')}
+  scope :late, -> (user_id){ join_usernote.where('user_notes.role = ? AND user_notes.user_id = ? AND user_notes.status = ?', 1, user_id,3 ).where(note_type: 'collaboration')}
+  scope :completed_note, ->(user_id){ join_usernote.where('user_notes.user_id = ?', user_id).where(status: 'completed').where.not(note_type: 'team')}
 
   enum note_type: {
     personal: 0,
@@ -42,33 +42,28 @@ class Note < ApplicationRecord
   def self.filter_and_sort(params, current_user)
     notes = Note.noteall(current_user)
 
-    if params[:note] == 'passed'
-      notes = Note.passed_note(current_user)
+    filter_options = {
+      'owner' => :owner,
+      'passed' => :passed_note,
+      'upcoming' => :upcoming_note,
+      'up' => :upload_done,
+      'notup' => :not_upload,
+      'late' => :late,
+      'completed' => :completed_note
+    }
+  
+    filter_options.each do |filter, method|
+      if params[filter].present?
+        notes = notes.merge(Note.send(method, current_user))
+      end
     end
-    if params[:note] == 'upcoming'
-      notes = Note.upcoming_note(current_user)
-    end 
-    if params[:owner] == 'yes'
-      notes = Note.owner(current_user)
-    end
-    if params[:up] == 'no'
-      notes = Note.not_upload(current_user)
-    end
-    if params[:up] == 'yes'
-      notes = Note.upload_done(current_user)
-    end
-    if params[:late] == 'yes'
-      notes = Note.late(current_user)
-    end
-    if params[:completed] == 'yes'
-      notes = Note.completed_note
-    end
-
+  
     sort_direction = params[:sort] == 'desc' ? 'desc' : 'asc'
     notes = notes.order(event_date: sort_direction)
-
-    return notes
+  
+    notes
   end
+  
 
   def self.ref_note(current_user)
     # remind = Note.where('reminder = ?', Time.now)
