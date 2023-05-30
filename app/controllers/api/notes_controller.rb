@@ -18,7 +18,7 @@ class Api::NotesController < ApplicationController
     if @find_user_note.role == 'owner' && @find_user_note.user_id != @current_user
       render json: { success: true, status: 200, data: @note.new_attr(current_user) }, status: 200
     elsif @find_user_note.role == 'member' && @find_user_note.user_id != @current_user
-      render json: { success: true, status: 200, data: @note.member_side(@find_user_note)}, status: 200
+      render json: { success: true, status: 200, data: @note.member_side(current_user)}, status: 200
     end
   end
 
