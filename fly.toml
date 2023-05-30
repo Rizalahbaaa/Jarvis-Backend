@@ -7,6 +7,9 @@ primary_region = "sin"
   app = "bin/rails server"
   worker = "bundle exec sidekiq"
 
+[env]
+TZ = "Asia/Jakarta"
+
 [[services]]
   processes = ["worker"]
   count = 1
