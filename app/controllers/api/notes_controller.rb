@@ -34,7 +34,7 @@ class Api::NotesController < ApplicationController
       if @emails.present?
         collab_mailer
       end
-      render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
+      render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr(current_user) },
              status: 201
     else
       @note.destroy
@@ -95,7 +95,7 @@ end
 
       if @note.update(note_params)
         @find_user_note.update(updated_at: Time.now)
-        render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr },
+        render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr(current_user) },
                status: 200
       else
         render json: { success: false, status: 422, message: 'note updated unsuccessfully', data: @note.errors },

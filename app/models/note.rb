@@ -89,8 +89,8 @@ class Note < ApplicationRecord
           puts 'SENDING REMINDER...'
         end
       end
-    else
-      puts 'NO EMAIL SEND :('
+    # else
+    #   puts 'NO EMAIL SEND :('
     end
   end
 
@@ -161,7 +161,6 @@ class Note < ApplicationRecord
   end
 
   def new_attr(current_user)
-   
     {
       id:,
       subject:,
@@ -174,10 +173,9 @@ class Note < ApplicationRecord
       ringtone: ringtone.name,
       file: file_collection,
       note_type: self.note_type,
-      status: owner_collab.map { |owner| owner  == current_user ? precentage : user_note&.find_by(user_id: current_user.id, note_id: self.id)&.status},
+      status: owner_collab.map { |owner| owner == current_user ? precentage : user_note&.find_by(user_id: current_user.id, note_id: self.id)&.status},
       column: column&.title,
     }
-                                                                        
   end
 
   def member_side(current_user_note)
