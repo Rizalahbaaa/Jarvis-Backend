@@ -57,6 +57,8 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
+  config.redis = { url: ENV['REDIS_URL']}
+
   config.action_mailer.default_url_options = { host: 'bantuin.fly.dev', protocol: 'https' }
   config.action_mailer.perform_deliveries = true
   config.action_mailer.delivery_method = :smtp

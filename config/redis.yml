@@ -1,0 +1,4 @@
+development:
+  url: redis://localhost:6379
+production:
+  url: <%= ENV['REDIS_URL'] %>

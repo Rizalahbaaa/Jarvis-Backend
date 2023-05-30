@@ -1,0 +1,7 @@
+:scheduler:
+  :listened_queues:
+    - default
+  :schedule:
+    reminder_worker:
+      cron: '* * * * * Asia/Jakarta'
+      class: ReminderWorker
