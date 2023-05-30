@@ -179,8 +179,10 @@ class Note < ApplicationRecord
     }
   end
 
-  def member_side(current_user_note)
-    attach_current = Attach.where(user_note: current_user_note).map(&:path).map(&:url)
+  def member_side(current_user)
+
+    member = UserNote.find_by(note: self.id, user: current_user)
+    attach_current = Attach.where(user_note: member).map(&:path).map(&:url)
     {
       id:,
       subject:,
@@ -193,7 +195,7 @@ class Note < ApplicationRecord
       ringtone: ringtone.name,
       file: attach_current,
       note_type:,
-      status:,
+      status: member.status,
       column: column&.title
     }
   end
