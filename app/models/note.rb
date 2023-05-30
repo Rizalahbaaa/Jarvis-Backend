@@ -6,12 +6,13 @@ class Note < ApplicationRecord
   belongs_to :ringtone
 
   validates :subject, presence: { message: "can't be blank" }, length: { maximum: 30 }
-  validates :description, presence: { message: "can't be blank" }, length: { maximum: 100 }
+  validates :description, presence: { message: "can't be blank" }, length: { maximum: 250 }
   validates :ringtone_id, presence: { message: 'ringtone must be assigned' }
   validates :event_date, presence: true
   validates :reminder, presence: true
   validates :column_id, presence: false
-  validate :reminder_date_valid?, :event_date_valid?
+  validates :frequency, presence: false
+  # validate :reminder_date_valid?, :event_date_valid?
 
   scope :join_usernote, -> { joins(:user_note) }
   # scope :notefunc, -> (note_id) { join_usernote.where(user_note: { note_id: note_id })}
@@ -31,6 +32,13 @@ class Note < ApplicationRecord
     personal: 0,
     collaboration: 1,
     team: 2
+  }
+
+  enum frequency: {
+    harian: 0,
+    mingguan: 1,
+    bulanan: 2,
+    tahunan: 3
   }
 
   enum status: {
@@ -78,17 +86,18 @@ class Note < ApplicationRecord
   end
 
   def self.send_reminder
-    notes = Note.where('reminder = ?', Time.now.strftime('%F %I:%M'))
-    users = UserNote.where(note: notes)
-    users.each do |u|
-      if notes.present?
-        notes.each do |n|
+    notes = Note.where('reminder = ?', Time.now.strftime('%F %R').in_time_zone('Jakarta'))
+
+    if notes.present?
+      notes.each do |n|
+        users = UserNote.where(note: n)
+        users.each do |u|
           ReminderMailer.my_reminder(u.user.email, n).deliver_now
           puts 'SENDING REMINDER...'
         end
-      else
-        puts 'NO EMAIL SEND :('
       end
+    else
+      puts 'NO EMAIL SEND :('
     end
   end
 
@@ -141,8 +150,8 @@ class Note < ApplicationRecord
       description:,
       owner: owner_collab.map { |owner| owner.new_attr },
       member: accepted_member.map { |accept_user| accept_user.new_attr },
-      event_date: event_date.strftime('%F %I:%M'),
-      reminder: reminder.strftime('%F %I:%M'),
+      event_date: event_date.strftime('%d-%m-%Y %R'),
+      reminder: reminder.strftime('%d-%m-%Y %R'),
       ringtone_id: ringtone.id,
       ringtone: ringtone.name,
       file: file_collection,
@@ -160,8 +169,8 @@ class Note < ApplicationRecord
       description:,
       owner: owner_collab.map { |owner| owner.new_attr },
       member: accepted_member.map { |accept_user| accept_user.new_attr },
-      event_date: event_date.strftime('%F %I:%M'),
-      reminder: reminder.strftime('%F %I:%M'),
+      event_date: event_date.strftime('%d-%m-%Y %R'),
+      reminder: reminder.strftime('%d-%m-%Y %R'),
       ringtone_id: ringtone.id,
       ringtone: ringtone.name,
       file: attach_current,
