@@ -3,7 +3,6 @@ class UserNote < ApplicationRecord
   belongs_to :note
   has_many :attaches
   has_many :transactions
-  # has_many :notifications
 
   validates :note_id, presence: true
   validates :user_id, presence: true
