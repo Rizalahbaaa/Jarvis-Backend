@@ -1,7 +1,6 @@
 class UserTeam < ApplicationRecord
   belongs_to :team
   belongs_to :user
-  has_many :notifications
 
   validates :team_id, presence: true
   validates :user_id, uniqueness: { scope: :team, message: 'user already join the team' }
