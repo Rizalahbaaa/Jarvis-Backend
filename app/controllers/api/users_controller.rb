@@ -56,6 +56,10 @@ class Api::UsersController < ApplicationController
   end
 
   def update
+    if params[:email]
+      return render json: {success: false, message: 'cannot change email', status: 400}
+    end
+
     if @user.update(user_params)
       render json: { success: true, message: 'profile updated successfully', status: 200, data: @user.new_attr },
              status: 200
