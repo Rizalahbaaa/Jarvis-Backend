@@ -1,5 +1,5 @@
 class Api::UsersController < ApplicationController
-  skip_before_action :authenticate_request, only: %i[create login confirm_email forgot reset]
+  skip_before_action :authenticate_request, only: %i[create login confirm_email forgot reset resend_verification]
   before_action :set_user, only: %i[show update update_password]
 
   def index
@@ -56,6 +56,10 @@ class Api::UsersController < ApplicationController
   end
 
   def update
+    if params[:email]
+      return render json: {success: false, message: 'cannot change email', status: 400}
+    end
+
     if @user.update(user_params)
       render json: { success: true, message: 'profile updated successfully', status: 200, data: @user.new_attr },
              status: 200
@@ -142,12 +146,12 @@ class Api::UsersController < ApplicationController
 
   def update_password
     unless @user.authenticate(params[:current_password])
-      render json: { success: false, message: 'Invalid current password', status: 422 }
+      render json: { success: false, message: 'Invalid current password', status: 422 }, status: 422
       return
     end
 
     if @user.update(password_params.merge(is_forgot: true))
-      render json: { success: true, message: 'Password updated successfully', status: 200 }
+      render json: { success: true, message: 'Password updated successfully', status: 200 }, status: 200
     else
       render json: { success: false, message: 'Failed to update password', status: 422, errors: @user.errors.full_messages }
     end

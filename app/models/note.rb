@@ -11,7 +11,8 @@ class Note < ApplicationRecord
   validates :event_date, presence: true
   validates :reminder, presence: true
   validates :column_id, presence: false
-  validate :reminder_date_valid?, :event_date_valid?
+  validates :frequency, presence: false
+  # validate :reminder_date_valid?, :event_date_valid?
 
   scope :join_usernote, -> { joins(:user_note) }
 
@@ -29,6 +30,13 @@ class Note < ApplicationRecord
     personal: 0,
     collaboration: 1,
     team: 2
+  }
+
+  enum frequency: {
+    harian: 0,
+    mingguan: 1,
+    bulanan: 2,
+    tahunan: 3
   }
 
   enum status: {
@@ -71,17 +79,18 @@ class Note < ApplicationRecord
   end
 
   def self.send_reminder
-    notes = Note.where('reminder = ?', Time.now.strftime('%F %I:%M'))
-    users = UserNote.where(note: notes)
-    users.each do |u|
-      if notes.present?
-        notes.each do |n|
+    notes = Note.where('reminder = ?', Time.now.strftime('%F %R').in_time_zone('Jakarta'))
+
+    if notes.present?
+      notes.each do |n|
+        users = UserNote.where(note: n)
+        users.each do |u|
           ReminderMailer.my_reminder(u.user.email, n).deliver_now
           puts 'SENDING REMINDER...'
         end
-      else
-        puts 'NO EMAIL SEND :('
       end
+    else
+      puts 'NO EMAIL SEND :('
     end
   end
 
@@ -159,8 +168,9 @@ class Note < ApplicationRecord
       description:,
       owner: owner_collab.map { |owner| owner.new_attr },
       member: accepted_member.map { |accept_user| accept_user.new_attr },
-      event_date:,
-      reminder:,
+      event_date: event_date.strftime('%d-%m-%Y %R'),
+      reminder: reminder.strftime('%d-%m-%Y %R'),
+      ringtone_id: ringtone.id,
       ringtone: ringtone.name,
       file: file_collection,
       note_type: self.note_type,
@@ -168,5 +178,24 @@ class Note < ApplicationRecord
       column: column&.title,
     }
                                                                         
+  end
+
+  def member_side(current_user_note)
+    attach_current = Attach.where(user_note: current_user_note).map(&:path).map(&:url)
+    {
+      id:,
+      subject:,
+      description:,
+      owner: owner_collab.map { |owner| owner.new_attr },
+      member: accepted_member.map { |accept_user| accept_user.new_attr },
+      event_date: event_date.strftime('%d-%m-%Y %R'),
+      reminder: reminder.strftime('%d-%m-%Y %R'),
+      ringtone_id: ringtone.id,
+      ringtone: ringtone.name,
+      file: attach_current,
+      note_type:,
+      status:,
+      column: column&.title
+    }
   end
 end
