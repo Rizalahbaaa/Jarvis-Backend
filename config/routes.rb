@@ -13,7 +13,7 @@ Rails.application.routes.draw do
     post '/forgot_password', to: 'users#forgot'
     get '/resetpassword/:token', to: 'users#reset'
     get '/check_reset/:token', to: 'users#check_reset'
-    patch '/resetpassword/:token', to: 'users#reset'
+    put '/resetpassword/:token', to: 'users#reset'
 
     post '/note/inv', to: 'users_notes#create'
     get '/reqlist', to:'users_notes#reqlist'
@@ -32,7 +32,7 @@ Rails.application.routes.draw do
     get '/user_notes/late', to: 'users_notes#late'
 
     get '/search_email', to: 'notes#email_valid'
-    get '/history', to: 'users_notes#history'
+    # get '/history', to: 'users_notes#history'
     put '/update_password', to: 'users#update_password'
 
     resources :transactions do
@@ -59,7 +59,12 @@ Rails.application.routes.draw do
       end
     end
     resources :columns
-    resources :notes
+    resources :notes do
+      member do
+        get 'history', to: 'notes#history'
+        post 'remove', to: 'notes#remove_member'
+      end
+    end
     resources :users_notes
     resources :user_teams
     resources :attaches
