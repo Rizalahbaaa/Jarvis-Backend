@@ -107,7 +107,7 @@ class Api::TeamsController < ApplicationController
       @find_user_team = UserTeam.find_by(user: @current_user, team: @team, team_role: 'owner').present?
       if @find_user_team == true
         # Cek apakah anggota tersebut adalah anggota dari tim
-        user_teams = @team.user_team.where(user: members)
+        user_teams = @team.user_team.where(user: members, teaminvitation_status: 1)
         if user_teams.empty?
           render json: { success: false, message: 'Members are not part of the team', status: 422 }, status: 422
         else
