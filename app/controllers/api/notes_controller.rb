@@ -25,10 +25,10 @@ class Api::NotesController < ApplicationController
       if @emails.present?
         collab_mailer
       end
-      render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
+      return render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
              status: 201
     else
-      render json: { success: false, message: 'note created unsuccessfully', status: 422, data: @note.errors },
+      return render json: { success: false, message: 'note created unsuccessfully', status: 422, data: @note.errors },
              status: 422
     end
   end
@@ -67,20 +67,34 @@ class Api::NotesController < ApplicationController
     if params[:note_type] && @note.note_type != params[:note_type]
       return render json: { success: false, message: 'cannot change note_type', status: 400 }, status: :bad_request
     end
-
+  
     @find_user_note = UserNote.find_by(user: @current_user, note: @note)
-    if (@find_user_note.role == 'owner' && @find_user_note.user_id != @current_user) || 
-      (!@note.column_id.nil? && Note.teamates(@current_user, @note))
-      @emails = params[:email]
-
-      if @emails.present?
+    if (@find_user_note.role == 'owner' && @find_user_note.user_id != @current_user) || (!@note.column_id.nil? && Note.teamates(@current_user, @note))
+      emails = params[:email]
+  
+      if emails.present?
         collab_mailer
-        return render json: { status: 200, message: 'email send successfully' }, status: 200
-        # return
+        return render json: { status: 200, message: 'email sent successfully' }, status: 200
       end
-
+  
       if @note.update(note_params)
         @find_user_note.update(updated_at: Time.now)
+        @note = Note.find(params[:id])
+        note_members = @note.users
+        recipients = []
+  
+        note_members.each do |member|
+          unless emails&.include?(member.email)
+            Notification.create(
+              title: "Telah memperbarui Catatan #{@note.subject}",
+              body: params[:body],
+              user_id: member.id,
+              sender_id: current_user.id,
+              sender_place: @note.id
+            )
+            recipients << member.email
+          end
+        end     
         render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr },
                status: 200
       else
@@ -88,26 +102,40 @@ class Api::NotesController < ApplicationController
                status: 422
       end
     else
-      render json: { success: false, message: 'sorry, only owner can update note', status: 422 },
+      render json: { success: false, message: 'sorry, only the owner can update the note', status: 422 },
              status: 422
     end
-  end
+  end  
 
   def destroy
     @user_note = UserNote.find_by(user: @current_user, note: @note)
-    # binding.pry
+    
     if @user_note.role != 'owner'
       render json: { success: false, message: 'sorry, only owner can delete note', status: 422 },
              status: 422
-    elsif @user_note.role == 'owner' && @user_note.user_id != @current_user && @note.destroy
-      render json: { success: true, message: 'note delete successfully', status: 200 },
+    elsif @note.destroy
+      note_members = @note.users
+      note_members.each do |member|
+        unless member == @current_user
+          notification = Notification.new(
+            title: "Telah menghapus Catatan #{@note.subject}",
+            body: params[:body],
+            user_id: member.id,
+            sender_id: @current_user.id,
+            sender_place: @note.id
+          )
+          notification.save
+        end
+      end
+  
+      render json: { success: true, message: 'note deleted successfully', status: 200 },
              status: 200
     else
-      render json: { success: false, message: 'note delete unsuccessfully', status: 422, data: @note.errors },
+      render json: { success: false, message: 'note deletion unsuccessful', status: 422, data: @note.errors },
              status: 422
     end
   end
-
+  
   private
 
   def set_invite_token

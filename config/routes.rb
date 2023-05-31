@@ -45,7 +45,7 @@ Rails.application.routes.draw do
     end
     resources :products
     resources :invitations
-    resources :notivications
+    resources :notifications
     resources :ringtones
     resources :team_notes
     resources :users
