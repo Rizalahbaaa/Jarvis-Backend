@@ -1,5 +1,5 @@
 class Api::UsersController < ApplicationController
-  skip_before_action :authenticate_request, only: %i[create login confirm_email forgot reset]
+  skip_before_action :authenticate_request, only: %i[create login confirm_email forgot reset resend_verification]
   before_action :set_user, only: %i[show update update_password]
 
   def index
@@ -16,8 +16,9 @@ class Api::UsersController < ApplicationController
     if @user.save
       puts 'SENDING EMAIL.....'
       UserMailer.registration_confirmation(@user).deliver_now
-      new_transaction = @user.transactions.create(point: 300, point_type: 'earned')
+      new_transaction = @user.transactions.create(point:0, point_type: 'earned')
       new_transaction.save
+      @user.add_notes_count(100) # Ubah angka 3 sesuai dengan jumlah catatan yang ingin ditambahkan
       render json: { success: true, status: 201, message: 'please confirm your email address to continue', data: @user.new_attr },
              status: 201
     else
@@ -55,6 +56,10 @@ class Api::UsersController < ApplicationController
   end
 
   def update
+    if params[:email]
+      return render json: {success: false, message: 'cannot change email', status: 400}
+    end
+
     if @user.update(user_params)
       render json: { success: true, message: 'profile updated successfully', status: 200, data: @user.new_attr },
              status: 200
@@ -141,12 +146,12 @@ class Api::UsersController < ApplicationController
 
   def update_password
     unless @user.authenticate(params[:current_password])
-      render json: { success: false, message: 'Invalid current password', status: 422 }
+      render json: { success: false, message: 'Invalid current password', status: 422 }, status: 422
       return
     end
 
     if @user.update(password_params.merge(is_forgot: true))
-      render json: { success: true, message: 'Password updated successfully', status: 200 }
+      render json: { success: true, message: 'Password updated successfully', status: 200 }, status: 200
     else
       render json: { success: false, message: 'Failed to update password', status: 422, errors: @user.errors.full_messages }
     end
@@ -156,6 +161,13 @@ class Api::UsersController < ApplicationController
     point = user.point
     render json: { success: true, status: 200, message: 'User point retrieved successfully', data: { user_id: user.id, point: point } }
   end
+  
+  def notes_count
+    user = User.find_by(id: params[:id])
+    notes_count = user.notes_count
+    render json: { success: true, status: 200, message: 'User note retrieved successfully', data: { user_id: user.id, notes_count: notes_count } }
+  end
+    
   private
 
   def set_user
@@ -166,7 +178,7 @@ class Api::UsersController < ApplicationController
   end
 
   def user_params
-    params.permit(:username, :email, :phone, :job, :photo, :password, :password_confirmation)
+    params.permit(:username,:email, :phone, :job, :photo, :password, :password_confirmation, :notes_count)
   end
 
   def password_params

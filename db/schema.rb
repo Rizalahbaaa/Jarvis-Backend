@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_22_031907) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_26_085259) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -35,10 +35,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031907) do
     t.integer "ringtone_id"
     t.integer "column_id"
     t.integer "note_type", default: 0
-    t.integer "status", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "reminder"
+    t.integer "status", default: 0
+    t.integer "frequency"
   end
 
   create_table "products", force: :cascade do |t|
@@ -50,6 +51,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031907) do
     t.datetime "updated_at", null: false
     t.text "photo_product"
     t.boolean "status"
+    t.integer "notes_quantity", default: 0
   end
 
   create_table "ringtones", force: :cascade do |t|
@@ -113,6 +115,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031907) do
     t.string "confirm_token"
     t.string "password_reset_token"
     t.datetime "password_reset_sent_at"
+    t.integer "notes_count", default: 0
   end
 
 end

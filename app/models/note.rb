@@ -6,26 +6,25 @@ class Note < ApplicationRecord
   belongs_to :ringtone
 
   validates :subject, presence: { message: "can't be blank" }, length: { maximum: 30 }
-  validates :description, presence: { message: "can't be blank" }, length: { maximum: 100 }
+  validates :description, presence: { message: "can't be blank" }, length: { maximum: 250 }
   validates :ringtone_id, presence: { message: 'ringtone must be assigned' }
   validates :event_date, presence: true
   validates :reminder, presence: true
   validates :column_id, presence: false
-  validate :reminder_date_valid?, :event_date_valid?
+  validates :frequency, presence: false
+  # validate :reminder_date_valid?, :event_date_valid?
 
   scope :join_usernote, -> { joins(:user_note) }
-  # scope :notefunc, -> (note_id) { join_usernote.where(user_note: { note_id: note_id })}
 
 # filters & sorts
-  # scope :noteall, -> (user_id){ join_usernote.where(user_note: { user_id: user_id}).where.not(note_type: 'team')}
-  scope :noteall, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where.not(note_type: 'team')}
+  scope :noteall, -> (user_id){ join_usernote.where('user_notes.user_id = ?', user_id).where.not(note_type: 'team')}
   scope :passed_note, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where('event_date < ?', Date.today).where.not(note_type: 'team') }
   scope :upcoming_note, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where('event_date >= ?', Date.today).where.not(note_type: 'team') }
-  scope :owner, -> (user_id){ join_usernote.where(user_note: { role: 'owner', user_id: user_id }).where.not(note_type: 'team')}
-  scope :upload_done, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'have_upload' }).where(note_type: 'collaboration')}
-  scope :not_upload, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'not_upload_yet' }).where(note_type: 'collaboration')}
-  scope :late, -> (user_id){ join_usernote.where(user_note: { role: 'member', user_id: user_id, status:'late' }).where(note_type: 'collaboration')}
-  scope :completed_note, ->{ where(status: 'completed').where.not(note_type: 'team') }
+  scope :owner, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND user_notes.role = ?', user_id, 0).where.not(note_type: 'team')}
+  scope :upload_done, -> (user_id){ join_usernote.where('user_notes.role = ? AND user_notes.user_id = ? AND user_notes.status = ?', 1, user_id,1 ).where(note_type: 'collaboration')}
+  scope :not_upload, -> (user_id){ join_usernote.where('user_notes.role = ? AND user_notes.user_id = ? AND user_notes.status = ? AND user_notes.noteinvitation_status = ?', 1, user_id, 0,1).where(note_type: 'collaboration')}
+  scope :late, -> (user_id){ join_usernote.where('user_notes.role = ? AND user_notes.user_id = ? AND user_notes.status = ?', 1, user_id,3 ).where(note_type: 'collaboration')}
+  scope :completed_note, ->(user_id){ join_usernote.where('user_notes.user_id = ?', user_id).where(status: 'completed').where.not(note_type: 'team')}
 
   enum note_type: {
     personal: 0,
@@ -33,44 +32,46 @@ class Note < ApplicationRecord
     team: 2
   }
 
+  enum frequency: {
+    harian: 0,
+    mingguan: 1,
+    bulanan: 2,
+    tahunan: 3
+  }
+
   enum status: {
     in_progress: 0,
     completed: 1
   }
+
   before_create :team_status
 
 
   def self.filter_and_sort(params, current_user)
-
     notes = Note.noteall(current_user)
 
-    if params[:note] == 'passed'
-      notes = Note.passed_note(current_user)
+    filter_options = {
+      'owner' => :owner,
+      'passed' => :passed_note,
+      'upcoming' => :upcoming_note,
+      'up' => :upload_done,
+      'notup' => :not_upload,
+      'late' => :late,
+      'completed' => :completed_note
+    }
+  
+    filter_options.each do |filter, method|
+      if params[filter].present?
+        notes = notes.merge(Note.send(method, current_user))
+      end
     end
-    if params[:note] == 'upcoming'
-      notes = Note.upcoming_note(current_user)
-    end 
-    if params[:owner] == 'yes'
-      notes = Note.owner(current_user)
-    end
-    if params[:up] == 'no'
-      notes = Note.not_upload(current_user)
-    end
-    if params[:up] == 'yes'
-      notes = Note.upload_done(current_user)
-    end
-    if params[:late] == 'yes'
-      notes = Note.late(current_user)
-    end
-    if params[:completed] == 'yes'
-      notes = Note.completed_note
-    end
-
+  
     sort_direction = params[:sort] == 'desc' ? 'desc' : 'asc'
     notes = notes.order(event_date: sort_direction)
-
-    return notes
+  
+    notes
   end
+  
 
   def self.ref_note(current_user)
     # remind = Note.where('reminder = ?', Time.now)
@@ -78,17 +79,18 @@ class Note < ApplicationRecord
   end
 
   def self.send_reminder
-    notes = Note.where('reminder = ?', Time.now.strftime('%F %I:%M'))
-    users = UserNote.where(note: notes)
-    users.each do |u|
-      if notes.present?
-        notes.each do |n|
+    notes = Note.where('reminder = ?', Time.now.strftime('%F %R').in_time_zone('Jakarta'))
+
+    if notes.present?
+      notes.each do |n|
+        users = UserNote.where(note: n)
+        users.each do |u|
           ReminderMailer.my_reminder(u.user.email, n).deliver_now
           puts 'SENDING REMINDER...'
         end
-      else
-        puts 'NO EMAIL SEND :('
       end
+    else
+      puts 'NO EMAIL SEND :('
     end
   end
 
@@ -134,17 +136,63 @@ class Note < ApplicationRecord
     user_note.map { |f| f.attaches.map { |attach| attach.path.url } }.flatten
   end
 
-  def new_attr
+  
+  def calculate_usernote 
+    UserNote.where(note_id: self.id, role: 'member', noteinvitation_status: 'Accepted')
+  end
+
+  def calculate_upload
+     UserNote.where(note_id: self.id, role: 'member', status:'have_upload') 
+  end
+
+  def calculate_progress
+    total_tasks = calculate_usernote.count
+    note_done = calculate_upload.count 
+    return 0 if total_tasks.zero?
+    (note_done.to_f / total_tasks) * 100
+  end
+
+  def precentage
+    if self.status == 'completed'
+      'completed'
+    else
+      "#{calculate_progress.to_i}%"
+    end
+  end
+
+  def new_attr(current_user)
+   
     {
       id:,
       subject:,
       description:,
       owner: owner_collab.map { |owner| owner.new_attr },
       member: accepted_member.map { |accept_user| accept_user.new_attr },
-      event_date:,
-      reminder:,
+      event_date: event_date.strftime('%d-%m-%Y %R'),
+      reminder: reminder.strftime('%d-%m-%Y %R'),
+      ringtone_id: ringtone.id,
       ringtone: ringtone.name,
       file: file_collection,
+      note_type: self.note_type,
+      status: owner_collab.map { |owner| owner  == current_user ? precentage : user_note&.find_by(user_id: current_user.id, note_id: self.id)&.status},
+      column: column&.title,
+    }
+                                                                        
+  end
+
+  def member_side(current_user_note)
+    attach_current = Attach.where(user_note: current_user_note).map(&:path).map(&:url)
+    {
+      id:,
+      subject:,
+      description:,
+      owner: owner_collab.map { |owner| owner.new_attr },
+      member: accepted_member.map { |accept_user| accept_user.new_attr },
+      event_date: event_date.strftime('%d-%m-%Y %R'),
+      reminder: reminder.strftime('%d-%m-%Y %R'),
+      ringtone_id: ringtone.id,
+      ringtone: ringtone.name,
+      file: attach_current,
       note_type:,
       status:,
       column: column&.title

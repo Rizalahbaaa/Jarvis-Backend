@@ -6,7 +6,7 @@ class Api::NotesController < ApplicationController
     notes = Note.filter_and_sort(params, current_user)
     if notes.present?
       render json: { success: true, message: 'data found', status: 200, data: notes.map do |owner|
-                                                                                owner.new_attr
+                                                                                owner.new_attr(current_user)
      end }
     else
       render json: { success: true, message: 'data not found', status: 404 }, status: 404
@@ -14,13 +14,22 @@ class Api::NotesController < ApplicationController
   end
 
   def show
-    render json: { success: true, status: 200, data: @note.new_attr }, status: 200
+    @find_user_note = UserNote.find_by(user: current_user, note: @note)
+    if @find_user_note.role == 'owner' && @find_user_note.user_id != @current_user
+      render json: { success: true, status: 200, data: @note.new_attr }, status: 200
+    elsif @find_user_note.role == 'member' && @find_user_note.user_id != @current_user
+      render json: { success: true, status: 200, data: @note.member_side(@find_user_note)}, status: 200
+    end
   end
 
   def create
     @note = Note.new(note_params)
     if @note.save
       @user_note = UserNote.create(note: @note, user: @current_user)
+      if @current_user.can_create_note?
+        @current_user.deduct_notes_count(1) # Mengurangi notes_count
+        @current_user.save
+
       @emails = params[:email]
       if @emails.present?
         collab_mailer
@@ -28,10 +37,15 @@ class Api::NotesController < ApplicationController
       return render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
              status: 201
     else
-      return render json: { success: false, message: 'note created unsuccessfully', status: 422, data: @note.errors },
+      @note.destroy
+      render json: { success: false, message: 'Tidak bisa membuat note lagi silahkan redeem', status: 422 },
              status: 422
     end
+  else
+    render json: { success: false, message: 'note created unsuccessfully', status: 422, data: @note.errors },
+           status: 422
   end
+end
 
   def email_valid
     @email = params[:email].downcase

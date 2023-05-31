@@ -21,9 +21,9 @@ class UserNote < ApplicationRecord
     late: 3
   }
   def completed?
-    note.nil? ? status == 'completed' : (status == 'completed' && note.status == 'completed')
+    note.nil? ? (status == 'completed') : (status == 'completed' && note.completed?)
   end
-
+  
   def invitation_valid?
     noteinvitation_status == 'Pending' && noteinvitation_expired > Time.now
   end
@@ -65,8 +65,8 @@ class UserNote < ApplicationRecord
     {
       owner: owner.user.new_attr,
       histories: histories.map{|h| h.new_attr},
-      note_created_at: note.created_at,
-      note_done_at: note.updated_at,
+      note_created_at: note.created_at.strftime('%F %I:%M'),
+      note_done_at: note.updated_at.strftime('%F %I:%M'),
       note_status: note.status
     }
   end
@@ -99,7 +99,8 @@ class UserNote < ApplicationRecord
       user: user.username,
       file: docs.map(&:url),
       role:,
-      status:
+      status:,
+      date: updated_at.strftime('%F %I:%M')
       # invitation_token: self.noteinvitation_token,
       # invitation_status: self.noteinvitation_status,
       # invitation_expired: self.noteinvitation_expired
