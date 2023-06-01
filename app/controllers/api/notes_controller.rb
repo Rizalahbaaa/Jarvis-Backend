@@ -34,8 +34,8 @@ class Api::NotesController < ApplicationController
       if @emails.present?
         collab_mailer
       end
-      return render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr },
-             status: 201
+      return render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr(current_user) },
+       status: 201
     else
       @note.destroy
       render json: { success: false, message: 'Tidak bisa membuat note lagi silahkan redeem', status: 422 },
@@ -127,25 +127,29 @@ end
     if @user_note.role != 'owner'
       render json: { success: false, message: 'sorry, only owner can delete note', status: 422 },
              status: 422
-    elsif @note.destroy
+    elsif @user_note.role == 'owner' && @user_note.user_id != @current_user
+      @note = Note.find(params[:id])
+      
       note_members = @note.users
       note_members.each do |member|
-        unless member == @current_user
-          notification = Notification.new(
-            title: "Telah menghapus Catatan #{@note.subject}",
-            body: params[:body],
-            user_id: member.id,
-            sender_id: @current_user.id,
-            sender_place: @note.id
-          )
-          notification.save
-        end
+        Notification.create(
+          title: " Telah menghapus Catatan #{@note.subject}",
+          body: params[:body],
+          user_id: member.id,
+          sender_id: current_user.id,
+          sender_place: @note.id
+        )
       end
-  
-      render json: { success: true, message: 'note deleted successfully', status: 200 },
-             status: 200
+      
+      if @note.destroy
+        render json: { success: true, message: 'note delete successfully', status: 200 },
+               status: 200
+      else
+        render json: { success: false, message: 'note delete unsuccessfully', status: 422, data: @note.errors },
+               status: 422
+      end
     else
-      render json: { success: false, message: 'note deletion unsuccessful', status: 422, data: @note.errors },
+      render json: { success: false, message: 'note delete unsuccessfully', status: 422, data: @note.errors },
              status: 422
     end
   end
