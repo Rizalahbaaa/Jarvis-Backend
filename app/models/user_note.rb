@@ -1,7 +1,7 @@
 class UserNote < ApplicationRecord
   belongs_to :user
   belongs_to :note
-  has_many :attaches
+  has_many :attaches, dependent: :destroy
   has_many :transactions
 
   validates :note_id, presence: true
@@ -39,8 +39,8 @@ class UserNote < ApplicationRecord
   end
 
   def update_status
-    ontime_file = attaches.where('self.created_at < ?', note.event_date)
-    late_file = attaches.where('self.created_at > ?', note.event_date)
+    ontime_file = Attach.where('self.created_at < ?', note.event_date)
+    late_file = Attach.where('self.created_at > ?', note.event_date)
 
     self.status = if ontime_file
                     'have_upload'
@@ -59,21 +59,21 @@ class UserNote < ApplicationRecord
 
   def note_history(note)
     sort = UserNote.order('updated_at ASC')
-    histories = sort.user_note_data
+    histories = sort.user_note_data(note)
 
     owner = UserNote.find_by(role: 'owner', note_id: note.id)
     {
       owner: owner.user.new_attr,
       histories: histories.map{|h| h.new_attr},
-      note_created_at: note.created_at.strftime('%F %I:%M'),
-      note_done_at: note.updated_at.strftime('%F %I:%M'),
+      note_created_at: note.created_at,
+      note_done_at: note.updated_at,
       note_status: note.status
     }
   end
 
-  def self.user_note_data
+  def self.user_note_data(note)
     member = []
-    UserNote.where(role: 'member', status: 'have_upload').each do |m|
+    UserNote.where(role: 'member', note: note, status: 'have_upload').each do |m|
       member.push(User.find_by(id: m.user_id))
     end
   end
@@ -100,7 +100,7 @@ class UserNote < ApplicationRecord
       file: docs.map(&:url),
       role:,
       status:,
-      date: updated_at.strftime('%F %I:%M')
+      date: updated_at
       # invitation_token: self.noteinvitation_token,
       # invitation_status: self.noteinvitation_status,
       # invitation_expired: self.noteinvitation_expired

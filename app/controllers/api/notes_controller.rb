@@ -16,9 +16,9 @@ class Api::NotesController < ApplicationController
   def show
     @find_user_note = UserNote.find_by(user: current_user, note: @note)
     if @find_user_note.role == 'owner' && @find_user_note.user_id != @current_user
-      render json: { success: true, status: 200, data: @note.new_attr }, status: 200
+      render json: { success: true, status: 200, data: @note.new_attr(current_user) }, status: 200
     elsif @find_user_note.role == 'member' && @find_user_note.user_id != @current_user
-      render json: { success: true, status: 200, data: @note.member_side(@find_user_note)}, status: 200
+      render json: { success: true, status: 200, data: @note.member_side(current_user)}, status: 200
     end
   end
 
@@ -38,11 +38,11 @@ class Api::NotesController < ApplicationController
        status: 201
     else
       @note.destroy
-      render json: { success: false, message: 'Tidak bisa membuat note lagi silahkan redeem', status: 422 },
+      return render json: { success: false, message: 'Tidak bisa membuat note lagi silahkan redeem', status: 422 },
              status: 422
     end
   else
-    render json: { success: false, message: 'note created unsuccessfully', status: 422, data: @note.errors },
+    return render json: { success: false, message: 'note created unsuccessfully', status: 422, data: @note.errors },
            status: 422
   end
 end
@@ -109,7 +109,7 @@ end
             recipients << member.email
           end
         end     
-        render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr },
+        render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr(current_user) },
                status: 200
       else
         render json: { success: false, status: 422, message: 'note updated unsuccessfully', data: @note.errors },
@@ -153,7 +153,46 @@ end
              status: 422
     end
   end
-  
+
+  def history
+    note = Note.find_by(id: params[:id])
+    if note.present?
+      user_note = UserNote.find_by(user: current_user, note: note)
+      render json: {status: 200, data: user_note.note_history(note)}, status: 200
+    else
+      render json: {status: 404, error: 'note not found'}, status: 404
+    end
+  end
+
+  def remove_member
+    member_emails = params[:email]
+    members = User.where(email: member_emails)
+
+    if members.empty?
+      render json: { success: false, message: 'Members not found', status: 404 }, status: 404
+    elsif members.include?(current_user)
+      render json: { success: false, message: 'You cannot remove yourself', status: 422 }, status: 422
+    else
+      note = Note.find_by_id(params[:id])
+      find_user_note = UserNote.find_by(user: current_user, note: note, role: 'owner')
+      if find_user_note.present?
+        user_note = note.user_note.where(user: members, noteinvitation_status: 1)
+        if user_note.empty?
+          render json: { success: false, message: 'Members are not part of the collab note', status: 422 }, status: 422
+        else
+          if user_note.destroy_all
+            render json: { success: true, message: 'Members remove successfully', status: 200 }, status: 200
+          else
+            render json: { success: false, message: 'Failed to remove members', status: 500 }, status: 500
+          end
+        end
+      else
+        render json: { success: false, message: 'sorry, only owner can update note', status: 422, data: find_user_note },
+              status: 422
+      end
+    end
+  end
+
   private
 
   def set_invite_token

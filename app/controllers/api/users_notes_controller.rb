@@ -18,30 +18,7 @@ class Api::UsersNotesController < ApplicationController
     render json: {success: true, status: 200, data: @user_note.new_attr}, status: 200
   end
 
-  def on_progress
-    @user_notes = UserNote.where(status: "on_progress")
-    render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
-  end
 
-  def completed
-    @user_notes = UserNote.where(status: "completed")
-    render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
-  end
-
-  def late
-    @user_notes = UserNote.where(status: "late")
-    render json: { success: true, status: 200, data: @user_notes.map {|user_note| user_note.new_attr} }
-  end
-
-  def history
-    user_note = UserNote.find_by(note: params[:note_id])
-    note = Note.find_by(id: params[:note_id])
-    if user_note
-      render json: {status: 200, data: user_note.note_history(note)},  status: 200
-    else
-      render json: note.errros, status: 400
-    end
-  end
 
   def accept_invitation
     @user_note = UserNote.find_by(noteinvitation_token: params[:noteinvitation_token])
