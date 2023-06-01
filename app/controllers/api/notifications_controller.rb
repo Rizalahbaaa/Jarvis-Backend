@@ -1,43 +1,53 @@
 class Api::NotificationsController < ApplicationController
     before_action :authenticate_request
     before_action :set_notification, only: %i[update destroy show]
-
+    
     def index
-        @notification = Notification.all
-        render json: { success: true, status: 200, data: @notification.map { |notification| notification.new_attr } }
+        @notifications = Notification.where(user_id: current_user.id)
+        render json: { success: true, status: 200, data: @notifications.map { |notification| notification.new_attr } }
     end
-
-    def show
-        render json: @notification.new_attr
-    end
-
+      
     def create
         @notification = Notification.new(notification_params)
-    
+        @notification.user_id = current_user.id
         if @notification.save
-          render json: { success: true, status: 201, message: 'create notification successfully', data: @notification.new_attr },
+          render json: { success: true, message: 'notification sent successfully', status: 201, data: @notification.new_attr },
                  status: 201
         else
-          render json: { success: false, status: 422, message: 'create notification unsuccessfully', data: @notification.errors },
+          render json: { success: false, message: 'notification sending unsuccessful', status: 422, data: @notification.errors },
                  status: 422
         end
-    end
+      end      
 
-    def update
-        if @notification.update(notification_params)
-          render json: { success: true, status: 200, message: 'notification updated successfully', data: @notification.new_attr }, status: 200
+    def mark_as_read
+        @notification = Notification.find(params[:id])
+        if @notification.update(read: true)
+          render json: { success: true }
         else
-          render json: { success: false, status: 422, message: @notification.errors }, status: 422
+          render json: { success: false }
         end
     end
-
-    def destroy
-        room = Notification.find(params[:id])
-        room.destroy
-        render json: "berhasil di hapus"
+    
+    def update
+        if @notification.update(notification_params)
+            render json: { success: true, message: 'notification updated successfully', status: 200, data: @notifications.new_attr },
+             status: 200
+        else
+        render json: { success: false, message: 'notification updated unsuccessfully', status: 422, data: @notifications.errors },
+                status: 422
+        end
+    
     end
     
-
+    def destroy
+        @notification = Notification.find(params[:id])
+        if @notification.destroy
+            render json: { success: true, status: 200, message: 'notification deleted successfully' }, status: 200
+        else
+            render json: { success: true, status: 422, message: 'notification deleted unsuccessfully' }, status: 422
+        end
+    end
+    
     private
 
     def set_notification
@@ -48,7 +58,7 @@ class Api::NotificationsController < ApplicationController
     end
 
     def notification_params
-        params.permit(
-         :title, :description, :user_id, :user_note_id, :user_team_id)
+        params.require(:notification).permit(:title, :body, :user_id, :read)
     end
+    
 end
