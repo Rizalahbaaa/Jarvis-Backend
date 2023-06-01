@@ -33,10 +33,11 @@ class Note < ApplicationRecord
   }
 
   enum frequency: {
-    harian: 0,
-    mingguan: 1,
-    bulanan: 2,
-    tahunan: 3
+    no_repeat: 0,
+    daily: 1,
+    weekly: 2,
+    monthly: 3,
+    annual: 4
   }
 
   enum status: {
@@ -89,8 +90,8 @@ class Note < ApplicationRecord
           puts 'SENDING REMINDER...'
         end
       end
-    else
-      puts 'NO EMAIL SEND :('
+    # else
+    #   puts 'NO EMAIL SEND :('
     end
   end
 
@@ -161,40 +162,40 @@ class Note < ApplicationRecord
   end
 
   def new_attr(current_user)
-   
     {
       id:,
       subject:,
       description:,
       owner: owner_collab.map { |owner| owner.new_attr },
       member: accepted_member.map { |accept_user| accept_user.new_attr },
-      event_date: event_date.strftime('%d-%m-%Y %R'),
-      reminder: reminder.strftime('%d-%m-%Y %R'),
+      event_date:,
+      reminder: ,
       ringtone_id: ringtone.id,
       ringtone: ringtone.name,
       file: file_collection,
       note_type: self.note_type,
-      status: owner_collab.map { |owner| owner  == current_user ? precentage : user_note&.find_by(user_id: current_user.id, note_id: self.id)&.status},
+      status: owner_collab.map { |owner| owner == current_user ? precentage : user_note&.find_by(user_id: current_user.id, note_id: self.id)&.status},
       column: column&.title,
     }
-                                                                        
   end
 
-  def member_side(current_user_note)
-    attach_current = Attach.where(user_note: current_user_note).map(&:path).map(&:url)
+  def member_side(current_user)
+
+    member = UserNote.find_by(note: self.id, user: current_user)
+    attach_current = Attach.where(user_note: member).map(&:path).map(&:url)
     {
       id:,
       subject:,
       description:,
       owner: owner_collab.map { |owner| owner.new_attr },
       member: accepted_member.map { |accept_user| accept_user.new_attr },
-      event_date: event_date.strftime('%d-%m-%Y %R'),
-      reminder: reminder.strftime('%d-%m-%Y %R'),
+      event_date:,
+      reminder:,
       ringtone_id: ringtone.id,
       ringtone: ringtone.name,
       file: attach_current,
       note_type:,
-      status:,
+      status: member.status,
       column: column&.title
     }
   end
