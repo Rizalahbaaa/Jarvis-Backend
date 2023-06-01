@@ -1,4 +1,6 @@
 class Api::NotificationsController < ApplicationController
+    before_action :authenticate_request
+    before_action :set_notification, only: %i[update destroy show]
     
     def index
         @notifications = Notification.where(user_id: current_user.id)
@@ -27,7 +29,6 @@ class Api::NotificationsController < ApplicationController
     end
     
     def update
-        @notification = Notification.find(params[:id])
         if @notification.update(notification_params)
             render json: { success: true, message: 'notification updated successfully', status: 200, data: @notifications.new_attr },
              status: 200
@@ -48,8 +49,12 @@ class Api::NotificationsController < ApplicationController
     end
     
     private
+
     def set_notification
         @notification = Notification.find(params[:id])
+        return unless @notification.nil?
+    
+        render json: { status: 404, message: 'notification not found' }, status: 404
     end
 
     def notification_params
