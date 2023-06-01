@@ -35,11 +35,22 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_26_085259) do
     t.integer "ringtone_id"
     t.integer "column_id"
     t.integer "note_type", default: 0
+    t.integer "status", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "reminder"
-    t.integer "status", default: 0
     t.integer "frequency"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.string "title"
+    t.string "body"
+    t.integer "user_id"
+    t.boolean "read", default: false
+    t.integer "sender_id"
+    t.integer "sender_place"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "products", force: :cascade do |t|
