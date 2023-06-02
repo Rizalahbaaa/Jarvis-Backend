@@ -32,6 +32,7 @@ class Api::NotesController < ApplicationController
 
       emails = params[:email]
       if emails.present?
+        @note.update(note_type: 1)
         collab_mailer(emails)
       end
       return render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr(current_user) },
@@ -59,21 +60,20 @@ end
   end
 
   def collab_mailer(emails)
-    @note.update(note_type: 1)
     emails.each do |email|
       token = set_invite_token
       @user_invite = User.find_by(email:)
-      @is_join = UserNote.find_by(note: @note, user: @user_invite)
-      if @is_join.nil?
-        @invite_collab = UserNote.new(note: @note, user: @user_invite, noteinvitation_token: token[:token], noteinvitation_status:
-          token[:status], role: token[:role], noteinvitation_expired: token[:expired])
-        if @invite_collab.save
-          puts 'SENDING EMAIL.....'
-          InvitationMailer.collab_invitation(email, token[:token]).deliver_now
-        end
-      else
-        render json: { status: 422, message: "#{email} already invited" }, status: 422
+      # @is_join = UserNote.find_by(note: @note, user: @user_invite)
+      # if @is_join.nil?
+      @invite_collab = UserNote.new(note: @note, user: @user_invite, noteinvitation_token: token[:token], noteinvitation_status:
+        token[:status], role: token[:role], noteinvitation_expired: token[:expired])
+      if @invite_collab.save
+        puts 'SENDING EMAIL.....'
+        InvitationMailer.collab_invitation(email, token[:token]).deliver_now
       end
+      # else
+      #   return render json: { status: 422, message: "#{email} already invited" }, status: 422
+      # end
     end
   end
 
@@ -81,14 +81,20 @@ end
     if params[:note_type] && @note.note_type != params[:note_type]
       return render json: { success: false, message: 'cannot change note_type', status: 400 }, status: :bad_request
     end
-  
+
     @find_user_note = UserNote.find_by(user: @current_user, note: @note)
     if (@find_user_note.role == 'owner' && @find_user_note.user_id != @current_user) || (!@note.column_id.nil? && Note.teamates(@current_user, @note))
       emails = params[:email]
-  
       if emails.present?
-        collab_mailer(emails)
-        return render json: { status: 200, message: 'email sent successfully' }, status: 200
+        emails.each do |e|
+          user = User.find_by(email: e)
+          is_join = UserNote.find_by(note: @note, user: user)
+          if is_join.nil?
+            collab_mailer(emails)
+          else
+            return render json: { status: 422, message: "#{e} already invited" }, status: 422
+          end
+        end
       end
   
       if @note.update(note_params)
@@ -108,7 +114,7 @@ end
             )
             recipients << member.email
           end
-        end     
+        end
         render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr(current_user) },
                status: 200
       else
