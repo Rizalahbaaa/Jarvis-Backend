@@ -2,9 +2,10 @@ class Api::ColumnsController < ApplicationController
   before_action :set_column, only: %i[show update destroy]
 
   def index
-    # binding.pry
-    @column = Column.all
-    render json: { success: true, status: 200, data: @column.map {|column| column.new_attr} }
+    @team = Team.find(params[:team_id]) # Ubah ini sesuai dengan cara Anda mendapatkan ID tim yang diinginkan
+    @columns = @team.column # Ambil semua kolom yang terkait dengan tim
+  
+    render json: { success: true, status: 200, data: @columns.map { |column| column.new_attr } }
   end
 
   def show
