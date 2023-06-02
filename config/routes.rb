@@ -53,6 +53,7 @@ Rails.application.routes.draw do
     resources :team_notes
     resources :users
     resources :teams do
+      resources :columns, only: [:index]
       member do
         post :kick_member
         post :leave_member
