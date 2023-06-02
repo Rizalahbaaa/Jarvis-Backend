@@ -52,6 +52,18 @@ class UserNote < ApplicationRecord
     save!
   end
 
+  def self.auto_late
+    late_note = Note.where('event_date < ?', Time.now.strftime('%F %R').in_time_zone('Jakarta'))
+    late_note.each do |l|
+      user_late = UserNote.where(note: l, noteinvitation_status: 'Accepted', role: 'member')
+      user_late.each do |ul|
+        if ul.present? && ul.status != 'late'
+          ul.update(status: 'late')
+        end
+      end
+    end
+  end
+
   def update_time
     updated_at = Time.now
     save
