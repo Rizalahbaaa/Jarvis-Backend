@@ -32,8 +32,8 @@ class Api::NotesController < ApplicationController
 
       emails = params[:email]
       if emails.present?
-        @note.update(note_type: 1)
         collab_mailer(emails)
+        @note.update(note_type: 1)
       end
       return render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr(current_user) },
        status: 201
@@ -63,17 +63,12 @@ end
     emails.each do |email|
       token = set_invite_token
       @user_invite = User.find_by(email:)
-      # @is_join = UserNote.find_by(note: @note, user: @user_invite)
-      # if @is_join.nil?
       @invite_collab = UserNote.new(note: @note, user: @user_invite, noteinvitation_token: token[:token], noteinvitation_status:
         token[:status], role: token[:role], noteinvitation_expired: token[:expired])
       if @invite_collab.save
         puts 'SENDING EMAIL.....'
         InvitationMailer.collab_invitation(email, token[:token]).deliver_now
       end
-      # else
-      #   return render json: { status: 422, message: "#{email} already invited" }, status: 422
-      # end
     end
   end
 
@@ -84,7 +79,7 @@ end
 
     @find_user_note = UserNote.find_by(user: @current_user, note: @note)
     if (@find_user_note.role == 'owner' && @find_user_note.user_id != @current_user) || (!@note.column_id.nil? && Note.teamates(@current_user, @note))
-      emails = params[:email]
+      emails = params[:email] || []
       if emails.present?
         emails.each do |e|
           user = User.find_by(email: e)
