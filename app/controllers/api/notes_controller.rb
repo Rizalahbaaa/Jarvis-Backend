@@ -30,9 +30,9 @@ class Api::NotesController < ApplicationController
         @current_user.deduct_notes_count(1) # Mengurangi notes_count
         @current_user.save
 
-      @emails = params[:email]
-      if @emails.present?
-        collab_mailer
+      emails = params[:email]
+      if emails.present?
+        collab_mailer(emails)
       end
       return render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr(current_user) },
        status: 201
@@ -58,9 +58,9 @@ end
     render json: { data: @results.map { |result| result.email } }, status: 200
   end
 
-  def collab_mailer
+  def collab_mailer(emails)
     @note.update(note_type: 1)
-    @emails.each do |email|
+    emails.each do |email|
       token = set_invite_token
       @user_invite = User.find_by(email:)
       @is_join = UserNote.find_by(note: @note, user: @user_invite)
@@ -87,7 +87,7 @@ end
       emails = params[:email]
   
       if emails.present?
-        collab_mailer
+        collab_mailer(emails)
         return render json: { status: 200, message: 'email sent successfully' }, status: 200
       end
   
