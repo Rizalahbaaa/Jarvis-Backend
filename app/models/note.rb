@@ -72,12 +72,6 @@ class Note < ApplicationRecord
   
     notes
   end
-  
-
-  def self.ref_note(current_user)
-    # remind = Note.where('reminder = ?', Time.now)
-    my_note = Note.joins(:user_note).where('user_id = ? AND note_id = ?', current_user.id, self.id)
-  end
 
   def self.send_reminder
     notes = Note.where('reminder = ?', Time.now.strftime('%F %R').in_time_zone('Jakarta'))
