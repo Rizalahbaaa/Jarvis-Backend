@@ -107,6 +107,9 @@ GEM
     erubi (1.12.0)
     et-orbi (1.2.7)
       tzinfo
+    exception_notification (4.5.0)
+      actionmailer (>= 5.2, < 8)
+      activesupport (>= 5.2, < 8)
     faker (3.1.1)
       i18n (>= 1.8.11, < 2)
     ffi (1.15.5)
@@ -288,6 +291,7 @@ DEPENDENCIES
   debug
   dockerfile-rails (>= 1.2)
   dotenv-rails
+  exception_notification
   faker
   jwt
   pg (~> 1.1)
