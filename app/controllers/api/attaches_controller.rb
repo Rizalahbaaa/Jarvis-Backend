@@ -4,11 +4,7 @@ class Api::AttachesController < ApplicationController
 
   def index
     @attaches = Attach.all
-    if @attaches.present?
-      render json: { success: true, status: 200, data: @attaches.map { |attach| attach.new_attr } }
-    else
-      render json: { success: true, message: 'data not found', status: 404 }, status: 404
-    end
+    render json: { success: true, status: 200, data: @attaches.map { |attach| attach.new_attr } }
   end
 
   def create
