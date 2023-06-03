@@ -78,15 +78,25 @@ class Note < ApplicationRecord
 
     if notes.present?
       notes.each do |n|
-        users = UserNote.where(note: n)
+        users = UserNote.where('note_id = ? AND (role = ? OR noteinvitation_status = ?)', n.id, 0, 1)
         users.each do |u|
           ReminderMailer.my_reminder(u.user.email, n).deliver_now
           puts 'SENDING REMINDER...'
+          Note.send_notif(n, u.user.id)
+          puts 'SEND NOTIF....'
         end
       end
     # else
     #   puts 'NO EMAIL SEND :('
     end
+  end
+
+  def self.send_notif(note, user)
+    Notification.create(
+      title: "Reminder event #{note.subject}",
+      body: "Tanggal event : #{note.event_date}",
+      user_id: user
+    )
   end
 
   # def name
