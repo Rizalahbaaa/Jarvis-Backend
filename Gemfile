@@ -51,6 +51,8 @@ gem 'jwt'
 
 gem 'dotenv-rails'
 
+gem 'exception_notification'
+
 gem 'faker'
 
 gem 'carrierwave'
