@@ -5,7 +5,7 @@ class Api::ColumnsController < ApplicationController
     @team = Team.find(params[:team_id]) # Ubah ini sesuai dengan cara Anda mendapatkan ID tim yang diinginkan
     @columns = @team.column # Ambil semua kolom yang terkait dengan tim
   
-    render json: { success: true, status: 200, data: @columns.map { |column| column.new_attr } }
+    render json: { success: true, status: 200, data: @columns.map { |column| column.new_attr(current_user) } }
   end
 
   def show
