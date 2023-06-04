@@ -39,8 +39,8 @@ class Api::UsersController < ApplicationController
         }, status: 200
       else
         render json: {
-          status: 422, message: 'Please activate your email account first'
-        }, status: 422
+          status: 403, message: 'Please activate your email account first'
+        }, status: 403
       end
     else
       render json: { error: 'invalid email or password' }, status: 401
