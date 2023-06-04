@@ -301,6 +301,7 @@ DEPENDENCIES
   rails (~> 7.0.4, >= 7.0.4.3)
   rails_admin (~> 3.0)
   redis
+  rufus-scheduler
   sassc-rails
   sidekiq
   sidekiq-scheduler
