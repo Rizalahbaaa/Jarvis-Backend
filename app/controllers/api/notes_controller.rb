@@ -10,9 +10,9 @@ class Api::NotesController < ApplicationController
 
   def show
     @find_user_note = UserNote.find_by(user: current_user, note: @note)
-    if @find_user_note.role == 'owner' && @find_user_note.user_id != @current_user
+    if @find_user_note.role == 'owner' && @find_user_note
       render json: { success: true, status: 200, data: @note.new_attr(current_user) }, status: 200
-    elsif @find_user_note.role == 'member' && @find_user_note.user_id != @current_user
+    elsif @find_user_note.role == 'member' && @find_user_note
       render json: { success: true, status: 200, data: @note.member_side(current_user)}, status: 200
     end
   end
@@ -73,7 +73,7 @@ end
     end
 
     @find_user_note = UserNote.find_by(user: @current_user, note: @note)
-    if (@find_user_note.role == 'owner' && @find_user_note.user_id != @current_user) || (!@note.column_id.nil? && Note.teamates(@current_user, @note))
+    if (@find_user_note.role == 'owner' && @find_user_note) || (!@note.column_id.nil? && Note.teamates(@current_user, @note))
       emails = params[:email] || []
       if emails.present?
         emails.each do |e|
@@ -123,7 +123,7 @@ end
     if @user_note.role != 'owner'
       render json: { success: false, message: 'sorry, only owner can delete note', status: 422 },
              status: 422
-    elsif @user_note.role == 'owner' && @user_note.user_id != @current_user
+    elsif @user_note.role == 'owner' && @user_note
       @note = Note.find(params[:id])
       
       note_members = @note.users

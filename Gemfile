@@ -68,3 +68,5 @@ gem 'sidekiq'
 gem 'sidekiq-scheduler'
 
 gem 'redis'
+
+gem 'rufus-scheduler'

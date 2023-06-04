@@ -5,12 +5,12 @@ class Column < ApplicationRecord
   validates :title, presence: true, length: { maximum: 100 }
   validates :team_id, presence: true
 
-  def new_attr
+  def new_attr(current_user)
     {
       id:,
       title:,
       team: team.title,
-      note: note.map { |note| note.new_attr }
+      note: note.map { |note| note.new_attr(current_user) }
     }
   end
 end
