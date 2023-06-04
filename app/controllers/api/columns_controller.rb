@@ -8,7 +8,7 @@ class Api::ColumnsController < ApplicationController
     render json: { success: true, status: 200, data: @columns.map { |column| column.new_attr(current_user) } }
   end
 
-  def showo
+  def show
     render json: @column.new_attr
   end
 
