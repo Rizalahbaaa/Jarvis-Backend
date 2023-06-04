@@ -74,7 +74,7 @@ class Api::TeamsController < ApplicationController
 
   def update
     @find_user_team = UserTeam.find_by(user: @current_user, team: @team)
-    if @find_user_team.team_role == 'owner' && @find_user_team.user_id != @current_user
+    if @find_user_team && @find_user_team.team_role == 'owner'
       emails = params[:email] || []
 
       if @team.update(team_params)
