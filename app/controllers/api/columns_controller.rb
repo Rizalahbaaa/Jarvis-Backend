@@ -8,7 +8,7 @@ class Api::ColumnsController < ApplicationController
     render json: { success: true, status: 200, data: @columns.map { |column| column.new_attr(current_user) } }
   end
 
-  def show
+  def showo
     render json: @column.new_attr
   end
 
@@ -16,7 +16,7 @@ class Api::ColumnsController < ApplicationController
     @column = Column.new(column_params)
 
     if @column.save
-      render json: { success: true, status: 201, message: 'create column successfully', data: @column.new_attr },
+      render json: { success: true, status: 201, message: 'create column successfully', data: @column.new_attr(current_user) },
              status: 201
     else
       render json: { success: false, status: 422, message: 'create column unsuccessfully', data: @column.errors },
@@ -26,7 +26,7 @@ class Api::ColumnsController < ApplicationController
 
   def update
     if @column.update(column_params)
-      render json: { success: true, status: 200, message: 'column updated successfully', data: @column.new_attr }, status: 200
+      render json: { success: true, status: 200, message: 'column updated successfully', data: @column.new_attr(current_user) }, status: 200
     else
       render json: { success: false, status: 422, message: @column.errors }, status: 422
     end
