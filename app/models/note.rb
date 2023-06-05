@@ -36,8 +36,7 @@ class Note < ApplicationRecord
     no_repeat: 0,
     daily: 1,
     weekly: 2,
-    monthly: 3,
-    annual: 4
+    monthly: 3
   }
 
   enum status: {
@@ -74,7 +73,8 @@ class Note < ApplicationRecord
   end
 
   def self.send_reminder
-    notes = Note.where('reminder = ?', Time.now.strftime('%F %R').in_time_zone('Jakarta'))
+    now = Time.now.strftime('%F %R').in_time_zone('Jakarta')
+    notes = Note.where('reminder = ?', now)
 
     if notes.present?
       notes.each do |n|
@@ -91,10 +91,62 @@ class Note < ApplicationRecord
     end
   end
 
+  def self.send_repeater
+    require 'rufus-scheduler'
+
+    interval = Rufus::Scheduler.new
+    now = Time.now.strftime('%F %R').in_time_zone('Jakarta')
+    notes = Note.where('event_date = ?', now)
+
+    if notes.present?
+      notes.each do |n|
+        users = UserNote.where('note_id = ? AND (role = ? OR noteinvitation_status = ?)', n.id, 0, 1)
+        users.each do |u|
+          ReminderMailer.my_reminder(u.user.email, n).deliver_now
+          puts 'SENDING REMINDER NOW...'
+          Note.send_notif(n, u.user.id)
+          puts 'SEND NOTIF....'
+
+          case n.frequency
+          when 'daily'
+            interval.every '1d' do
+              ReminderMailer.my_repeater(u.user.email, n).deliver_now
+              puts 'SENDING DAILY REMINDER...'
+              Note.freq_notif(n, u.user.id)
+              puts 'SEND DAILY NOTIF....'
+            end
+          when 'weekly'
+            interval.every '1w' do
+              ReminderMailer.my_repeater(u.user.email, n).deliver_now
+              puts 'SENDING WEEKLY REMINDER...'
+              Note.freq_notif(n, u.user.id)
+              puts 'SEND WEEKLY NOTIF....'
+            end
+          when 'monthly'
+            interval.every '1M' do
+              ReminderMailer.my_repeater(u.user.email, n).deliver_now
+              puts 'SENDING MONTHLY REMINDER...'
+              Note.freq_notif(n, u.user.id)
+              puts 'SEND MONTHLY NOTIF....'
+            end
+          end
+        end
+      end
+    end
+  end
+
   def self.send_notif(note, user)
     Notification.create(
       title: "Reminder event #{note.subject}",
       body: "Tanggal event : #{note.event_date}",
+      user_id: user
+    )
+  end
+
+  def self.freq_notif(note, user)
+    Notification.create(
+      title: "#{note.frequency} reminder untuk #{note.subject}",
+      body: "tanggal event: #{Time.now.strftime('%F %R').in_time_zone('Jakarta')}",
       user_id: user
     )
   end
