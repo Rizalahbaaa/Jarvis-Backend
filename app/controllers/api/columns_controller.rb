@@ -15,7 +15,7 @@ class Api::ColumnsController < ApplicationController
   def create
     @column = Column.new(column_params)
 
-    if @column.save
+    if @column.save && Column.teamsval(current_user, params[:team_id])
       render json: { success: true, status: 201, message: 'create column successfully', data: @column.new_attr(current_user) },
              status: 201
     else
@@ -25,7 +25,10 @@ class Api::ColumnsController < ApplicationController
   end
 
   def update
-    if @column.update(column_params)
+    if params[:team_id] && @column.team_id != params[:team_id]
+      return render json: { success: false, message: 'cannot change team id', status: 400 }, status: :bad_request
+    end
+    if @column.update(column_params) 
       render json: { success: true, status: 200, message: 'column updated successfully', data: @column.new_attr(current_user) }, status: 200
     else
       render json: { success: false, status: 422, message: @column.errors }, status: 422
