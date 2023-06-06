@@ -14,14 +14,19 @@ class Api::ColumnsController < ApplicationController
 
   def create
     @column = Column.new(column_params)
-
-    if @column.save && Column.teamsval(current_user, params[:team_id])
+if Column.teamsval(current_user, params[:team_id])
+    if @column.save 
       render json: { success: true, status: 201, message: 'create column successfully', data: @column.new_attr(current_user) },
              status: 201
+     else
+      render json: { success: false, status: 422, message: 'create column unsuccessfully', data: @column.errors },
+             status: 422
+    end
     else
       render json: { success: false, status: 422, message: 'create column unsuccessfully', data: @column.errors },
              status: 422
     end
+  
   end
 
   def update
