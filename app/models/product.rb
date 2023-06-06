@@ -8,20 +8,20 @@ class Product < ApplicationRecord
     validates :terms, presence: true ,length: { maximum: 100 }
     validates :reward, presence: true, length: { maximum: 50 }, uniqueness: { case_sensitive: false }
     validates :price, presence: true, numericality: { greater_than: 0 }
-    validates :photo_product, presence: false
+    validates :photo_product, presence: true
     validates_presence_of :status
 
     enum status: { unredeemed: false, redeemed: true }
   
     def new_attr
       {
-        id: self.id,
-        name: self.name,
-        reward: self.reward,
-        terms: self.terms,
-        price: self.price,
-        photo_product: self.photo_product.url,
-        status: self.status,
+        id: ,
+        name: ,
+        reward: ,
+        terms: ,
+        price: ,
+        photo_product: photo_product.url,
+        status: ,
         notes_quantity:
       }
     end
