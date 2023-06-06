@@ -91,6 +91,28 @@ class Note < ApplicationRecord
     end
   end
 
+  def self.assign_member_to_note(emails, column, note)
+    participant = []
+    emails.each do |e|
+      user = User.find_by(email: e)
+      team = Team.find_by(column: Column.find_by_id(column))
+      find_member = UserTeam.find_by(user: user, team: team, teaminvitation_status: 'Accepted')
+      if find_member.present?
+        check_member = UserNote.find_by(user_id: find_member.user_id, note: note)
+        if check_member.role != 'owner'
+          member = {
+            note_id: note.id,
+            user_id: find_member.user_id,
+            role: 1,
+            noteinvitation_status: 1
+          }
+        end
+      end
+      participant << member
+    end
+    UserNote.create(participant)
+  end
+
   def self.send_repeater
     require 'rufus-scheduler'
 
