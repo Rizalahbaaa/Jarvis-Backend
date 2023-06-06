@@ -161,6 +161,12 @@ class Note < ApplicationRecord
     @find_user_team = UserTeam.find_by(user: current_user, team: @find_team).present?
   end
 
+  def self.columncheck(current_user, column_id)
+    @find_column = Column.find_by(id: column_id)
+    @find_team = Team.find_by(id: @find_column.team_id)
+    @find_user_team = UserTeam.find_by(user: current_user, team: @find_team).present?
+  end
+
   def team_status
     if self.column_id.present?
       self.note_type = 'team'
