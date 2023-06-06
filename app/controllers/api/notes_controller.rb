@@ -10,10 +10,12 @@ class Api::NotesController < ApplicationController
 
   def show
     @find_user_note = UserNote.find_by(user: current_user, note: @note)
-    if @find_user_note.role == 'owner' && @find_user_note
+    if @note.note_type == 'team' && Note.teamates(current_user, @note)
       render json: { success: true, status: 200, data: @note.new_attr(current_user) }, status: 200
     elsif @find_user_note.role == 'member' && @find_user_note
       render json: { success: true, status: 200, data: @note.member_side(current_user)}, status: 200
+    elsif @find_user_note.role == 'owner' && @find_user_note
+      render json: { success: true, status: 200, data: @note.new_attr(current_user)}, status: 200
     end
   end
 
