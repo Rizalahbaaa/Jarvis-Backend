@@ -36,19 +36,19 @@ class Api::NotesController < ApplicationController
           @note.update(note_type: 1)
         elsif emails.present? && @note.note_type == 'team'
           Note.assign_member_to_note(emails, column, @note)
-        
         end
 
         return render json: { success: true, message: 'Note created successfully', status: 201, data: @note.new_attr(current_user) },
                status: 201
-      else
-        @note.destroy
-        return render json: { success: false, message: 'Tidak bisa membuat note lagi silahkan redeem', status: 422 },
-               status: 422
+      # else
+      #   @note.destroy
+      #   return render json: { success: false, message: 'Tidak bisa membuat note lagi silahkan redeem', status: 422 },
+      #          status: 422
       end
     else
       return render json: { success: false, message: 'Note created unsuccessfully', status: 422, data: @note.errors },
-             status: 422
+      status: 422
+    # else
     end
   end
   
@@ -218,7 +218,7 @@ class Api::NotesController < ApplicationController
   end
 
   def note_params
-    params.permit(:subject, :description, :event_date, :reminder, :ringtone_id, :column_id,
+    params.permit(:subject, :description, :event_date, :reminder, :frequency, :ringtone_id, :column_id,
                   :status)
   end
 
