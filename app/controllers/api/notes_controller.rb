@@ -23,32 +23,32 @@ class Api::NotesController < ApplicationController
     @note = Note.new(note_params)
     column = params[:column_id]
     if !column.present? || Column.find_by(id: column).present? && Note.columncheck(current_user, column)
-      if @note.save
-        @user_note = UserNote.create(note: @note, user: @current_user)
         if @current_user.can_create_note?
-          @current_user.deduct_notes_count(1) # Mengurangi notes_count
-          @current_user.save
-        end
+          if @note.save
+        @current_user.deduct_notes_count(1) # Mengurangi notes_count
+        @user_note = UserNote.create(note: @note, user: @current_user)
 
-        emails = params[:email]
-        if emails.present? && @note.note_type != 'team'
-          collab_mailer(emails)
-          @note.update(note_type: 1)
-        elsif emails.present? && @note.note_type == 'team'
-          Note.assign_member_to_note(emails, column, @note)
+       emails = params[:email]
+       if emails.present? && @note.note_type != 'team'
+         collab_mailer(emails)
+         @note.update(note_type: 1)
+       elsif emails.present? && @note.note_type == 'team'
+         Note.assign_member_to_note(emails, column, @note)
+       end
+   
+       return render json: { success: true, message: 'Note created successfully', status: 201, data: @note.new_attr(current_user) },
+       status: 201
+        else
+       return render json: { success: false, message: 'Note created unsuccessfully', status: 422, data: @note.errors },
+     status: 422
+       end
+        else
+          return render json: { success: true, message: 'Tidak Bisa membuat note lagi silahkan redeem', status: 422, data: @note.errors },
+          status: 422
         end
-
-        return render json: { success: true, message: 'Note created successfully', status: 201, data: @note.new_attr(current_user) },
-               status: 201
-      # else
-      #   @note.destroy
-      #   return render json: { success: false, message: 'Tidak bisa membuat note lagi silahkan redeem', status: 422 },
-      #          status: 422
-      end
-    else
-      return render json: { success: false, message: 'Note created unsuccessfully', status: 422, data: @note.errors },
+        else 
+       return render json: { success: false, message: 'cannot created note, your not tim member', status: 422 },
       status: 422
-    # else
     end
   end
   
