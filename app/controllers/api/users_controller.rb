@@ -22,7 +22,7 @@ class Api::UsersController < ApplicationController
       render json: { success: true, status: 201, message: 'please confirm your email address to continue', data: @user.new_attr },
              status: 201
     else
-      render json: { success: false, status: 422, message: 'oooppss, something went wrong!', data: @user.errors },
+      render json: { success: false, status: 422, message: 'oooppss, something went wrong!', data: @user.errors.full_messages },
              status: 422
     end
   end
