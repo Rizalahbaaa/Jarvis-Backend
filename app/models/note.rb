@@ -99,7 +99,7 @@ class Note < ApplicationRecord
       find_member = UserTeam.find_by(user: user, team: team, teaminvitation_status: 'Accepted')
       if find_member.present?
         check_member = UserNote.find_by(user_id: find_member.user_id, note: note)
-        if check_member.role != 'owner'
+        if check_member.nil?
           member = {
             note_id: note.id,
             user_id: find_member.user_id,
