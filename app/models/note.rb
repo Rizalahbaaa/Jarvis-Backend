@@ -12,7 +12,7 @@ class Note < ApplicationRecord
   validates :reminder, presence: true
   validates :column_id, presence: false
   validates :frequency, presence: false
-  # validate :reminder_date_valid?, :event_date_valid?
+  validate :reminder_date_valid?, :event_date_valid?
 
   scope :join_usernote, -> { joins(:user_note) }
 
@@ -33,10 +33,10 @@ class Note < ApplicationRecord
   }
 
   enum frequency: {
-    no_repeat: 0,
-    daily: 1,
-    weekly: 2,
-    monthly: 3
+    tidak_diulang: 0,
+    harian: 1,
+    mingguan: 2,
+    bulanan: 3
   }
 
   enum status: {
@@ -130,21 +130,21 @@ class Note < ApplicationRecord
           puts 'SEND NOTIF....'
 
           case n.frequency
-          when 'daily'
+          when 'harian'
             interval.every '1d' do
               ReminderMailer.my_repeater(u.user.email, n).deliver_now
               puts 'SENDING DAILY REMINDER...'
               Note.freq_notif(n, u.user.id)
               puts 'SEND DAILY NOTIF....'
             end
-          when 'weekly'
+          when 'mingguan'
             interval.every '1w' do
               ReminderMailer.my_repeater(u.user.email, n).deliver_now
               puts 'SENDING WEEKLY REMINDER...'
               Note.freq_notif(n, u.user.id)
               puts 'SEND WEEKLY NOTIF....'
             end
-          when 'monthly'
+          when 'bulanan'
             interval.every '1M' do
               ReminderMailer.my_repeater(u.user.email, n).deliver_now
               puts 'SENDING MONTHLY REMINDER...'
@@ -254,6 +254,7 @@ class Note < ApplicationRecord
       member: accepted_member.map { |accept_user| accept_user.new_attr },
       event_date:,
       reminder: ,
+      frequency: ,
       ringtone_id: ringtone.id,
       ringtone: ringtone.name,
       file: file_collection,
@@ -275,6 +276,7 @@ class Note < ApplicationRecord
       member: accepted_member.map { |accept_user| accept_user.new_attr },
       event_date:,
       reminder:,
+      frequency: ,
       ringtone_id: ringtone.id,
       ringtone: ringtone.name,
       file: attach_current,
