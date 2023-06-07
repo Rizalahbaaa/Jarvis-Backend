@@ -113,9 +113,6 @@ class UserNote < ApplicationRecord
       role:,
       status:,
       date: updated_at
-      # invitation_token: self.noteinvitation_token,
-      # invitation_status: self.noteinvitation_status,
-      # invitation_expired: self.noteinvitation_expired
     }
   end
 
