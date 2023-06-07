@@ -34,7 +34,7 @@ class UserTeam < ApplicationRecord
   }
 
   def owner_team
-    UserTeam.find_by(team_id: self.team_id, team_role: "owner")&.user&.username
+    UserTeam.find_by(team_id: self.team_id, team_role: "owner")
   end
 
   def message_teaminv
@@ -61,13 +61,15 @@ class UserTeam < ApplicationRecord
   def inv_reqteam
   {
     id:,
-    from:owner_team,
+    from: owner_team&.user&.username,
+    photo: owner_team&.user&.photo&.url,
     message: message_teaminv,
     team: team.title,
     actions: [
       { action: "accept", url: "#{BACKEND_DOMAIN}/team/inv/accept_invitation/#{self.teaminvitation_token}" },
       { action: "reject", url: "#{BACKEND_DOMAIN}/team/inv/decline_invitation/#{self.teaminvitation_token}" }
-    ]
+    ],
+    date_invite: owner_team&.updated_at
   }
   end
 
