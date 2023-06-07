@@ -12,7 +12,7 @@ class Note < ApplicationRecord
   validates :reminder, presence: true
   validates :column_id, presence: false
   validates :frequency, presence: false
-  # validate :reminder_date_valid?, :event_date_valid?
+  validate :reminder_date_valid?, :event_date_valid?
 
   scope :join_usernote, -> { joins(:user_note) }
 
@@ -33,11 +33,10 @@ class Note < ApplicationRecord
   }
 
   enum frequency: {
-    no_repeat: 0,
-    daily: 1,
-    weekly: 2,
-    monthly: 3,
-    annual: 4
+    tidak_diulang: 0,
+    harian: 1,
+    mingguan: 2,
+    bulanan: 3
   }
 
   enum status: {
@@ -74,7 +73,8 @@ class Note < ApplicationRecord
   end
 
   def self.send_reminder
-    notes = Note.where('reminder = ?', Time.now.strftime('%F %R').in_time_zone('Jakarta'))
+    now = Time.now.strftime('%F %R').in_time_zone('Jakarta')
+    notes = Note.where('reminder = ?', now)
 
     if notes.present?
       notes.each do |n|
@@ -91,10 +91,84 @@ class Note < ApplicationRecord
     end
   end
 
+  def self.assign_member_to_note(emails, column, note)
+    participant = []
+    emails.each do |e|
+      user = User.find_by(email: e)
+      team = Team.find_by(column: Column.find_by_id(column))
+      find_member = UserTeam.find_by(user: user, team: team, teaminvitation_status: 'Accepted')
+      if find_member.present?
+        check_member = UserNote.find_by(user_id: find_member.user_id, note: note)
+        if check_member.nil?
+          member = {
+            note_id: note.id,
+            user_id: find_member.user_id,
+            role: 1,
+            noteinvitation_status: 1
+          }
+        end
+      end
+      participant << member
+    end
+    UserNote.create(participant)
+  end
+
+  def self.send_repeater
+    require 'rufus-scheduler'
+
+    interval = Rufus::Scheduler.new
+    now = Time.now.strftime('%F %R').in_time_zone('Jakarta')
+    notes = Note.where('event_date = ?', now)
+
+    if notes.present?
+      notes.each do |n|
+        users = UserNote.where('note_id = ? AND (role = ? OR noteinvitation_status = ?)', n.id, 0, 1)
+        users.each do |u|
+          ReminderMailer.my_reminder(u.user.email, n).deliver_now
+          puts 'SENDING REMINDER NOW...'
+          Note.send_notif(n, u.user.id)
+          puts 'SEND NOTIF....'
+
+          case n.frequency
+          when 'harian'
+            interval.every '1d' do
+              ReminderMailer.my_repeater(u.user.email, n).deliver_now
+              puts 'SENDING DAILY REMINDER...'
+              Note.freq_notif(n, u.user.id)
+              puts 'SEND DAILY NOTIF....'
+            end
+          when 'mingguan'
+            interval.every '1w' do
+              ReminderMailer.my_repeater(u.user.email, n).deliver_now
+              puts 'SENDING WEEKLY REMINDER...'
+              Note.freq_notif(n, u.user.id)
+              puts 'SEND WEEKLY NOTIF....'
+            end
+          when 'bulanan'
+            interval.every '1M' do
+              ReminderMailer.my_repeater(u.user.email, n).deliver_now
+              puts 'SENDING MONTHLY REMINDER...'
+              Note.freq_notif(n, u.user.id)
+              puts 'SEND MONTHLY NOTIF....'
+            end
+          end
+        end
+      end
+    end
+  end
+
   def self.send_notif(note, user)
     Notification.create(
       title: "Reminder event #{note.subject}",
       body: "Tanggal event : #{note.event_date}",
+      user_id: user
+    )
+  end
+
+  def self.freq_notif(note, user)
+    Notification.create(
+      title: "#{note.frequency} reminder untuk #{note.subject}",
+      body: "tanggal event: #{Time.now.strftime('%F %R').in_time_zone('Jakarta')}",
       user_id: user
     )
   end
@@ -180,6 +254,7 @@ class Note < ApplicationRecord
       member: accepted_member.map { |accept_user| accept_user.new_attr },
       event_date:,
       reminder: ,
+      frequency: ,
       ringtone_id: ringtone.id,
       ringtone: ringtone.name,
       file: file_collection,
@@ -201,6 +276,7 @@ class Note < ApplicationRecord
       member: accepted_member.map { |accept_user| accept_user.new_attr },
       event_date:,
       reminder:,
+      frequency: ,
       ringtone_id: ringtone.id,
       ringtone: ringtone.name,
       file: attach_current,

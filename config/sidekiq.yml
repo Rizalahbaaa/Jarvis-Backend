@@ -5,6 +5,10 @@
     reminder_worker:
       cron: '* * * * * Asia/Jakarta'
       class: ReminderWorker
+    
+    repeater_worker:
+      cron: '* * * * * Asia/Jakarta'
+      class: RepeaterWorker
 
     status_worker:
       cron: '* * * * * Asia/Jakarta'

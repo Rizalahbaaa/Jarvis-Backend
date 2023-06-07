@@ -52,7 +52,7 @@
       <h1>Event Reminder!</h1>
       <p>Please note that your event at </p>
       <p>Subject : <%= @note.subject %></p>
-      <p>Date : <%= @note.event_date %></p><br>
+      <p>Date : <%= Time.now.strftime('%F %R').in_time_zone('Jakarta') %></p><br>
 
       <p>If you did not request this reminder, please ignore this email.</p>
       <p>Thank you for using our service!</p>
