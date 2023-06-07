@@ -113,15 +113,12 @@ class UserNote < ApplicationRecord
       role:,
       status:,
       date: updated_at
-      # invitation_token: self.noteinvitation_token,
-      # invitation_status: self.noteinvitation_status,
-      # invitation_expired: self.noteinvitation_expired
     }
   end
 
 
   def owner_note
-    UserNote.find_by(note_id: self.note_id, role: "owner")&.user&.username
+    UserNote.find_by(note_id: self.note_id, role: "owner")
   end
 
   def message_inv
@@ -137,13 +134,15 @@ class UserNote < ApplicationRecord
   def inv_request
     {
       id:,
-      from: owner_note,
+      from: owner_note&.user&.username,
+      photo: owner_note&.user&.photo&.url,
       message: message_inv,
       note: note.subject, 
       actions: [
         { action: "accept", url: "#{BACKEND_DOMAIN}/note/inv/accept_invitation/#{self.noteinvitation_token}" },
         { action: "reject", url: "#{BACKEND_DOMAIN}/note/inv/decline_invitation/#{self.noteinvitation_token}" }
-      ]
+      ],
+      date_invite: owner_note&.updated_at
     }
   end
 

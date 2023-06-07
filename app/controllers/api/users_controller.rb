@@ -56,11 +56,7 @@ class Api::UsersController < ApplicationController
   end
 
   def update
-    if params[:email]
-      return render json: {success: false, message: 'cannot change email', status: 400}
-    end
-
-    if @user.update(user_params)
+    if @user.update(user_update)
       render json: { success: true, message: 'profile updated successfully', status: 200, data: @user.new_attr },
              status: 200
     else
@@ -161,10 +157,10 @@ class Api::UsersController < ApplicationController
     point = user.point
     render json: { success: true, status: 200, message: 'User point retrieved successfully', data: { user_id: user.id, point: point } }
   end
-  
+
   def notes_count
     user = User.find_by(id: params[:id])
-    notes_count = user.notes_count
+    notes_count = user.notes_countJago
     render json: { success: true, status: 200, message: 'User note retrieved successfully', data: { user_id: user.id, notes_count: notes_count } }
   end
     
@@ -180,6 +176,11 @@ class Api::UsersController < ApplicationController
   def user_params
     params.permit(:username,:email, :phone, :job, :photo, :password, :password_confirmation, :notes_count)
   end
+
+  def user_update
+    params.permit(:username, :phone, :job, :photo, :password, :password_confirmation, :notes_count)
+  end
+  
 
   def password_params
     params.permit(:current_password, :password, :password_confirmation)

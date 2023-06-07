@@ -9,7 +9,7 @@ class Api::ColumnsController < ApplicationController
   end
 
   def show
-    render json: @column.new_attr
+    render json: @column.new_attr(current_user)
   end
 
   def create
