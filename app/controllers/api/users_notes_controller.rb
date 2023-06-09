@@ -52,15 +52,14 @@ class Api::UsersNotesController < ApplicationController
 
   def decline_invitation
     @user_note = UserNote.find_by(noteinvitation_token: params[:noteinvitation_token])
-    user_note_backup = @user_note
-    note = user_note_backup.note
+    note = @user_note.note
     owner = UserNote.find_by(note: note, role: 'owner')
-    member = user_note_backup.user
+    member = @user_note.user
 
     if @user_note && @user_note.invitation_valid?
       @user_note.decline_invitation!
       Notification.create(
-        title: "#{member.username} telah menerima catatan anda",
+        title: "#{member.username} telah menolak catatan anda",
         body: 'default',
         user_id: owner.user.id,
         sender_id: member.id,

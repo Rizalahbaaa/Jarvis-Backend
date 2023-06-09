@@ -20,8 +20,8 @@ class Api::UserTeamsController < ApplicationController
 
   def accept_invitation
     @user_team = UserTeam.find_by(teaminvitation_token: params[:teaminvitation_token])
-    team = @user_team.note
-    owner = UserTeam.find_by(team: team, role: 'owner')
+    team = @user_team.team
+    owner = UserTeam.find_by(team: team, team_role: 'owner')
     member = @user_team.user
 
     if @user_team && @user_team.invitation_valid?
@@ -31,7 +31,7 @@ class Api::UserTeamsController < ApplicationController
         body: 'default',
         user_id: owner.user.id,
         sender_id: member.id,
-        sender_place: note.id
+        sender_place: team.id
       )
       render json: { status: 200, message: "Undangan Diterima"}, status: 200
     else
@@ -52,18 +52,18 @@ class Api::UserTeamsController < ApplicationController
 
   def decline_invitation
     @user_team = UserTeam.find_by(teaminvitation_token: params[:teaminvitation_token])
-    team = @user_team.note
-    owner = UserTeam.find_by(team: team, role: 'owner')
+    team = @user_team.team
+    owner = UserTeam.find_by(team: team, team_role: 'owner')
     member = @user_team.user
 
     if @user_team && @user_team.invitation_valid?
       @user_team.decline_invitation!
       Notification.create(
-        title: "#{member.username} telah menerima undangan grub anda",
+        title: "#{member.username} telah menolak undangan grub anda",
         body: 'default',
         user_id: owner.user.id,
         sender_id: member.id,
-        sender_place: note.id
+        sender_place: team.id
       )
       render json: { status: 200, message: "Undangan Ditolak"}, status: 200
     else
