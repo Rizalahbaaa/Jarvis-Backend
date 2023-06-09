@@ -18,9 +18,7 @@ class Api::UsersNotesController < ApplicationController
     render json: {success: true, status: 200, data: @user_note.new_attr}, status: 200
   end
 
-
-
-  def accept_invitation
+  def accept_invitation_email
     @user_note = UserNote.find_by(noteinvitation_token: params[:noteinvitation_token])
 
     if @user_note && @user_note.invitation_valid?
@@ -28,10 +26,53 @@ class Api::UsersNotesController < ApplicationController
       render json: { status: 200, message: "Undangan Diterima"}, status: 200
     else
       render json: { message: "Undangan tidak valid"}
-    end 
+    end
+  end
+
+  def accept_invitation
+    @user_note = UserNote.find_by(noteinvitation_token: params[:noteinvitation_token])
+    note = @user_note.note
+    owner = UserNote.find_by(note: note, role: 'owner')
+    member = @user_note.user
+
+    if @user_note && @user_note.invitation_valid?
+      @user_note.accept_invitation!
+      Notification.create(
+        title: "#{member.username} telah menerima catatan anda",
+        body: 'default',
+        user_id: owner.user.id,
+        sender_id: member.id,
+        sender_place: note.id
+      )
+      render json: { status: 200, message: "Undangan Diterima"}, status: 200
+    else
+      render json: { message: "Undangan tidak valid"}
+    end
   end
 
   def decline_invitation
+    @user_note = UserNote.find_by(noteinvitation_token: params[:noteinvitation_token])
+    user_note_backup = @user_note
+    note = user_note_backup.note
+    owner = UserNote.find_by(note: note, role: 'owner')
+    member = user_note_backup.user
+
+    if @user_note && @user_note.invitation_valid?
+      @user_note.decline_invitation!
+      Notification.create(
+        title: "#{member.username} telah menerima catatan anda",
+        body: 'default',
+        user_id: owner.user.id,
+        sender_id: member.id,
+        sender_place: note.id
+      )
+      render json: { status: 200, message: "Undangan Ditolak"}, status: 200
+    else
+      render json: { message: "Undangan tidak valid"}
+    end 
+  end
+
+  def decline_invitation_email
     @user_note = UserNote.find_by(noteinvitation_token: params[:noteinvitation_token])
 
     if @user_note && @user_note.invitation_valid?
