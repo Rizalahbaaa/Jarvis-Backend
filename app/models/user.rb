@@ -102,25 +102,25 @@ class User < ApplicationRecord
   def username_format
     return unless username.present?
 
-    validates_format_of :username, with: USERNAME_REGEX, message: 'username is invalid'
+    validates_format_of :username, with: USERNAME_REGEX, message: 'format is invalid'
   end
 
   def email_format
     return unless email.present?
 
-    validates_format_of :email, with: EMAIL_REGEX, message: 'email is invalid'
+    validates_format_of :email, with: EMAIL_REGEX, message: 'format is invalid'
   end
 
   def phone_format
     return unless phone.present?
 
-    validates_format_of :phone, with: PHONE_REGEX, message: 'phone is invalid'
+    validates_format_of :phone, with: PHONE_REGEX, message: 'format is invalid'
   end
 
   def job_format
     return unless job.present?
 
-    validates_format_of :job, with: JOB_REGEX, message: 'job is invalid'
+    validates_format_of :job, with: JOB_REGEX, message: 'format is invalid'
   end
 
   def email_activate

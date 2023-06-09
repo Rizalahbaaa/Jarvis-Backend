@@ -1,7 +1,6 @@
 class Note < ApplicationRecord
   has_many :user_note
   has_many :users, through: :user_note, source: :user, dependent: :destroy
-  # has_many :notification
   belongs_to :column, optional: true
   belongs_to :ringtone
 
@@ -18,8 +17,8 @@ class Note < ApplicationRecord
 
 # filters & sorts
   scope :noteall, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where.not(note_type: 'team')}
-  scope :passed_note, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where('event_date < ?', Date.today).where.not(note_type: 'team') }
-  scope :upcoming_note, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where('event_date >= ?', Date.today).where.not(note_type: 'team') }
+  scope :passed_note, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where('event_date < ? OR notes.status = ?', Time.now.in_time_zone('Jakarta'), 1).where.not(note_type: 'team') }
+  scope :upcoming_note, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', user_id, 1, 0).where('event_date >= ?', Time.now.in_time_zone('Jakarta')).where.not(note_type: 'team') }
   scope :owner, -> (user_id){ join_usernote.where('user_notes.user_id = ? AND user_notes.role = ?', user_id, 0).where.not(note_type: 'team')}
   scope :upload_done, -> (user_id){ join_usernote.where('user_notes.role = ? AND user_notes.user_id = ? AND user_notes.status = ?', 1, user_id,1 ).where(note_type: 'collaboration')}
   scope :not_upload, -> (user_id){ join_usernote.where('user_notes.role = ? AND user_notes.user_id = ? AND user_notes.status = ? AND user_notes.noteinvitation_status = ?', 1, user_id, 0,1).where(note_type: 'collaboration')}
@@ -72,25 +71,6 @@ class Note < ApplicationRecord
     notes
   end
 
-  def self.send_reminder
-    now = Time.now.strftime('%F %R').in_time_zone('Jakarta')
-    notes = Note.where('reminder = ?', now)
-
-    if notes.present?
-      notes.each do |n|
-        users = UserNote.where('note_id = ? AND (role = ? OR noteinvitation_status = ?)', n.id, 0, 1)
-        users.each do |u|
-          ReminderMailer.my_reminder(u.user.email, n).deliver_now
-          puts 'SENDING REMINDER...'
-          Note.send_notif(n, u.user.id)
-          puts 'SEND NOTIF....'
-        end
-      end
-    # else
-    #   puts 'NO EMAIL SEND :('
-    end
-  end
-
   def self.assign_member_to_note(emails, column, note)
     participant = []
     emails.each do |e|
@@ -113,12 +93,12 @@ class Note < ApplicationRecord
     UserNote.create(participant)
   end
 
-  def self.send_repeater
+  def self.send_reminder
     require 'rufus-scheduler'
 
     interval = Rufus::Scheduler.new
     now = Time.now.strftime('%F %R').in_time_zone('Jakarta')
-    notes = Note.where('event_date = ?', now)
+    notes = Note.where('reminder = ?', now)
 
     if notes.present?
       notes.each do |n|
@@ -159,9 +139,11 @@ class Note < ApplicationRecord
 
   def self.send_notif(note, user)
     Notification.create(
-      title: "Reminder event #{note.subject}",
-      body: "Tanggal event : #{note.event_date}",
-      user_id: user
+      title: "Reminder!, #{note.subject}",
+      body: "Tanggal event: #{note.event_date}",
+      user_id: user,
+      notif_type: 1,
+      sender_place: note.id
     )
   end
 
