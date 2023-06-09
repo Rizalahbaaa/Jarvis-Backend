@@ -10,37 +10,46 @@ class Api::NotesController < ApplicationController
 
   def show
     @find_user_note = UserNote.find_by(user: current_user, note: @note)
-    if @find_user_note.role == 'owner' && @find_user_note.user_id != @current_user
+    if @note.note_type == 'team' && Note.teamates(current_user, @note)
       render json: { success: true, status: 200, data: @note.new_attr(current_user) }, status: 200
-    elsif @find_user_note.role == 'member' && @find_user_note.user_id != @current_user
+    elsif @find_user_note.role == 'member' && @find_user_note
       render json: { success: true, status: 200, data: @note.member_side(current_user)}, status: 200
+    elsif @find_user_note.role == 'owner' && @find_user_note
+      render json: { success: true, status: 200, data: @note.new_attr(current_user)}, status: 200
     end
   end
 
   def create
     @note = Note.new(note_params)
-    if @note.save
-      @user_note = UserNote.create(note: @note, user: @current_user)
-      if @current_user.can_create_note?
+    column = params[:column_id]
+    if !column.present? || Column.find_by(id: column).present? && Note.columncheck(current_user, column)
+        if @current_user.can_create_note?
+          if @note.save
         @current_user.deduct_notes_count(1) # Mengurangi notes_count
-        @current_user.save
+        @user_note = UserNote.create(note: @note, user: @current_user)
 
-      emails = params[:email]
-      if emails.present?
-        collab_mailer(emails)
-        @note.update(note_type: 1)
-      end
-      return render json: { success: true, message: 'note created successfully', status: 201, data: @note.new_attr(current_user) },
+       emails = params[:email]
+       if emails.present? && @note.note_type != 'team'
+         collab_mailer(emails)
+         @note.update(note_type: 1)
+       elsif emails.present? && @note.note_type == 'team'
+         Note.assign_member_to_note(emails, column, @note)
+       end
+
+       return render json: { success: true, message: 'Note created successfully', status: 201, data: @note.new_attr(current_user) },
        status: 201
-    else
-      @note.destroy
-      return render json: { success: false, message: 'Tidak bisa membuat note lagi silahkan redeem', status: 422 },
-             status: 422
+        else
+       return render json: { success: false, message: 'Note created unsuccessfully', status: 422, data: @note.errors },
+     status: 422
+       end
+        else
+          return render json: { success: true, message: 'Tidak Bisa membuat note lagi silahkan redeem', status: 422, data: @note.errors },
+          status: 422
+        end
+        else 
+       return render json: { success: false, message: 'cannot created note, your not tim member', status: 422 },
+      status: 422
     end
-  else
-    return render json: { success: false, message: 'note created unsuccessfully', status: 422, data: @note.errors },
-           status: 422
-  end
 end
 
   def email_valid
@@ -73,7 +82,7 @@ end
     end
   
     @find_user_note = UserNote.find_by(user: @current_user, note: @note)
-    if (@find_user_note.role == 'owner' && @find_user_note.user_id != @current_user) || (!@note.column_id.nil? && Note.teamates(@current_user, @note))
+    if (@find_user_note.role == 'owner' && @find_user_note) || (!@note.column_id.nil? && Note.teamates(@current_user, @note))
       emails = params[:email] || []
       if emails.present?
         emails.each do |e|
@@ -247,8 +256,7 @@ end
   end
 
   def note_params
-    params.permit(:subject, :description, :event_date, :reminder, :ringtone_id, :column_id,
-                  :status)
+    params.permit(:subject, :description, :event_date, :reminder, :frequency, :ringtone_id, :column_id, :status)
   end
 
   def attach_params
