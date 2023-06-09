@@ -4,6 +4,6 @@ class StatusWorker
   include Sidekiq::Worker
 
   def perform
-    UserNote.auto_late
+    UserNote.auto_change_status
   end
 end
