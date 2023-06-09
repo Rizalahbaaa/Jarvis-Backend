@@ -35,10 +35,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_09_061822) do
     t.integer "ringtone_id"
     t.integer "column_id"
     t.integer "note_type", default: 0
+    t.integer "status", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "reminder"
-    t.integer "status", default: 0
     t.integer "frequency"
   end
 

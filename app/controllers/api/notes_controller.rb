@@ -81,6 +81,7 @@ end
           is_join = UserNote.find_by(note: @note, user: user)
           if is_join.nil?
             collab_mailer(emails)
+            @note.update(note_type: 1)
           else
             return render json: { status: 422, message: "#{e} already invited" }, status: 422
           end
@@ -147,20 +148,13 @@ end
         else
           render json: { success: false, status: 422, message: 'note updated unsuccessfully', data: @note.errors },
                  status: 422
-        end    
-      end    
+        end
+      end        
     else
       render json: { success: false, message: 'sorry, only the owner can update the note', status: 422 },
              status: 422
     end
   end
-  
-  # def create_notif(note)
-  #   @find_user_note = UserNote.find_by(user: @current_user, note: note)
-  
-        
-  # end
-  
   
   def destroy
     @user_note = UserNote.find_by(user: @current_user, note: @note)
