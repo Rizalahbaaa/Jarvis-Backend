@@ -17,13 +17,16 @@ Rails.application.routes.draw do
 
     post '/note/inv', to: 'users_notes#create'
     get '/reqlist', to:'users_notes#reqlist'
-    get 'note/inv/accept_invitation/:noteinvitation_token', to: 'users_notes#accept_invitation'
+
+    # reqlist
+    get 'note/inv/accept_invitation/:noteinvitation_token', to: 'users_notes#accept_invitation' 
     get 'note/inv/decline_invitation/:noteinvitation_token', to: 'users_notes#decline_invitation'
     get 'team/inv/accept_invitation/:teaminvitation_token', to: 'user_teams#accept_invitation'
     get 'team/inv/decline_invitation/:teaminvitation_token', to: 'user_teams#decline_invitation'
 
-    get 'note/inv/accept_invitation', to: 'users_notes#accept_invitation', as: 'accept_invitation'
-    get 'note/inv/decline_invitation', to: 'users_notes#decline_invitation', as: 'decline_invitation'
+    # email
+    get 'note/inv/accept_invitation', to: 'users_notes#accept_invitation_email', as: 'accept_invitation'
+    get 'note/inv/decline_invitation', to: 'users_notes#decline_invitation_email', as: 'decline_invitation'
     get 'team/inv/accept_invitation', to: 'user_teams#accept_invitation', as: 'accept_team_invitation'
     get 'team/inv/decline_invitation', to: 'user_teams#decline_invitation', as: 'decline_team_invitation'
 
@@ -33,6 +36,8 @@ Rails.application.routes.draw do
 
     get '/search_email', to: 'notes#email_valid'
     put '/update_password', to: 'users#update_password'
+
+    # get '/accept', to: 'users_notes#accept_invitation'
 
     resources :transactions do
       member do
@@ -48,6 +53,8 @@ Rails.application.routes.draw do
     resources :products
     resources :invitations
     resources :notifications
+    get '/client_notif', to: 'notifications#user_notif'
+
     resources :ringtones
     resources :team_notes
     resources :users
