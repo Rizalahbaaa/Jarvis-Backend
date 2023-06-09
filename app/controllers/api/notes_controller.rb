@@ -168,20 +168,23 @@ end
   def completed_note
     note = Note.find_by(id: params[:id])
     if note.present?
-      Note.note_done(note)
-      earned_point = 100
-      users = User.joins(:user_notes).where('user_notes.note_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', note.id, 1, 0)
-      if users.present? && note.status == 'completed'
-        users.each do |user|
-          Transaction.create(
-            user_id: user.id,
-            point: earned_point,
-            point_type: 'earned'
-          )
+      owner = UserNote.find_by(note: note, role: 'owner')
+      if current_user.id == owner.user.id
+        Note.note_done(note)
+        earned_point = 100
+        users = User.joins(:user_notes).where('user_notes.note_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', note.id, 1, 0)
+        if users.present? && note.status == 'completed'
+          users.each do |user|
+            Transaction.create(
+              user_id: user.id,
+              point: earned_point,
+              point_type: 'earned'
+            )
+          end
+          return render json: { success: true, status: 201, message: "catatan selesai, mendapatkan #{earned_point} point" }, status: 201
         end
-        return render json: { success: true, status: 201, message: "catatan selesai, mendapatkan #{earned_point} point" }, status: 201
       else
-        return render json: { success: false, status: 422, message: "maaf, catatan anda belum selesai, gagal mendapatkan point" }, status: 422
+        render json: { status: 422, message: 'maaf, anda bukan pemilik catatan' }, status: 422
       end
     else
       render json: { status: 404, message: 'catatan tidak ditemukan' }, status: 404
