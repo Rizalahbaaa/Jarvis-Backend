@@ -27,8 +27,8 @@ Rails.application.routes.draw do
     # email
     get 'note/inv/accept_invitation', to: 'users_notes#accept_invitation_email', as: 'accept_invitation'
     get 'note/inv/decline_invitation', to: 'users_notes#decline_invitation_email', as: 'decline_invitation'
-    get 'team/inv/accept_invitation', to: 'user_teams#accept_invitation', as: 'accept_team_invitation'
-    get 'team/inv/decline_invitation', to: 'user_teams#decline_invitation', as: 'decline_team_invitation'
+    get 'team/inv/accept_invitation', to: 'user_teams#accept_invitation_email', as: 'accept_team_invitation'
+    get 'team/inv/decline_invitation', to: 'user_teams#decline_invitation_email', as: 'decline_team_invitation'
 
     get '/user_notes/on_progress', to: 'users_notes#on_progress'
     get '/user_notes/completed', to: 'users_notes#completed'
