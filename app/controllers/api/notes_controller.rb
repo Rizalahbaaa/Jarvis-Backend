@@ -35,7 +35,7 @@ class Api::NotesController < ApplicationController
        elsif emails.present? && @note.note_type == 'team'
          Note.assign_member_to_note(emails, column, @note)
        end
-   
+
        return render json: { success: true, message: 'Note created successfully', status: 201, data: @note.new_attr(current_user) },
        status: 201
         else
@@ -50,8 +50,7 @@ class Api::NotesController < ApplicationController
        return render json: { success: false, message: 'cannot created note, your not tim member', status: 422 },
       status: 422
     end
-  end
-  
+end
 
   def email_valid
     @email = params[:email].downcase
@@ -81,7 +80,7 @@ class Api::NotesController < ApplicationController
     if params[:note_type] && @note.note_type != params[:note_type]
       return render json: { success: false, message: 'cannot change note_type', status: 400 }, status: :bad_request
     end
-
+  
     @find_user_note = UserNote.find_by(user: @current_user, note: @note)
     if (@find_user_note.role == 'owner' && @find_user_note) || (!@note.column_id.nil? && Note.teamates(@current_user, @note))
       emails = params[:email] || []
@@ -91,49 +90,88 @@ class Api::NotesController < ApplicationController
           is_join = UserNote.find_by(note: @note, user: user)
           if is_join.nil?
             collab_mailer(emails)
+            @note.update(note_type: 1)
           else
             return render json: { status: 422, message: "#{e} already invited" }, status: 422
           end
         end
       end
-  
+
+      # Mengambil record dari database
+      record = Note.find_by(id: @note.id)
+    
+      # Menyimpan nilai kolom ke dalam variabel
+      subject_value = record.subject
+      description_value = record.description
+      date_value = record.event_date
+      reminder_value = record.reminder
+
       if @note.update(note_params)
         @find_user_note.update(updated_at: Time.now)
-        @note = Note.find(params[:id])
+        record_update = record.update(note_params)
         note_members = @note.users
-        recipients = []
-  
-        note_members.each do |member|
-          unless emails&.include?(member.email)
-            Notification.create(
-              title: "Telah memperbarui Catatan #{@note.subject}",
-              body: params[:body],
-              user_id: member.id,
-              sender_id: current_user.id,
-              sender_place: @note.id
-            )
-            recipients << member.email
+        
+        if params[:body].blank?
+          render json: { success: false, status: 422, message: "Tidak bisa menghapus catatan, tolong isi pesan terlebih dahulu." }
+        elsif @note.update(note_params)
+          @find_user_note.update(updated_at: Time.now)
+          record_update = record.update(note_params)
+          note_members = @note.users
+        
+          if params[:email].present?
+            default_message = "Telah Menambahkan Anggota Baru di Catatan #{@note.subject}"
+          elsif subject_value != @note.subject
+            default_message = "Telah Mengubah Nama Catatan #{subject_value} menjadi #{@note.subject}"
+          elsif description_value != @note.description
+            default_message = "Telah Mengubah Deskripsi Catatan #{@note.subject}"
+          elsif date_value != @note.event_date
+            default_message = "Telah Mengubah Tanggal Acara di Catatan #{@note.subject}"
+          elsif reminder_value != @note.reminder
+            default_message = "Telah Mengubah Tanggal Pengingat di Catatan #{@note.subject}"
+          else
+            default_message = "telah Memperbarui Catatan #{@note.subject}"
           end
+        
+          note_members.each do |member|
+            if @note.note_type == 'collaboration'
+              Notification.create(
+                title: "#{current_user.username} #{default_message}",
+                user_id: member.id,
+                sender_id: current_user.id,
+                sender_place: @note.id,
+                body: params[:body]
+              )
+            elsif @note.note_type == 'team'
+              Notification.create(
+                title: "telah Memperbarui Catatan #{@note.subject}",
+                user_id: member.id,
+                sender_id: current_user.id,
+                sender_place: @note.id,
+                body: "#{current_user.username} #{default_message}"
+              )
+            end
+          end
+        
+          render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr(current_user) },
+                 status: 200
+        else
+          render json: { success: false, status: 422, message: 'note updated unsuccessfully', data: @note.errors },
+                 status: 422
         end
-        render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr(current_user) },
-               status: 200
-      else
-        render json: { success: false, status: 422, message: 'note updated unsuccessfully', data: @note.errors },
-               status: 422
-      end
+      end        
     else
       render json: { success: false, message: 'sorry, only the owner can update the note', status: 422 },
              status: 422
     end
-  end  
-
+  end
+  
   def destroy
     @user_note = UserNote.find_by(user: @current_user, note: @note)
     
     if @user_note.role != 'owner'
       render json: { success: false, message: 'sorry, only owner can delete note', status: 422 },
              status: 422
-    elsif @user_note.role == 'owner' && @user_note
+    elsif @user_note.role == 'owner' && @user_note.user_id != @current_user
       @note = Note.find(params[:id])
       
       note_members = @note.users
@@ -218,8 +256,7 @@ class Api::NotesController < ApplicationController
   end
 
   def note_params
-    params.permit(:subject, :description, :event_date, :reminder, :frequency, :ringtone_id, :column_id,
-                  :status)
+    params.permit(:subject, :description, :event_date, :reminder, :frequency, :ringtone_id, :column_id, :status)
   end
 
   def attach_params

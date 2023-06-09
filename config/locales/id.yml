@@ -1,0 +1,32 @@
+id:
+  datetime:
+    distance_in_words:
+      x_seconds: "kurang dari satu menit"
+      half_a_minute: "setengah menit"
+      less_than_x_minutes:
+        one:   "kurang dari satu menit"
+        other: "kurang dari %{count} menit"
+      x_minutes:
+        one:   "1 menit"
+        other: "%{count} menit"
+      about_x_hours:
+        one:   "sekitar 1 jam"
+        other: "sekitar %{count} jam"
+      x_days:
+        one:   "1 hari"
+        other: "%{count} hari"
+      about_x_months:
+        one:   "sekitar 1 bulan"
+        other: "sekitar %{count} bulan"
+      x_months:
+        one:   "1 bulan"
+        other: "%{count} bulan"
+      about_x_years:
+        one:   "sekitar 1 tahun"
+        other: "sekitar %{count} tahun"
+      over_x_years:
+        one:   "lebih dari 1 tahun"
+        other: "lebih dari %{count} tahun"
+      almost_x_years:
+        one:   "hampir 1 tahun"
+        other: "hampir %{count} tahun"

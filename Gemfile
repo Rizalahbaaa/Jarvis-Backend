@@ -57,6 +57,8 @@ gem 'faker'
 
 gem 'carrierwave'
 
+gem 'rails-i18n'
+
 gem 'cloudinary'
 
 gem 'dockerfile-rails', '>= 1.2', group: :development

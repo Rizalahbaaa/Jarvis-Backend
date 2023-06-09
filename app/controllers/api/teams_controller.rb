@@ -67,27 +67,46 @@ class Api::TeamsController < ApplicationController
     @find_user_team = UserTeam.find_by(user: @current_user, team: @team)
     if @find_user_team && @find_user_team.team_role == 'owner'
       emails = params[:email] || []
-
+  
+      # Mengambil record dari database
+      record = Team.find_by(id: @team.id)
+  
+      # Menyimpan nilai kolom ke dalam variabel
+      title_value = record.title
+      photo_value = record.photo
+  
       if @team.update(team_params)
-        
         team_mailer(emails) if emails.present?
-
+  
+        record.update(title: @team.title, photo: @team.photo)
+  
         @team = Team.find(params[:id])
         team_members = @team.user
+  
+        if params[:email].present?
+          default_message = "telah Menambahkan Anggota Baru"
+        elsif title_value != record.title
+          default_message = "telah Mengubah Nama Tim #{title_value} menjadi #{@team.title}"
+        elsif photo_value != record.photo
+          default_message = "mengubah Foto Profil Tim"
+        else
+          default_message = "telah Memperbarui Tim"
+        end
+  
         team_members.each do |member|
           unless emails.include?(member.email)
             Notification.create(
-              title: "Telah memperbarui Team #{@team.title} ",
-              body: params[:body],
+              title: "Telah Memperbarui Tim #{@team.title}",
+              body: "#{current_user.username} #{default_message}",
               user_id: member.id,
               sender_id: current_user.id,
               sender_place: @team.id
             )
           end
         end
-        
+  
         render json: { success: true, status: 200, message: 'team updated successfully', data: @team.new_attr },
-        status: 200
+               status: 200
       else
         render json: { success: false, status: 422, message: 'team updated unsuccessfully', data: @team.errors },
                status: 422
@@ -96,7 +115,8 @@ class Api::TeamsController < ApplicationController
       render json: { success: false, message: 'sorry, only owner can update team', status: 422 },
              status: 422
     end
-  end
+  end  
+  
   
   def kick_member
     member_emails = params[:email]
@@ -152,22 +172,27 @@ class Api::TeamsController < ApplicationController
     elsif @user_team.team_role == 'owner' && @user_team.user_id != @current_user
       @team = Team.find(params[:id])
       
-      team_members = @team.user
-      team_members.each do |member|
-        Notification.create(
-          title: " Telah menghapus Team #{@team.title}",
-          body: params[:body],
-          user_id: member.id,
-          sender_id: current_user.id,
-          sender_place: @team.id
-        )
-      end
-      
-      if @team.destroy
-        render json: { success: true, message: 'team delete successfully', status: 200 },
-               status: 200
+      if params[:body].present?
+        team_members = @team.user
+        team_members.each do |member|
+          Notification.create(
+            title: " Telah menghapus Team #{@team.title}",
+            body: params[:body],
+            user_id: member.id,
+            sender_id: current_user.id,
+            sender_place: @team.id
+          )
+        end
+        
+        if @team.destroy
+          render json: { success: true, message: 'team delete successfully', status: 200 },
+                status: 200
+        else
+          render json: { success: false, message: 'team delete unsuccessfully', status: 422, data: @team.errors },
+                status: 422
+        end
       else
-        render json: { success: false, message: 'team delete unsuccessfully', status: 422, data: @team.errors },
+        render json: { success: false, message: "can't delete a team, please fill in the notes first", status: 422 },
                status: 422
       end
     else
