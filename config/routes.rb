@@ -37,7 +37,7 @@ Rails.application.routes.draw do
     get '/search_email', to: 'notes#email_valid'
     put '/update_password', to: 'users#update_password'
 
-    # get '/accept', to: 'users_notes#accept_invitation'
+    # get '/accept', to: 'user_teams#accept_invitation'
 
     resources :transactions do
       member do
