@@ -38,11 +38,12 @@ class Api::UsersNotesController < ApplicationController
     if @user_note && @user_note.invitation_valid?
       @user_note.accept_invitation!
       Notification.create(
-        title: "#{member.username} telah menerima catatan anda",
-        body: 'default',
+        title: "telah menerima catatan anda",
+        body: 'nil',
         user_id: owner.user.id,
         sender_id: member.id,
-        sender_place: note.id
+        sender_place: note.id,
+        notif_type: 2
       )
       render json: { status: 200, message: "Undangan Diterima"}, status: 200
     else
@@ -59,11 +60,12 @@ class Api::UsersNotesController < ApplicationController
     if @user_note && @user_note.invitation_valid?
       @user_note.decline_invitation!
       Notification.create(
-        title: "#{member.username} telah menolak catatan anda",
-        body: 'default',
+        title: "telah menolak catatan anda",
+        body: 'nil',
         user_id: owner.user.id,
         sender_id: member.id,
-        sender_place: note.id
+        sender_place: note.id,
+        notif_type: 2
       )
       render json: { status: 200, message: "Undangan Ditolak"}, status: 200
     else
