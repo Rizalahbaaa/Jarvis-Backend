@@ -3,9 +3,27 @@ class Api::NotificationsController < ApplicationController
     before_action :set_notification, only: %i[update destroy show]
     
     def index
-        @notifications = Notification.where(user_id: current_user.id)
-        render json: { success: true, status: 200, data: @notifications.map { |notification| notification.new_attr } }
+        notifs = Notification.where(user_id: current_user.id).order(created_at: :desc)
+        coll_notif = []
+
+        if notifs.present?
+          notifs.each do |n|
+            if n.notif_type == 'client'
+              coll_notif << n.new_attr
+            else
+              coll_notif << n.reminder_notif
+            end
+          end
+        end
+
+        render json: { success: true, status: 200, data: coll_notif}
     end
+
+    def user_notif
+        @notifications = Notification.where(user_id: current_user.id, notif_type: 0).order(created_at: :desc)
+        render json: { success: true, status: 200, data: @notifications.map { |notification| notification.new_attr } } 
+    end
+    
       
     def create
         @notification = Notification.new(notification_params)

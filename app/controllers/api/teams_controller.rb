@@ -12,15 +12,6 @@ class Api::TeamsController < ApplicationController
     render json: { success: true, status: 200, data: @team.new_attr }, status: 200
   end
 
-  # def create
-  #   @team = Team.new(team_params)
-  #   if @team.save
-  #     render json: { success: true, message: 'team created successfully', status: 201, data: @team.new_attributes }, status: 201
-  #   else
-  #     render json: { success: false, message: 'team created unsuccessfully', status: 422, data: @team.errors }, status: 422
-  #   end
-  # end
-
   def create
     @team = Team.new(team_params)
     return unless @team.save
