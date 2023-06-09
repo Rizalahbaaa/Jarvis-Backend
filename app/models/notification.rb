@@ -10,7 +10,8 @@ class Notification < ApplicationRecord
 
     enum notif_type: {
       client: 0,
-      system: 1
+      system: 1,
+      invite: 2
     }
 
     def recipient
@@ -42,7 +43,8 @@ class Notification < ApplicationRecord
             photo: sender&.photo&.url,
             sender_place: self.sender_place,
             created: created_at,
-            send: "#{sending[:time_ago]} yang lalu"
+            send: "#{sending[:time_ago]} yang lalu",
+            notif_type: 
         }
     end
 
@@ -52,7 +54,8 @@ class Notification < ApplicationRecord
         body:,
         recipient:,
         sender_place:,
-        created: created_at
+        created: created_at,
+        notif_type: 
       }
     end
     
