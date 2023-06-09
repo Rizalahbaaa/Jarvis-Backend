@@ -4,8 +4,19 @@ class Api::NotificationsController < ApplicationController
     
     def index
         notifs = Notification.where(user_id: current_user.id).order(created_at: :desc)
+        coll_notif = []
 
-        render json: { success: true, status: 200, data: notifs.map {|n| n.new_attr} }
+        if notifs.present?
+          notifs.each do |n|
+            if n.notif_type == 'client'
+              coll_notif << n.new_attr
+            else
+              coll_notif << n.reminder_notif
+            end
+          end
+        end
+
+        render json: { success: true, status: 200, data: coll_notif}
     end
 
     def user_notif

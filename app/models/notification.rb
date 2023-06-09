@@ -32,4 +32,15 @@ class Notification < ApplicationRecord
             created: created_at
         }
     end
+
+    def reminder_notif
+      {
+        title:, 
+        body:,
+        recipient:,
+        sender_place:,
+        created: created_at
+      }
+    end
+    
 end
