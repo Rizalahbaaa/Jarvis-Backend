@@ -139,9 +139,11 @@ class Note < ApplicationRecord
 
   def self.send_notif(note, user)
     Notification.create(
-      title: "Reminder event #{note.subject}",
+      title: "Reminder!, #{note.subject}",
       body: "Tanggal event: #{note.event_date}",
-      user_id: user
+      user_id: user,
+      notif_type: 1,
+      sender_place: note.id
     )
   end
 
