@@ -1,7 +1,6 @@
 class Note < ApplicationRecord
   has_many :user_note
   has_many :users, through: :user_note, source: :user, dependent: :destroy
-  # has_many :notification
   belongs_to :column, optional: true
   belongs_to :ringtone
 
@@ -72,25 +71,6 @@ class Note < ApplicationRecord
     notes
   end
 
-  def self.send_reminder
-    now = Time.now.strftime('%F %R').in_time_zone('Jakarta')
-    notes = Note.where('reminder = ?', now)
-
-    if notes.present?
-      notes.each do |n|
-        users = UserNote.where('note_id = ? AND (role = ? OR noteinvitation_status = ?)', n.id, 0, 1)
-        users.each do |u|
-          ReminderMailer.my_reminder(u.user.email, n).deliver_now
-          puts 'SENDING REMINDER...'
-          Note.send_notif(n, u.user.id)
-          puts 'SEND NOTIF....'
-        end
-      end
-    # else
-    #   puts 'NO EMAIL SEND :('
-    end
-  end
-
   def self.assign_member_to_note(emails, column, note)
     participant = []
     emails.each do |e|
@@ -113,12 +93,12 @@ class Note < ApplicationRecord
     UserNote.create(participant)
   end
 
-  def self.send_repeater
+  def self.send_reminder
     require 'rufus-scheduler'
 
     interval = Rufus::Scheduler.new
     now = Time.now.strftime('%F %R').in_time_zone('Jakarta')
-    notes = Note.where('event_date = ?', now)
+    notes = Note.where('reminder = ?', now)
 
     if notes.present?
       notes.each do |n|
@@ -160,7 +140,7 @@ class Note < ApplicationRecord
   def self.send_notif(note, user)
     Notification.create(
       title: "Reminder event #{note.subject}",
-      body: "Tanggal event : #{note.event_date}",
+      body: "Tanggal event: #{note.event_date}",
       user_id: user
     )
   end
