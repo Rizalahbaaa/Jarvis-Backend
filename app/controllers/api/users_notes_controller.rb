@@ -38,7 +38,7 @@ class Api::UsersNotesController < ApplicationController
     if @user_note && @user_note.invitation_valid?
       @user_note.accept_invitation!
       Notification.create(
-        title: "telah menerima catatan anda",
+        title: "menerima",
         body: 'nil',
         user_id: owner.user.id,
         sender_id: member.id,
@@ -60,7 +60,7 @@ class Api::UsersNotesController < ApplicationController
     if @user_note && @user_note.invitation_valid?
       @user_note.decline_invitation!
       Notification.create(
-        title: "telah menolak catatan anda",
+        title: "menolak",
         body: 'nil',
         user_id: owner.user.id,
         sender_id: member.id,

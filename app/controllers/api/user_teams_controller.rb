@@ -27,12 +27,12 @@ class Api::UserTeamsController < ApplicationController
     if @user_team && @user_team.invitation_valid?
       @user_team.accept_invitation!
       Notification.create(
-        title: "telah menerima undangan grub anda",
+        title: "menerima",
         body: 'nil',
         user_id: owner.user.id,
         sender_id: member.id,
         sender_place: team.id,
-        notif_type: 2
+        notif_type: 3
       )
       render json: { status: 200, message: "Undangan Diterima"}, status: 200
     else
@@ -60,12 +60,12 @@ class Api::UserTeamsController < ApplicationController
     if @user_team && @user_team.invitation_valid?
       @user_team.decline_invitation!
       Notification.create(
-        title: "telah menolak undangan grub anda",
+        title: "menolak",
         body: 'nil',
         user_id: owner.user.id,
         sender_id: member.id,
         sender_place: team.id,
-        notif_type: 2
+        notif_type: 3
       )
       render json: { status: 200, message: "Undangan Ditolak"}, status: 200
     else
