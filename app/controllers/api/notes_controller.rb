@@ -135,7 +135,7 @@ end
           note_members.each do |member|
             if @note.note_type == 'collaboration'
               Notification.create(
-                title: "#{current_user.username} #{default_message}",
+                title: "#{default_message}",
                 user_id: member.id,
                 sender_id: current_user.id,
                 sender_place: @note.id,
@@ -204,7 +204,7 @@ end
       note_members = @note.users
       note_members.each do |member|
         Notification.create(
-          title: " Telah menghapus Catatan #{@note.subject}",
+          title: "Telah menghapus Catatan #{@note.subject}",
           body: params[:body],
           user_id: member.id,
           sender_id: current_user.id,
