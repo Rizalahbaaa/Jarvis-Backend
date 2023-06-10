@@ -11,7 +11,8 @@ class Notification < ApplicationRecord
     enum notif_type: {
       client: 0,
       system: 1,
-      invite: 2
+      collab: 2,
+      team: 3
     }
 
     def recipient
