@@ -1,4 +1,6 @@
 class UserNote < ApplicationRecord
+  include ActionView::Helpers::DateHelper
+
   belongs_to :user
   belongs_to :note
   has_many :attaches, dependent: :destroy
@@ -125,6 +127,16 @@ class UserNote < ApplicationRecord
     'mengirim anda sebuah catatan'
   end
 
+  def sending
+    time_send = Time.now - owner_note&.updated_at
+    time_ago = distance_of_time_in_words(owner_note&.updated_at, Time.now, locale: :id)
+    
+    {
+      time_send: time_send,
+      time_ago: time_ago
+    }
+  end
+
   BACKEND_DOMAIN = if Rails.env.development?
     'http://localhost:3000/api'
   else
@@ -142,7 +154,7 @@ class UserNote < ApplicationRecord
         { action: "accept", url: "#{BACKEND_DOMAIN}/note/inv/accept_invitation/#{self.noteinvitation_token}" },
         { action: "reject", url: "#{BACKEND_DOMAIN}/note/inv/decline_invitation/#{self.noteinvitation_token}" }
       ],
-      date_invite: owner_note&.updated_at
+      date_invite: "#{sending[:time_ago]} yang lalu" 
     }
   end
 
