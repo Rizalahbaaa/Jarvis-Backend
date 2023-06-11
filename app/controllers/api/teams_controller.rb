@@ -172,12 +172,11 @@ class Api::TeamsController < ApplicationController
     elsif @user_team.team_role == 'owner' && @user_team.user_id != @current_user
       @team = Team.find(params[:id])
       
-      if params[:body].present?
         team_members = @team.user
         team_members.each do |member|
           Notification.create(
             title: " Telah menghapus Team #{@team.title}",
-            body: params[:body],
+            body: "#{current_user.username} telah Mengahapus Tim #{@team.title}",
             user_id: member.id,
             sender_id: current_user.id,
             sender_place: @team.id
@@ -191,10 +190,6 @@ class Api::TeamsController < ApplicationController
           render json: { success: false, message: 'team delete unsuccessfully', status: 422, data: @team.errors },
                 status: 422
         end
-      else
-        render json: { success: false, message: "can't delete a team, please fill in the notes first", status: 422 },
-               status: 422
-      end
     else
       render json: { success: false, message: 'team delete unsuccessfully', status: 422, data: @team.errors },
              status: 422
