@@ -54,8 +54,8 @@ class UserNote < ApplicationRecord
 
   def self.auto_change_status
     late_upload = Note.where('event_date < ?', Time.now.strftime('%F %R').in_time_zone('Jakarta'))
-    progress_note = late_upload
-    progress_note.update_all(status: 'completed')
+    # progress_note = late_upload
+    # progress_note.update_all(status: 'completed')
     if late_upload.present?
       late_upload.each do |l|
         user_late = UserNote.where(note: l, noteinvitation_status: 'Accepted', role: 'member')

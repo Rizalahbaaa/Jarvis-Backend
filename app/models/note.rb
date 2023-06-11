@@ -114,21 +114,21 @@ class Note < ApplicationRecord
             interval.every '1d' do
               ReminderMailer.my_repeater(u.user.email, n).deliver_now
               puts 'SENDING DAILY REMINDER...'
-              Note.freq_notif(n, u.user.id)
+              Note.send_notif(n, u.user.id)
               puts 'SEND DAILY NOTIF....'
             end
           when 'mingguan'
             interval.every '1w' do
               ReminderMailer.my_repeater(u.user.email, n).deliver_now
               puts 'SENDING WEEKLY REMINDER...'
-              Note.freq_notif(n, u.user.id)
+              Note.send_notif(n, u.user.id)
               puts 'SEND WEEKLY NOTIF....'
             end
           when 'bulanan'
             interval.every '1M' do
               ReminderMailer.my_repeater(u.user.email, n).deliver_now
               puts 'SENDING MONTHLY REMINDER...'
-              Note.freq_notif(n, u.user.id)
+              Note.send_notif(n, u.user.id)
               puts 'SEND MONTHLY NOTIF....'
             end
           end
@@ -147,13 +147,10 @@ class Note < ApplicationRecord
     )
   end
 
-  def self.freq_notif(note, user)
-    Notification.create(
-      title: "#{note.frequency} reminder untuk #{note.subject}",
-      body: "tanggal event: #{Time.now.strftime('%F %R').in_time_zone('Jakarta')}",
-      user_id: user
-    )
-  end
+  def self.note_done(note)
+    note.status = 'completed'
+    note.save(validate: false)
+  end  
 
   # def name
   #   subject
