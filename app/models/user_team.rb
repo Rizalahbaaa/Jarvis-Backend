@@ -1,4 +1,6 @@
 class UserTeam < ApplicationRecord
+  include ActionView::Helpers::DateHelper
+  
   belongs_to :team
   belongs_to :user
 
@@ -52,6 +54,16 @@ class UserTeam < ApplicationRecord
     }
   end
 
+  def sending
+    time_send = Time.now - owner_team&.updated_at
+    time_ago = distance_of_time_in_words(owner_team&.updated_at, Time.now, locale: :id)
+    
+    {
+      time_send: time_send,
+      time_ago: time_ago
+    }
+  end
+
   BACKEND_DOMAIN = if Rails.env.development?
     'http://localhost:3000/api'
   else
@@ -69,7 +81,7 @@ class UserTeam < ApplicationRecord
       { action: "accept", url: "#{BACKEND_DOMAIN}/team/inv/accept_invitation/#{self.teaminvitation_token}" },
       { action: "reject", url: "#{BACKEND_DOMAIN}/team/inv/decline_invitation/#{self.teaminvitation_token}" }
     ],
-    date_invite: owner_team&.updated_at
+    date_invite: "#{sending[:time_ago]} yang lalu"
   }
   end
 
