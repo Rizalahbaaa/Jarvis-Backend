@@ -112,7 +112,7 @@ end
         note_members = @note.users
         
         if params[:body].blank?
-          render json: { success: false, status: 422, message: "Tidak bisa menghapus catatan, tolong isi pesan terlebih dahulu." }
+          render json: { success: false, status: 422, message: "Tidak bisa memperbarui catatan, tolong isi pesan terlebih dahulu." }
         elsif @note.update(note_params)
           @find_user_note.update(updated_at: Time.now)
           record_update = record.update(note_params)
@@ -173,18 +173,28 @@ end
              status: 422
     elsif @user_note.role == 'owner' && @user_note.user_id != @current_user
       @note = Note.find(params[:id])
-      
+
       note_members = @note.users
       note_members.each do |member|
-        Notification.create(
-          title: " Telah menghapus Catatan #{@note.subject}",
-          body: params[:body],
-          user_id: member.id,
-          sender_id: current_user.id,
-          sender_place: @note.id
-        )
+        if @note.note_type == 'collaboration'
+          Notification.create(
+            title: " Telah menghapus Catatan #{@note.subject}",
+            body: params[:body],
+            user_id: member.id,
+            sender_id: current_user.id,
+            sender_place: @note.id
+          )
+        elsif @note.note_type == 'team'
+          Notification.create(
+            title: "Telah menghapus Catatan #{@note.subject}",
+            body: "#{current_user.username} Telah menghapus Catatan #{@note.subject}",
+            user_id: member.id,
+            sender_id: current_user.id,
+            sender_place: @note.id
+          )
+        end
       end
-      
+
       if @note.destroy
         render json: { success: true, message: 'note delete successfully', status: 200 },
                status: 200
