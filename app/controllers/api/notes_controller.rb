@@ -135,7 +135,7 @@ end
           note_members.each do |member|
             if @note.note_type == 'collaboration'
               Notification.create(
-                title: "#{current_user.username} #{default_message}",
+                title: "#{default_message}",
                 user_id: member.id,
                 sender_id: current_user.id,
                 sender_place: @note.id,
@@ -164,6 +164,33 @@ end
              status: 422
     end
   end
+
+  def completed_note
+    note = Note.find_by(id: params[:id])
+    if note.present?
+      owner = UserNote.find_by(note: note, role: 'owner')
+      if current_user.id == owner.user.id
+        Note.note_done(note)
+        earned_point = 100
+        users = User.joins(:user_notes).where('user_notes.note_id = ? AND (user_notes.noteinvitation_status = ? OR user_notes.role = ?)', note.id, 1, 0)
+        if users.present? && note.status == 'completed'
+          users.each do |user|
+            Transaction.create(
+              user_id: user.id,
+              point: earned_point,
+              point_type: 'earned'
+            )
+          end
+          return render json: { success: true, status: 201, message: "catatan selesai, mendapatkan #{earned_point} point" }, status: 201
+        end
+      else
+        render json: { status: 422, message: 'maaf, anda bukan pemilik catatan' }, status: 422
+      end
+    else
+      render json: { status: 404, message: 'catatan tidak ditemukan' }, status: 404
+    end
+  end
+  
   
   def destroy
     @user_note = UserNote.find_by(user: @current_user, note: @note)
@@ -177,7 +204,7 @@ end
       note_members = @note.users
       note_members.each do |member|
         Notification.create(
-          title: " Telah menghapus Catatan #{@note.subject}",
+          title: "Telah menghapus Catatan #{@note.subject}",
           body: params[:body],
           user_id: member.id,
           sender_id: current_user.id,
@@ -262,4 +289,9 @@ end
   def attach_params
     params.permit({path: []})
   end
+
+  def transaction_params
+    params.permit(:point, :point_type)
+  end
+  
 end

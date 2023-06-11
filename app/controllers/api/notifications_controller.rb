@@ -8,7 +8,7 @@ class Api::NotificationsController < ApplicationController
 
         if notifs.present?
           notifs.each do |n|
-            if n.notif_type == 'client'
+            if n.notif_type == 'client' || n.notif_type == 'collab' || n.notif_type == 'team'
               coll_notif << n.new_attr
             else
               coll_notif << n.reminder_notif
@@ -20,7 +20,7 @@ class Api::NotificationsController < ApplicationController
     end
 
     def user_notif
-        @notifications = Notification.where(user_id: current_user.id, notif_type: 0).order(created_at: :desc)
+        @notifications = Notification.where(user_id: current_user.id, notif_type: [0, 2, 3]).order(created_at: :desc)
         render json: { success: true, status: 200, data: @notifications.map { |notification| notification.new_attr } } 
     end
     

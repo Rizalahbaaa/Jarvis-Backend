@@ -37,7 +37,7 @@ Rails.application.routes.draw do
     get '/search_email', to: 'notes#email_valid'
     put '/update_password', to: 'users#update_password'
 
-    # get '/accept', to: 'user_teams#accept_invitation'
+    get '/accept', to: 'users_notes#accept_invitation'
 
     resources :transactions do
       member do
@@ -70,6 +70,7 @@ Rails.application.routes.draw do
       member do
         get 'history', to: 'notes#history'
         post 'remove', to: 'notes#remove_member'
+        put 'complete', to: 'notes#completed_note'
       end
     end
     resources :users_notes
