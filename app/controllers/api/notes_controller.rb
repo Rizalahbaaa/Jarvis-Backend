@@ -29,7 +29,7 @@ class Api::NotesController < ApplicationController
         @user_note = UserNote.create(note: @note, user: @current_user)
 
        emails = params[:email]
-       if emails.present? && @note.note_type != 'collaboration'
+       if emails.present?
           @note.update(note_type: 1)
          collab_mailer(emails)
       #  elsif emails.present? && @note.note_type == 'team'
