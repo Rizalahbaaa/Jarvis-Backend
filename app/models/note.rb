@@ -11,7 +11,7 @@ class Note < ApplicationRecord
   validates :reminder, presence: true
   validates :column_id, presence: false
   validates :frequency, presence: false
-  validate :reminder_date_valid?, :event_date_valid?
+  validate :reminder_date_valid?
 
   scope :join_usernote, -> { joins(:user_note) }
 
@@ -183,7 +183,7 @@ class Note < ApplicationRecord
   def reminder_date_valid?
     return unless reminder.present?
 
-    validates_comparison_of :reminder, greater_than: Time.now, less_than: event_date
+    validates_comparison_of :reminder, less_than: event_date
   end
 
   def owner_collab
