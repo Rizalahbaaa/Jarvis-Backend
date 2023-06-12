@@ -29,11 +29,11 @@ class Api::NotesController < ApplicationController
         @user_note = UserNote.create(note: @note, user: @current_user)
 
        emails = params[:email]
-       if emails.present? && @note.note_type != 'team'
+       if emails.present?
+          @note.update(note_type: 1)
          collab_mailer(emails)
-         @note.update(note_type: 1)
-       elsif emails.present? && @note.note_type == 'team'
-         Note.assign_member_to_note(emails, column, @note)
+      #  elsif emails.present? && @note.note_type == 'team'
+      #    Note.assign_member_to_note(emails, column, @note)
        end
 
        return render json: { success: true, message: 'Note created successfully', status: 201, data: @note.new_attr(current_user) },
@@ -89,8 +89,8 @@ end
           user = User.find_by(email: e)
           is_join = UserNote.find_by(note: @note, user: user)
           if is_join.nil?
-            collab_mailer(emails)
             @note.update(note_type: 1)
+            collab_mailer(emails)
           else
             return render json: { status: 422, message: "#{e} already invited" }, status: 422
           end
@@ -108,59 +108,49 @@ end
 
       if @note.update(note_params)
         @find_user_note.update(updated_at: Time.now)
-        record_update = record.update(note_params)
         note_members = @note.users
-        
-        if params[:body].blank?
-          render json: { success: false, status: 422, message: "Tidak bisa memperbarui catatan, tolong isi pesan terlebih dahulu." }
-        elsif @note.update(note_params)
-          @find_user_note.update(updated_at: Time.now)
-          record_update = record.update(note_params)
-          note_members = @note.users
-        
-          if params[:email].present?
-            default_message = "Telah Menambahkan Anggota Baru di Catatan #{@note.subject}"
-          elsif subject_value != @note.subject
-            default_message = "Telah Mengubah Nama Catatan #{subject_value} menjadi #{@note.subject}"
-          elsif description_value != @note.description
-            default_message = "Telah Mengubah Deskripsi Catatan #{@note.subject}"
-          elsif date_value != @note.event_date
-            default_message = "Telah Mengubah Tanggal Acara di Catatan #{@note.subject}"
-          elsif reminder_value != @note.reminder
-            default_message = "Telah Mengubah Tanggal Pengingat di Catatan #{@note.subject}"
-          else
-            default_message = "telah Memperbarui Catatan #{@note.subject}"
-          end
-        
-          note_members.each do |member|
-            if @note.note_type == 'collaboration'
-              Notification.create(
-                title: "#{default_message}",
-                user_id: member.id,
-                sender_id: current_user.id,
-                sender_place: @note.id,
-                place_name: @note.subject,
-                body: params[:body]
-              )
-            elsif @note.note_type == 'team'
-              Notification.create(
-                title: "telah Memperbarui Catatan #{@note.subject}",
-                user_id: member.id,
-                sender_id: current_user.id,
-                sender_place: @note.id,
-                place_name: @note.subject,
-                body: "#{current_user.username} #{default_message}"
-              )
-            end
-          end
-        
-          render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr(current_user) },
-                 status: 200
+
+        if params[:email].present?
+          default_message = "Telah Menambahkan Anggota Baru di Catatan #{@note.subject}"
+        elsif subject_value != @note.subject
+          default_message = "Telah Mengubah Nama Catatan #{subject_value} menjadi #{@note.subject}"
+        elsif description_value != @note.description
+          default_message = "Telah Mengubah Deskripsi Catatan #{@note.subject}"
+        elsif date_value != @note.event_date
+          default_message = "Telah Mengubah Tanggal Acara di Catatan #{@note.subject}"
+        elsif reminder_value != @note.reminder
+          default_message = "Telah Mengubah Tanggal Pengingat di Catatan #{@note.subject}"
         else
-          render json: { success: false, status: 422, message: 'note updated unsuccessfully', data: @note.errors },
-                 status: 422
+          default_message = "telah Memperbarui Catatan #{@note.subject}"
         end
-      end        
+
+        note_members.each do |member|
+          if @note.note_type == 'collaboration'
+            Notification.create(
+              title: "#{default_message}",
+              user_id: member.id,
+              sender_id: current_user.id,
+              sender_place: @note.id,
+              place_name: @note.subject,
+              body: params[:body]
+            )
+          elsif @note.note_type == 'team'
+            Notification.create(
+              title: "telah Memperbarui Catatan #{@note.subject}",
+              user_id: member.id,
+              sender_id: current_user.id,
+              sender_place: @note.id,
+              place_name: @note.subject,
+              body: "#{current_user.username} #{default_message}"
+            )
+          end
+        end
+        return render json: { success: true, status: 200, message: 'note updated successfully', data: @note.new_attr(current_user) },
+                status: 200
+      else
+        return render json: { success: false, status: 422, message: 'note updated unsuccessfully', data: @note.errors },
+                status: 422
+      end
     else
       render json: { success: false, message: 'sorry, only the owner can update the note', status: 422 },
              status: 422
