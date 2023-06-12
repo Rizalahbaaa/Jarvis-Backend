@@ -36,6 +36,7 @@ class Notification < ApplicationRecord
 
     def new_attr
         {
+            id:,
             title: self.title,
             body: self.body,
             recipient: recipient,
@@ -43,6 +44,7 @@ class Notification < ApplicationRecord
             sender: sender&.username,
             photo: sender&.photo&.url,
             sender_place: self.sender_place,
+            place_name: self.place_name,
             created: created_at,
             send: "#{sending[:time_ago]} yang lalu",
             notif_type: 

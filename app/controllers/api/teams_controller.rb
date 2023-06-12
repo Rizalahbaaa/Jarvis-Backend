@@ -100,7 +100,8 @@ class Api::TeamsController < ApplicationController
               body: "#{current_user.username} #{default_message}",
               user_id: member.id,
               sender_id: current_user.id,
-              sender_place: @team.id
+              sender_place: @team.id,
+              place_name: @team.title
             )
           end
         end
@@ -179,7 +180,8 @@ class Api::TeamsController < ApplicationController
             body: "#{current_user.username} telah Mengahapus Tim #{@team.title}",
             user_id: member.id,
             sender_id: current_user.id,
-            sender_place: @team.id
+            sender_place: @team.id,
+            place_name: @team.title
           )
         end
         

@@ -52,7 +52,11 @@ Rails.application.routes.draw do
     end
     resources :products
     resources :invitations
-    resources :notifications
+    resources :notifications do
+      member do
+        put 'mark_as_read'
+      end
+    end
     get '/client_notif', to: 'notifications#user_notif'
 
     resources :ringtones

@@ -139,6 +139,7 @@ end
                 user_id: member.id,
                 sender_id: current_user.id,
                 sender_place: @note.id,
+                place_name: @note.subject,
                 body: params[:body]
               )
             elsif @note.note_type == 'team'
@@ -147,6 +148,7 @@ end
                 user_id: member.id,
                 sender_id: current_user.id,
                 sender_place: @note.id,
+                place_name: @note.subject,
                 body: "#{current_user.username} #{default_message}"
               )
             end
@@ -209,7 +211,8 @@ end
             body: params[:body],
             user_id: member.id,
             sender_id: current_user.id,
-            sender_place: @note.id
+            sender_place: @note.id,
+            place_name: @note.subject
           )
         elsif @note.note_type == 'team'
           Notification.create(
@@ -217,7 +220,8 @@ end
             body: "#{current_user.username} Telah menghapus Catatan #{@note.subject}",
             user_id: member.id,
             sender_id: current_user.id,
-            sender_place: @note.id
+            sender_place: @note.id,
+            place_name: @note.subject
           )
         end
       end
