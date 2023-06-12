@@ -85,7 +85,6 @@ end
     if (@find_user_note.role == 'owner' && @find_user_note) || (!@note.column_id.nil? && Note.teamates(@current_user, @note))
       emails = params[:email] || []
       if emails.present?
-        invited = []
         emails.each do |e|
           user = User.find_by(email: e)
           is_join = UserNote.find_by(note: @note, user: user)
@@ -93,12 +92,8 @@ end
             @note.update(note_type: 1)
             collab_mailer(emails)
           else
-            invited << e
+            return render json: { status: 422, message: "#{e} already invited" }, status: 422
           end
-        end
-
-        if invited.present?
-          return render json: { status: 422, message: "#{invited} already invited" }, status: 422
         end
       end
 
