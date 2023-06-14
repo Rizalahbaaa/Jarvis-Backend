@@ -60,7 +60,7 @@ class UserNote < ApplicationRecord
     # progress_note.update_all(status: 'completed')
     if late_upload.present?
       late_upload.each do |l|
-        user_late = UserNote.where(note: l, noteinvitation_status: 'Accepted', role: 'member')
+        user_late = UserNote.where(note: l, noteinvitation_status: 'Accepted', role: 'member', status: 'not_upload_yet')
         user_late.update_all(status: 'late')
       end
     end
