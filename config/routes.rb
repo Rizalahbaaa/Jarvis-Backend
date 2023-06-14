@@ -80,5 +80,6 @@ Rails.application.routes.draw do
     resources :users_notes
     resources :user_teams
     resources :attaches
+    resources :cards
   end
 end
