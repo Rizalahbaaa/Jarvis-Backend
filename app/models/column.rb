@@ -1,5 +1,6 @@
 class Column < ApplicationRecord
-  has_many :note
+  # has_many :note
+  has_many :cards
   belongs_to :team
 
   validates :title, presence: true, length: { maximum: 100 }
@@ -10,12 +11,13 @@ class Column < ApplicationRecord
     @find_user_team = UserTeam.find_by(user: current_user, team: @find_team).present?
   end
 
-  def new_attr(current_user)
+  def new_attr
     {
       id:,
       title:,
       team: team.title,
-      note: note.map { |note| note.new_attr(current_user) }
+      # note: note.map { |note| note.new_attr(current_user) }
+      cards: cards.map{|c| c.new_attr}
     }
   end
 end
