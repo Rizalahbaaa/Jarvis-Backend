@@ -8,16 +8,16 @@ class User < ApplicationRecord
   attr_accessor :is_forgot
   attr_accessor :current_password
 
-  has_many :transactions
+  has_many :transactions, dependent: :destroy
   has_many :products, through: :transactions
 
   has_many :user_notes
-  has_many :notes, through: :user_notes, source: :note, dependent: :destroy
+  has_many :notes, through: :user_notes, source: :note
 
   has_many :user_team
-  has_many :team, through: :user_team,source: :team, dependent: :destroy
+  has_many :team, through: :user_team,source: :team
 
-  has_many :notification
+  has_many :notification, dependent: :destroy
   PASSWORD_REGEX = /\A
     (?=.*\d)
     (?=.*[a-z])

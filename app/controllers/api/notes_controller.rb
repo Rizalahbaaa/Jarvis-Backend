@@ -30,8 +30,8 @@ class Api::NotesController < ApplicationController
 
        emails = params[:email]
        if emails.present?
-          @note.update(note_type: 1)
-         collab_mailer(emails)
+        collab_mailer(emails)
+        @note.update(note_type: 1)
       #  elsif emails.present? && @note.note_type == 'team'
       #    Note.assign_member_to_note(emails, column, @note)
        end

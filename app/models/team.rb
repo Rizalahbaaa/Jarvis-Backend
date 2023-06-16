@@ -1,7 +1,7 @@
 class Team < ApplicationRecord
   mount_uploader :photo, TeamUploader
   has_many :user_team
-  has_many :user, through: :user_team, source: :user, dependent: :destroy
+  has_many :user, through: :user_team, source: :user
   has_many :column
 
   validates :title, presence: {message: "can't be blank"}, length: { maximum: 100 }

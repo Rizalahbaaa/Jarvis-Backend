@@ -1,6 +1,6 @@
 class Note < ApplicationRecord
   has_many :user_note
-  has_many :users, through: :user_note, source: :user, dependent: :destroy
+  has_many :users, through: :user_note, source: :user
   belongs_to :column, optional: true
   belongs_to :ringtone
 

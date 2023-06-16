@@ -1,6 +1,6 @@
 class Api::UsersController < ApplicationController
   skip_before_action :authenticate_request, only: %i[create login confirm_email forgot reset resend_verification]
-  before_action :set_user, only: %i[show update update_password]
+  before_action :set_user, only: %i[show update destroy update_password]
 
   def index
     @users = User.all
@@ -48,7 +48,7 @@ class Api::UsersController < ApplicationController
   end
 
   def show
-    render json: @user.new_attr
+    render json: current_user.new_attr
   end
 
   def active_user
@@ -66,8 +66,8 @@ class Api::UsersController < ApplicationController
   end
 
   def destroy
-    @user = User.find(params[:id])
-    if @user.destroy
+    if @user == current_user
+      @user.destroy
       render json: { success: true, status: 200, message: 'user deleted successfully' }, status: 200
     else
       render json: { success: true, status: 422, message: 'user deleted unsuccessfully' }, status: 422
@@ -167,7 +167,8 @@ class Api::UsersController < ApplicationController
   private
 
   def set_user
-    @user = current_user
+    # @user = current_user
+    @user = User.find(params[:id])
     return unless @user.nil?
 
     render json: { status: 404, message: 'user not found' }, status: 404
