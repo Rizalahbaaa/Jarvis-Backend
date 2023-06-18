@@ -66,8 +66,7 @@ class Api::UsersController < ApplicationController
   end
 
   def destroy
-    if @user == current_user
-      @user.destroy
+    if @user.destroy
       render json: { success: true, status: 200, message: 'user deleted successfully' }, status: 200
     else
       render json: { success: true, status: 422, message: 'user deleted unsuccessfully' }, status: 422
