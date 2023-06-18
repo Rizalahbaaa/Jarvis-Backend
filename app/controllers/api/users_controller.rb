@@ -167,8 +167,8 @@ class Api::UsersController < ApplicationController
   private
 
   def set_user
-    # @user = current_user
-    @user = User.find(params[:id])
+    @user = current_user
+    # @user = User.find(params[:id])
     return unless @user.nil?
 
     render json: { status: 404, message: 'user not found' }, status: 404
