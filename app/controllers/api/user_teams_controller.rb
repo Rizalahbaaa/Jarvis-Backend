@@ -32,6 +32,7 @@ class Api::UserTeamsController < ApplicationController
         user_id: owner.user.id,
         sender_id: member.id,
         sender_place: team.id,
+        place_name: team.title,
         notif_type: 3
       )
       render json: { status: 200, message: "Undangan Diterima"}, status: 200
@@ -65,6 +66,7 @@ class Api::UserTeamsController < ApplicationController
         user_id: owner.user.id,
         sender_id: member.id,
         sender_place: team.id,
+        place_name: team.title,
         notif_type: 3
       )
       render json: { status: 200, message: "Undangan Ditolak"}, status: 200

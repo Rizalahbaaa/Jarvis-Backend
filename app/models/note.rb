@@ -1,6 +1,6 @@
 class Note < ApplicationRecord
   has_many :user_note
-  has_many :users, through: :user_note, source: :user, dependent: :destroy
+  has_many :users, through: :user_note, source: :user
   belongs_to :column, optional: true
   belongs_to :ringtone
 
@@ -149,8 +149,15 @@ class Note < ApplicationRecord
 
   def self.note_done(note)
     note.status = 'completed'
+    user_also_comp = UserNote.where(note: note)
+    if user_also_comp.present?
+      user_also_comp.each do |uc|
+        uc.status = 'completed'
+        uc.save(validate: false)
+      end
+    end
     note.save(validate: false)
-  end  
+  end
 
   # def name
   #   subject

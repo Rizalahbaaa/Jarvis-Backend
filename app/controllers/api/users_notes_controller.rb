@@ -9,7 +9,7 @@ class Api::UsersNotesController < ApplicationController
 
   def reqlist
     @user_notes = UserNote.joins(:note).where(notes: { note_type: 'collaboration' }).where(user_id: current_user, noteinvitation_status: 'Pending').order(updated_at: :desc)
-    @user_teams = UserTeam.where(user_id: current_user, teaminvitation_status: 'Pending', team_role: 'member')
+    @user_teams = UserTeam.where(user_id: current_user, teaminvitation_status: 'Pending', team_role: 'member').order(updated_at: :desc)
     combined_data = @user_notes.map {|user_note| user_note.inv_request} + @user_teams.map {|user_team|user_team.inv_reqteam}
     render json: { success: true, status: 200, data: combined_data}
   end
@@ -43,6 +43,7 @@ class Api::UsersNotesController < ApplicationController
         user_id: owner.user.id,
         sender_id: member.id,
         sender_place: note.id,
+        place_name: note.subject,
         notif_type: 2
       )
       render json: { status: 200, message: "Undangan Diterima"}, status: 200
@@ -65,6 +66,7 @@ class Api::UsersNotesController < ApplicationController
         user_id: owner.user.id,
         sender_id: member.id,
         sender_place: note.id,
+        place_name: note.subject,
         notif_type: 2
       )
       render json: { status: 200, message: "Undangan Ditolak"}, status: 200

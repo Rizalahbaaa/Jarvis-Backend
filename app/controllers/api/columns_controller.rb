@@ -27,11 +27,8 @@ class Api::ColumnsController < ApplicationController
       else
         render json: { success: false, status: 422, message: 'create column unsuccessfully', data: @column.errors },
               status: 422
-      end
-      else
-        render json: { success: false, status: 422, message: 'create column unsuccessfully', data: @column.errors },
-              status: 422
-      end
+      end  
+    end
   
   end
 

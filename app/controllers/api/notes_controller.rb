@@ -30,8 +30,8 @@ class Api::NotesController < ApplicationController
 
        emails = params[:email]
        if emails.present?
-          @note.update(note_type: 1)
-         collab_mailer(emails)
+        collab_mailer(emails)
+        @note.update(note_type: 1)
       #  elsif emails.present? && @note.note_type == 'team'
       #    Note.assign_member_to_note(emails, column, @note)
        end
@@ -77,6 +77,7 @@ end
   end
 
   def update
+    not_invited = []
     if params[:note_type] && @note.note_type != params[:note_type]
       return render json: { success: false, message: 'cannot change note_type', status: 400 }, status: :bad_request
     end
@@ -89,12 +90,13 @@ end
           user = User.find_by(email: e)
           is_join = UserNote.find_by(note: @note, user: user)
           if is_join.nil?
-            @note.update(note_type: 1)
-            collab_mailer(emails)
-          else
-            return render json: { status: 422, message: "#{e} already invited" }, status: 422
+            not_invited << e
+            # else
+            #   return render json: { status: 422, message: "#{e} already invited" }, status: 422
           end
         end
+        collab_mailer(not_invited)
+        @note.update(note_type: 1)
       end
 
       # Mengambil record dari database

@@ -93,16 +93,18 @@ class Api::TeamsController < ApplicationController
           default_message = "telah Memperbarui Tim"
         end
   
-        team_members.each do |member|
-          unless emails.include?(member.email)
-            Notification.create(
-              title: "Telah Memperbarui Tim #{@team.title}",
-              body: "#{current_user.username} #{default_message}",
-              user_id: member.id,
-              sender_id: current_user.id,
-              sender_place: @team.id,
-              place_name: @team.title
-            )
+        if team_members.present?
+          team_members.each do |member|
+            unless emails.include?(member.email)
+              Notification.create(
+                title: "Telah Memperbarui Tim #{@team.title}",
+                body: "#{current_user.username} #{default_message}",
+                user_id: member.id,
+                sender_id: current_user.id,
+                sender_place: @team.id,
+                place_name: @team.title
+              )
+            end
           end
         end
   
