@@ -37,3 +37,4 @@ processes = []
 
 [[statics]]
   guest_path = "/rails/public"
+  url_prefix = "/"
