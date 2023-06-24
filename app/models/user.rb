@@ -11,10 +11,10 @@ class User < ApplicationRecord
   has_many :transactions, dependent: :destroy
   has_many :products, through: :transactions
 
-  has_many :user_notes
+  has_many :user_notes, dependent: :destroy
   has_many :notes, through: :user_notes, source: :note
 
-  has_many :user_team
+  has_many :user_team, dependent: :destroy
   has_many :team, through: :user_team,source: :team
 
   has_many :notification, dependent: :destroy

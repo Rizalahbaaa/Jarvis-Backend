@@ -4,7 +4,7 @@ class UserNote < ApplicationRecord
   belongs_to :user
   belongs_to :note
   has_many :attaches, dependent: :destroy
-  has_many :transactions
+  has_many :transactions, dependent: :destroy
 
   validates :note_id, presence: true
   validates :user_id, presence: true

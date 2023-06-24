@@ -1,6 +1,6 @@
 class Column < ApplicationRecord
   # has_many :note
-  has_many :cards
+  has_many :cards, dependent: :destroy
   belongs_to :team
 
   validates :title, presence: true, length: { maximum: 100 }
