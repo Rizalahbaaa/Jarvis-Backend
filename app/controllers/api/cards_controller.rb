@@ -54,10 +54,11 @@ class Api::CardsController < ApplicationController
     column = @card.column_id
     check = Card.check_member(column, current_user)
     if check
+      # binding.pry
         if @card.destroy
-          render json: { message: 'success to delete card' }, status: 200
+          render json: { status: 200, message: 'success to delete card' }, status: 200
         else
-          render json: { message: 'failed to delete card' }, status: 422
+          render json: { status: 422, message: 'failed to delete card' }, status: 422
         end
     else
         return render json: { success: false, status: 403, error: 'your not member in team' }, status: 403

@@ -1,6 +1,6 @@
 class Card < ApplicationRecord
   belongs_to :column
-  has_many :attaches, dependent: :destroy
+  # has_many :attaches, dependent: :destroy
 
   validates :subject, presence: true, length: { maximum:50 }
   validates :description, presence: true, length: { maximum:500 }
